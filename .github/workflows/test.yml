@@ -3,8 +3,6 @@ on:
   push:
     branches:
       - "*"
-    tags:
-      - '*'
 jobs:
   test:
     name: Build and Test
