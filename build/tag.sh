@@ -2,9 +2,6 @@
 
 set -e
 
-DIR="$(dirname "$0")"
-source "${DIR}"/include.sh
-
 git checkout "${TRAVIS_BRANCH}"
 
 f_info_log "Calculating tag ${TRAVIS_BRANCH} branch..."
