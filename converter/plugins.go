@@ -1,9 +1,10 @@
-package pkg
+package converter
 
 import (
 	"fmt"
 	md "github.com/JohannesKaufmann/html-to-markdown"
 	"github.com/PuerkitoBio/goquery"
+	"htmltomarkdown/util"
 	"strings"
 )
 
@@ -29,7 +30,7 @@ func ArticlePlugin(filters []string, delim string) md.Plugin {
 						return &text
 					}
 
-					title := EscapeTitle(selec.Text())
+					title := util.EscapeTitle(selec.Text())
 					header := articleHeader(title, delim)
 					return &header
 				},

@@ -1,7 +1,10 @@
-package pkg
+package converter
 
 import (
 	"github.com/stretchr/testify/assert"
+	"htmltomarkdown/config"
+	"htmltomarkdown/models"
+	"htmltomarkdown/test"
 	"os"
 	"path/filepath"
 	"testing"
@@ -9,23 +12,23 @@ import (
 )
 
 func TestConvert(t *testing.T) {
-	var testdata = filepath.Join("../testdata", t.Name())
-	c := NewConverter(Config{
-		Html: HtmlConfig{
+	var testdata = filepath.Join("../test/data", t.Name())
+	c := NewConverter(config.Config{
+		Html: config.HtmlConfig{
 			HeaderTags: []string{"h1"},
 			Selector:   ".article",
 			Remove:     []string{".article-title .permalink"},
-			Replace: []DocReplacement{
+			Replace: []models.DocReplacement{
 				{
 					Match:   ".tooltips-term",
 					Replace: "{{< tooltip >}}",
 				},
 			},
 		},
-		Markdown: MarkdownConfig{},
+		Markdown: config.MarkdownConfig{},
 	})
 
-	dstDir := testDir(t)
+	dstDir := test.TempDir(t)
 	defer os.RemoveAll(dstDir)
 
 	err := c.Convert(testdata, dstDir)

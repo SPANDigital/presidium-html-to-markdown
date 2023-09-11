@@ -3,11 +3,11 @@ package cmd
 import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"htmltomarkdown/pkg"
+	config2 "htmltomarkdown/config"
 	"log"
 )
 
-var config pkg.Config
+var config config2.Config
 
 func init() {
 	cobra.OnInitialize(initConfig)

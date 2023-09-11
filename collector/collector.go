@@ -1,10 +1,11 @@
-package pkg
+package collector
 
 import (
 	"errors"
 	"fmt"
 	"github.com/gocolly/colly/v2"
 	log "github.com/sirupsen/logrus"
+	"htmltomarkdown/util"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -38,7 +39,7 @@ func Collect(baseURL string, dst string) error {
 
 	c.OnResponse(func(res *colly.Response) {
 		contentType := res.Headers.Get("Content-Type")
-		path := PathByType(contentType, res.Request.URL.Path)
+		path := util.PathByType(contentType, res.Request.URL.Path)
 		path = filepath.Join(dst, path)
 		ext := filepath.Ext(path)
 

@@ -1,4 +1,4 @@
-package pkg
+package models
 
 type RegexReplace struct {
 	Pattern string

@@ -1,9 +1,13 @@
-package pkg
+package converter
 
 import (
 	"errors"
 	"github.com/PuerkitoBio/goquery"
 	log "github.com/sirupsen/logrus"
+	"htmltomarkdown/config"
+	"htmltomarkdown/models"
+	"htmltomarkdown/parser"
+	"htmltomarkdown/util"
 	"os"
 	"path/filepath"
 )
@@ -11,10 +15,10 @@ import (
 var ErrNoContentFound = errors.New("no content found")
 
 type Converter struct {
-	cfg Config
+	cfg config.Config
 }
 
-func NewConverter(cfg Config) *Converter {
+func NewConverter(cfg config.Config) *Converter {
 	return &Converter{
 		cfg: cfg,
 	}
@@ -57,21 +61,19 @@ func (c *Converter) convertFile(filename, src, rel, dst string) error {
 	}
 
 	markdown := HtmlConverter(rel, c.cfg).Convert(content)
-
-	articles, err := ParseArticles(markdown)
+	articles, err := parser.ParseArticles(markdown, ";;;")
 	if err != nil {
 		return err
 	}
 
 	dst = filepath.Join(dst, rel)
-	path := filepath.Join(dst, FileNameWithoutExt(filename))
+	path := filepath.Join(dst, util.FileNameWithoutExt(filename))
 	if filename == "index.html" {
 		path = dst
 	}
 
 	log.Info("Converted: ", path)
-
-	return createArticles(path, articles)
+	return c.createArticles(path, articles)
 }
 
 func (c *Converter) readFile(path string) (*goquery.Selection, error) {
@@ -95,7 +97,7 @@ func (c *Converter) readFile(path string) (*goquery.Selection, error) {
 	return content, nil
 }
 
-func createArticles(dir string, articles []Article) error {
+func (c *Converter) createArticles(dir string, articles []models.Article) error {
 	if err := os.MkdirAll(dir, os.ModePerm); err != nil {
 		return err
 	}
@@ -114,6 +116,5 @@ func createArticles(dir string, articles []Article) error {
 			return err
 		}
 	}
-
 	return nil
 }

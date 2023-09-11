@@ -1,7 +1,8 @@
-package pkg
+package models
 
 import (
 	"fmt"
+	"htmltomarkdown/util"
 )
 
 type Article struct {
@@ -21,7 +22,7 @@ func NewArticle(fm *FrontMatter) *Article {
 }
 
 func (a *Article) FileName() string {
-	return fmt.Sprintf("%s.md", FilenameFromTitle(a.FrontMatter.Title))
+	return fmt.Sprintf("%s.md", util.FilenameFromTitle(a.FrontMatter.Title))
 }
 
 func (a *Article) WriteLine(s string) {

@@ -33,7 +33,7 @@ changelog:
       - '^docs:'
       - '^test:'
 brews:
-  - name: presidium-html2md
+  - name: html2md
     homepage: "https://github.com/spandigital/presidium"
     description: "Presidium is a software documentation management system for agile teams"
     tap:

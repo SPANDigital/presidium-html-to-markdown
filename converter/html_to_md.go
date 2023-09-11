@@ -1,4 +1,4 @@
-package pkg
+package converter
 
 import (
 	"fmt"
@@ -6,6 +6,9 @@ import (
 	"github.com/JohannesKaufmann/html-to-markdown/plugin"
 	"github.com/PuerkitoBio/goquery"
 	log "github.com/sirupsen/logrus"
+	"htmltomarkdown/config"
+	"htmltomarkdown/models"
+	"htmltomarkdown/util"
 	"mime"
 	"path/filepath"
 	"regexp"
@@ -14,8 +17,8 @@ import (
 
 var rules = []html2md.Rule{{
 	Filter: []string{"p", "div"},
-	Replacement: func(content string, selec *goquery.Selection, opt *html2md.Options) *string {
-		parent := goquery.NodeName(selec.Parent())
+	Replacement: func(content string, selection *goquery.Selection, opt *html2md.Options) *string {
+		parent := goquery.NodeName(selection.Parent())
 		if html2md.IsInlineElement(parent) || parent == "li" {
 			return &content
 		}
@@ -26,14 +29,14 @@ var rules = []html2md.Rule{{
 	},
 }}
 
-func HtmlConverter(baseUrl string, cfg Config) *html2md.Converter {
+func HtmlConverter(baseUrl string, cfg config.Config) *html2md.Converter {
 	conv := html2md.NewConverter(baseUrl, true, &html2md.Options{
 		GetAbsoluteURL: getAbsoluteURL,
 	})
 
 	conv.Before(remove(cfg.Html.Remove), replace(cfg.Html.Replace))
 	conv.After(regexReplace(cfg.Markdown.Replace))
-	conv.Use(plugin.Table(), ArticlePlugin(cfg.Html.HeaderTags, articleDelimiter))
+	conv.Use(plugin.Table(), ArticlePlugin(cfg.Html.HeaderTags, ";;;"))
 	conv.AddRules(rules...)
 
 	return conv
@@ -43,11 +46,11 @@ func getAbsoluteURL(_ *goquery.Selection, rawURL string, domain string) string {
 	ext := filepath.Ext(rawURL)
 	if len(ext) > 0 && ext != ".html" {
 		mimeType := mime.TypeByExtension(ext)
-		path := PathByType(mimeType, rawURL)
+		path := util.PathByType(mimeType, rawURL)
 		return fmt.Sprintf("{{%%baseurl%%}}/%s", path)
 	}
 
-	if IsExternalUrl(rawURL) {
+	if util.IsExternalUrl(rawURL) {
 		return rawURL
 	}
 
@@ -70,7 +73,7 @@ func getAbsoluteURL(_ *goquery.Selection, rawURL string, domain string) string {
 	return fmt.Sprintf("{{< ref \"%s\" >}}", absURL)
 }
 
-func replace(replacements []DocReplacement) html2md.BeforeHook {
+func replace(replacements []models.DocReplacement) html2md.BeforeHook {
 	return func(doc *goquery.Selection) {
 		for _, replacement := range replacements {
 			doc.Find(replacement.Match).Each(func(i int, selection *goquery.Selection) {
@@ -92,7 +95,7 @@ func replace(replacements []DocReplacement) html2md.BeforeHook {
 					args = append(args, argSel.Contents().First().Text())
 				}
 
-				rep := ReplaceTemplate(replacement.Replace, args)
+				rep := util.ReplaceTemplate(replacement.Replace, args)
 				selection.ReplaceWithHtml(fmt.Sprintf("<div>%s</div>", rep))
 			})
 		}
@@ -111,7 +114,7 @@ func remove(selectors []string) html2md.BeforeHook {
 	}
 }
 
-func regexReplace(replacements []RegexReplace) html2md.Afterhook {
+func regexReplace(replacements []models.RegexReplace) html2md.Afterhook {
 	return func(markdown string) string {
 		for _, replacement := range replacements {
 			rgx, err := regexp.Compile(replacement.Pattern)

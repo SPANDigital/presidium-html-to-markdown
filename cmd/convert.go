@@ -4,7 +4,9 @@ import (
 	"errors"
 	"fmt"
 	"github.com/spf13/cobra"
-	"htmltomarkdown/pkg"
+	"htmltomarkdown/collector"
+	"htmltomarkdown/converter"
+	"htmltomarkdown/util"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -26,12 +28,12 @@ var convertCmd = &cobra.Command{
 
 func run(_ *cobra.Command, args []string) error {
 	var src, dst = args[0], args[1]
-	if pkg.IsURL(src) {
+	if util.IsURL(src) {
 		srcPath, err := collect(src)
 		if err != nil {
 			return err
 		}
-		defer os.RemoveAll(srcPath)
+		//defer os.RemoveAll(srcPath)
 
 		parsedUrl, err := url.Parse(src)
 		if err != nil {
@@ -40,7 +42,7 @@ func run(_ *cobra.Command, args []string) error {
 
 		src = filepath.Join(srcPath, parsedUrl.Path)
 	}
-	return pkg.NewConverter(config).Convert(src, dst)
+	return converter.NewConverter(config).Convert(src, dst)
 }
 
 func collect(src string) (string, error) {
@@ -49,7 +51,7 @@ func collect(src string) (string, error) {
 		return tmp, err
 	}
 
-	if err := pkg.Collect(src, tmp); err != nil {
+	if err := collector.Collect(src, tmp); err != nil {
 		return tmp, err
 	}
 
@@ -63,7 +65,7 @@ func validateNPaths(n int) cobra.PositionalArgs {
 		}
 
 		for _, path := range args[:n] {
-			if pkg.IsURL(path) {
+			if util.IsURL(path) {
 				return nil
 			}
 

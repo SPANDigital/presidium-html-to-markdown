@@ -1,4 +1,4 @@
-package pkg
+package test
 
 import (
 	"encoding/json"
@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func mustReadFile(t *testing.T, path string) []byte {
+func MustReadFile(t *testing.T, path string) []byte {
 	content, err := os.ReadFile(path)
 	if err != nil {
 		t.Error(err)
@@ -15,7 +15,7 @@ func mustReadFile(t *testing.T, path string) []byte {
 	return content
 }
 
-func mustReadFileAsString(t *testing.T, path string) string {
+func MustReadFileAsString(t *testing.T, path string) string {
 	content, err := os.ReadFile(path)
 	if err != nil {
 		t.Error(err)
@@ -24,7 +24,7 @@ func mustReadFileAsString(t *testing.T, path string) string {
 	return string(content)
 }
 
-func mustUnmarshal(t *testing.T, path string, value interface{}) {
+func MustUnmarshal(t *testing.T, path string, value interface{}) {
 	content, err := os.ReadFile(path)
 	if err != nil {
 		t.Error(err)
@@ -36,7 +36,7 @@ func mustUnmarshal(t *testing.T, path string, value interface{}) {
 	}
 }
 
-func testDir(t *testing.T) string {
+func TempDir(t *testing.T) string {
 	path, err := os.MkdirTemp(".", "_test")
 	if err != nil {
 		t.Error(err)

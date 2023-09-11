@@ -1,7 +1,8 @@
-package pkg
+package collector
 
 import (
 	"github.com/stretchr/testify/assert"
+	"htmltomarkdown/test"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -11,7 +12,7 @@ import (
 )
 
 func TestCollect(t *testing.T) {
-	var testdata = filepath.Join("../testdata", t.Name())
+	var testdata = filepath.Join("../test/data", t.Name())
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
@@ -19,11 +20,11 @@ func TestCollect(t *testing.T) {
 		if path == "/" {
 			path = "index.html"
 		}
-		body := mustReadFile(t, filepath.Join(testdata, path))
+		body := test.MustReadFile(t, filepath.Join(testdata, path))
 		w.Write(body)
 	})
 
-	dstDir := testDir(t)
+	dstDir := test.TempDir(t)
 	defer os.RemoveAll(dstDir)
 
 	server := httptest.NewServer(mux)

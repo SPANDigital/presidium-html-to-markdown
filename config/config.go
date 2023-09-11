@@ -1,4 +1,6 @@
-package pkg
+package config
+
+import "htmltomarkdown/models"
 
 type Config struct {
 	Html     HtmlConfig
@@ -16,10 +18,10 @@ type HtmlConfig struct {
 	Remove []string
 
 	// List of HTML replacements to perform before conversion
-	Replace []DocReplacement
+	Replace []models.DocReplacement
 }
 
 type MarkdownConfig struct {
 	// List of Regex replacements to perform after conversion
-	Replace []RegexReplace
+	Replace []models.RegexReplace
 }
