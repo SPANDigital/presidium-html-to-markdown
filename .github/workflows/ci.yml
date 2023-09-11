@@ -28,6 +28,8 @@ jobs:
     if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v3
       - name: Tag code
         run: ./build/tag.sh
         shell: bash
