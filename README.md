@@ -1,23 +1,44 @@
 # Presidium HTML to Markdown converter
 
-**html2md** is tool that allow you to convert HTML files into [Presidium](https://presidium.spandigital.net/) markdown articles.
+**html2md** is a tool that allows you to convert HTML files into [Presidium](https://presidium.spandigital.net/) markdown articles.
 
-## Getting Started
+* [Development](#development)
+* [Installation](#installation)
+* [Usage](#usage)
+* [Advanced Usage](#advanced-usage)
+* [Limitations](#limitations)
 
-### Installation
+## Development
 
-Install homebrew
-
+Build
 ```bash
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+make
 ```
 
-Add SPAN's homebrew tap
+Test
+```bash
+make test
+```
+
+Run
+```bash
+go run main.go convert [source] [dest] [flags]
+```
+
+## Installation
+
+Install from Homebrew
+
+```bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+```
+
+Add SPAN's Homebrew tap
 ```bash
 brew tap SPANDigital/homebrew-tap https://github.com/SPANDigital/homebrew-tap.git
 ```
 
-Install converter
+Install html2md
 ```bash
 brew install html2md
 ```
@@ -28,7 +49,7 @@ Usage:
   html2md convert [source] [dest] [flags]
 
 Flags:
-      --headers strings   the filters for article titles (default [h1,h2])
+      --headers strings   article header tags (default [h1,h2])
       --select string     the part of the page to select and convert (default "body")
 ```
 
@@ -42,16 +63,69 @@ Convert local html files
 html2md convert ./html-files ./presidium --select=.article --headers=h1
 ```
 
-## Config
+## Advanced usage
 
-Sample config file
+
+You can define a config.yml file in the working directory or in`$HOME/.html2md` with additional options to  
+
+
+### Remove HTML
+
+The `html.remove` option allows you to selectively remove specific HTML elements from your source document before converting it to Markdown. This can be useful when you want to clean up your HTML content or remove unwanted elements that have no relevance.
+
+**Example Usage:**
+
+```yaml
+
+html:
+  remove: ['.nav-link', '#warning']
+
+```
+
+In this example, all element matching the CSS selectors `.nav-link` and `#warning` will be removed before conversion.
+
+### Replace HTML
+The `html.replace` option allows you to transform specific HTML elements into custom Markdown syntax, giving you greater control over the appearance and structure of your converted document.
+
+**Example Usage:**
+
+Suppose you have HTML content that includes tooltips, and you want to convert them into Markdown-friendly tooltips. Here's how you can achieve this using the "Replace HTML" feature:
+```yaml
+html:
+  replace:
+  - match: '.tooltips-term'
+    select: ['?href', '.tooltips-text']
+    replace: '{{< tooltip "$1" text="$2" >}}'
+
+```
+
+In this example, the CSS selector `.tooltips-term` is specified as the element to be replaced. The `select` field allows you to capture specific attributes and content relative to the matched element. Finally, the `replace` pattern converts the selected elements into a Markdown tooltip format.
+
+> [!NOTE]  
+> In addition to the standard CSS-selectors, `select` allows you to select attributes on the matched element using the `?` prefix. 
+> You can also get the text of the matched element by passing **text** in the select list.
+> 
+### Replace Markdown
+Similar to the HTML replace you can also replace markdown based on a Regex pattern.
+
+**Example Usage:**
+
+Let's say you have Markdown content with links, and you want to prepend the base URL to all these links.
+```yaml
+markdown:
+  replace:
+    - pattern: '\[([^]]+)\]\(([^\)]+)\)'
+      with: "[$1]({{%baseurl%}}$2)"
+```
+
+### Sample config
 ```yaml
 html:
   remove: ['.article-title .permalink', '#warning'] # CSS selectors for elements that should be removed before conversion.
   replace:
     - match: '.tooltips-term' # CSS selector for the element to be replaced.
       # Below are the arguments to select elements relative to the matched element.
-      select: ['href', '.tooltips-text']
+      select: ['?href', '.tooltips-text']
       # Replacement pattern with the selected arguments.
       replace: '{{< tooltip "$1" text="$2" >}}'
 markdown:
@@ -61,3 +135,9 @@ markdown:
       with: "[$1]({{%baseurl%}}/$2)" # This is the replacement pattern for converting Markdown links.
 
 ```
+
+## Limitations
+
+The article parser assumes that every article will have a title defined by the `--headers` selector. 
+If the article doesn't have a header the parsing will fail. 
+
