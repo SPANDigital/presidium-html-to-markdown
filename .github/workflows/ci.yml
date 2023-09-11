@@ -9,23 +9,19 @@ on:
       - main
 jobs:
   test:
-    name: Test
+    name: Build and Test
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v3
       - name: Set up Go
-        uses: actions/setup-go@v2
+        uses: actions/setup-go@v4
         with:
-          go-version: 1.20
-      - name: Run Tests
-        run: go test ./...
-      - name: Upload Test Results
-        if: ${{ always() }}
-        uses: actions/upload-artifact@v2
-        with:
-          name: test-results
-          path: test-results
+          go-version: '1.20'
+      - name: Build
+        run: go build -v ./...
+      - name: Test
+        run: go test -v ./...
   tag:
     name: Tag
     needs: test
@@ -43,13 +39,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
+        uses: actions/checkout@v3
       - name: Set up Go
-        uses: actions/setup-go@v2
+        uses: actions/setup-go@v4
         with:
-          go-version: 1.20
+          go-version: '1.20'
       - name: Prepare
         run: git reset --hard
       - name: Run GoReleaser
