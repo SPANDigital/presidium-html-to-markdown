@@ -1,11 +1,11 @@
-html:
-  remove: ['.article-title .permalink']
-  replace:
-    - match: '.tooltips-term'
-      select: ['.tooltips-text']
-      replace: '{{< tooltip "$1" >}}'
-markdown:
-  replace:
-    - pattern: '\[([^]]+)\]\(([^\)]+)\)' # Regex pattern used for selecting and capturing specific content.
-      # The captured content is then utilized in the replacement pattern below.
-      with: "[$1]({{%baseurl%}}/$2)" # This is the replacement pattern for converting Markdown links.
+#html:
+#  remove: ['.article-title .permalink']
+#  replace:
+#    - match: '.tooltips-term'
+#      select: ['.tooltips-text']
+#      replace: '{{< tooltip "$1" >}}'
+#markdown:
+#  replace:
+#    - pattern: '\[([^]]+)\]\(([^\)]+)\)' # Regex pattern used for selecting and capturing specific content.
+#      # The captured content is then utilized in the replacement pattern below.
+#      with: "[$1]({{%baseurl%}}/$2)" # This is the replacement pattern for converting Markdown links.

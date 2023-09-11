@@ -3,14 +3,13 @@ TESTDIRS=`go list ./... |grep -v "vendor/"`
 default:
 	rm -rf dist
 	mkdir -p dist
-	go build -o dist/presidium-json-schema main.go
+	go build -o dist/html2md main.go
 
 clean:
 	rm -rf dist
 	rm -rf reports
 	rm -rf tmp
 
-# test runs all tests
 test:
 	@mkdir -p reports
 	go test -p 1 -v $(TESTDIRS) -coverprofile=reports/tests-cov.out

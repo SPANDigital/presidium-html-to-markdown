@@ -38,6 +38,7 @@ brews:
   - name: html2md
     homepage: "https://github.com/spandigital/presidium"
     description: "Presidium is a software documentation management system for agile teams"
+    download_strategy: GitHubPrivateRepositoryReleaseDownloadStrategy
     tap:
       owner: spandigital
       name: homebrew-tap
