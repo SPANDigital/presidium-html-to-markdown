@@ -29,7 +29,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Tag code
-        run: build/tag.sh
+        run: ./build/tag.sh
+        shell: bash
     env:
       GITHUB_TOKEN: ${{ secrets.GH_ACCESS_TOKEN }}
   release:
