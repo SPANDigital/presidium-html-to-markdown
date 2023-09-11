@@ -30,6 +30,7 @@ jobs:
     name: Tag
     needs: test
     if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
     steps:
       - name: Tag code
         run: build/tag.sh
