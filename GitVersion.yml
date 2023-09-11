@@ -1,0 +1,12 @@
+mode: ContinuousDelivery
+next-version: 0.0.1
+branches:
+  develop:
+    mode: ContinuousDeployment
+    regex: (^develop$|^origin\/develop$)
+    tag: rfv
+  main:
+    mode: ContinuousDelivery
+    regex: (^main|^origin\/main)
+ignore:
+  sha: []

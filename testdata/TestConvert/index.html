@@ -1,0 +1,277 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset=utf-8>
+    <title>Presidium</title>
+    <meta name=viewport content="width=device-width,initial-scale=1">
+    <meta name=generator content="Hugo 0.104.3">
+    <link rel=icon href=images/favicon.ico type=image/x-icon>
+</head>
+<body id=presidium>
+<div id=presidium-container class=container-fluid>
+    <div class=row>
+        <div id=presidium-content class="col-lg-10 col-md-12">
+            <h1 class=page-title>Key Concepts</h1>
+            <hr>
+            <section>
+                <div class=well id=no-content-warning><span class="glyphicon glyphicon-info-sign"></span>No articles match the selected filter.</div>
+                <div class="article child" data-roles="All Roles" id=key-concepts-presidiums-learning-model>
+                    <div class=presidium-article-wrapper>
+                        <span class=anchor id=presidiums-learning-model data-id=key-concepts/presidium-learning-model.md></span>
+                        <div class=article-title>
+                            <h1>Presidium's Learning Model</h1>
+                            <div class=permalink><a class=link-icon href=#presidiums-learning-model title="Permalink to this article"></a></div>
+                        </div>
+                        <article>
+                            <p>Presidium is more than a framework for producing documentation. It asks you to think about, structure, author, and
+                                publish content based on sensible best practices so you can write effective documentation, rather than producing
+                                documentation for documentation’s sake.
+                            </p>
+                            <h2 id=supporting-learning-objectives--efficiency>Supporting Learning Objectives & Efficiency</h2>
+                            <p>Presidium recommends creating small micro-articles that convey enough information to fulfill a learning objective.
+                                Small articles are advantageous because they:
+                            </p>
+                            <ul>
+                                <li>Usually only require a single author</li>
+                                <li>Force the author to focus on effectively describing a single concept</li>
+                                <li>Enable authors to quickly add documentation while also working on a product or service.</li>
+                            </ul>
+                            <p>Using this method, creating high quality content is part of the engineering process, not a deferred or protracted task.</p>
+                            <h2 id=categorization>Categorization</h2>
+                            <p>Often, either only a few people hold all the critical business and technical knowledge or information is spread across
+                                documents without organization or cohesion. Presidium suggests a way to categorize information that helps the writer
+                                compartmentalize and categorize knowledge, leading to more cohesive and logical documentation.
+                            </p>
+                            <h3 id=overview--key-concepts>Overview & Key Concepts</h3>
+                            <p>Almost any knowledge base requires an overview to orient the reader in the correct domain. The Overview section should
+                                support and lead to a discussion of key concepts that <strong>prime</strong> the reader to use the rest of the content.
+                                These two sections are naturally presented first, and one should follow the another.
+                            </p>
+                            <h3 id=prerequisites--getting-started>Prerequisites & Getting Started</h3>
+                            <p>For software projects, APIs, and similar documentation, most readers will require some initial preparation.
+                                This may include installing libraries or binaries and reading information before proceeding.
+                            </p>
+                            <p>The Prerequisites section should support the information in Getting Started. The Getting Started section should be a
+                                quick deep-dive than enables a user to get from nowhere to running in minutes.
+                            </p>
+                            <h3 id=best-practices>Best Practices</h3>
+                            <p>The Best Practices section should contain the ideal path to follow to get the most out of your product or service and
+                                reduce the potential of encountering problems. They can be a combination of anecdotal knowledge, RFCs, white papers etc.
+                            </p>
+                            <h3 id=reference>Reference</h3>
+                            <p>References should enhance or support the information in other sections (for example, imported API documentation,
+                                deep-dives beyond the needs of most readers, etc.)
+                            </p>
+                            <h3 id=recipes>Recipes</h3>
+                            <p>Recipes are clear sets of steps that explain how to do something useful or unusual with your product or service.</p>
+                            <h3 id=glossary>Glossary</h3>
+                            <p>Glossary entries are bite-sized pieces of information that explain a concept, resolve jargon, or list synonyms for a
+                                particular term. Because all content in the Glossary can be used for automatic tooltip generation, a good rule of thumb
+                                is to make sure a glossary entry can be condensed into a tooltip without being verbose or introducing confusion.
+                            </p>
+                            <h3 id=more>More</h3>
+                            <p>Tools, Uses Cases, Updates, and Support are other sections you can use. You can also define your own sections in Presidium.</p>
+                        </article>
+                        <hr>
+                    </div>
+                </div>
+                <div class="article child" data-roles="All Roles" id=key-concepts-menu-structure>
+                    <div class=presidium-article-wrapper>
+                        <span class=anchor id=menu-structure data-id=key-concepts/menu-structure.md></span>
+                        <div class=article-title>
+                            <h1>Menu Structure</h1>
+                            <div class=permalink><a class=link-icon href=#menu-structure title="Permalink to this article"></a></div>
+                        </div>
+                        <article>
+                            <h3 id=structure>Structure</h3>
+                            <p>For simplicity and transparency, the menu structure and associated directory structure are the same.</p>
+                            <h3 id=behavior>Behavior</h3>
+                            <p>A significant feature of the menu is its tree structure: <strong>each section or subsection is a node</strong> and content traverses from
+                                each node through its children. In Presidium, the node <code>name</code> or title becomes the main header of the page.
+                                Everything outside of that sub-tree is not presented on the page. In this example, the user has clicked Content
+                                Structure. Everything under that section is displayed:
+                            </p>
+                            <p><img src=/images/content_structure.png alt="Content Structure"></p>
+                            <p>Note the URL: <code>/recipes/content-structure/</code>. When you click on a section or subsection title, the url is included in
+                                the path. If you click on an article in a subsection (for example, <code>Article Concatenation</code>), the URL changes to
+                                <code>/recipes/content-structure/#article-concatenation</code>.
+                            </p>
+                        </article>
+                        <hr>
+                    </div>
+                </div>
+                <div class="article child" data-roles="All Roles" id=key-concepts-templates>
+                    <div class=presidium-article-wrapper>
+                        <span class=anchor id=templates data-id=key-concepts/templates.md></span>
+                        <div class=article-title>
+                            <h1>Templates</h1>
+                            <div class=permalink><a class=link-icon href=#templates title="Permalink to this article"></a></div>
+                        </div>
+                        <article>
+                            <p>Presidium includes article templates for each of the pre-defined sections. Templates are text documents that contain
+                                instructions and Markdown which can be modified to meet your needs.
+                            </p>
+                            <p>Templates encourage consistency and provide a simple checklist that an author can use for inspiration.</p>
+                            <ul>
+                                <li><a href=https://github.com/SPANDigital/presidium/tree/release/v2/templates/default target=_blank rel=noopener>Default Template</a></li>
+                                <li><a href=https://github.com/SPANDigital/presidium/tree/release/v2/templates/design target=_blank rel=noopener>Design Template</a></li>
+                                <li><a href=https://github.com/SPANDigital/presidium/tree/release/v2/templates/onboarding target=_blank rel=noopener>Onboarding Template</a></li>
+                            </ul>
+                        </article>
+                        <hr>
+                    </div>
+                </div>
+                <div class="article child" data-roles="All Roles" id=key-concepts-authoring-workflow>
+                    <div class=presidium-article-wrapper>
+                        <span class=anchor id=authoring-workflow data-id=key-concepts/authoring.md></span>
+                        <div class=article-title>
+                            <h1>Authoring Workflow</h1>
+                            <div class=permalink><a class=link-icon href=#authoring-workflow title="Permalink to this article"></a></div>
+                        </div>
+                        <article>
+                            <p>The following workflow is recommended for authoring content using Presidium.</p>
+                            <h3 id=identify-the-author>Identify the Author</h3>
+                            <p>Whether you’re creating a single article or an entire section, make sure to include the author tag in the front matter.</p>
+                            <h3 id=work-locally>Work Locally</h3>
+                            <p>Presidium encourages you to write and review documentation on your local machine, rather than making changes directly
+                                on Github. The advantages to this workflow are:
+                            </p>
+                            <ul>
+                                <li>Changes are immediately viewable</li>
+                                <li>You can leverage Presidium’s validation tools</li>
+                                <li>Git commit history will have less noise</li>
+                            </ul>
+                            <h3 id=protect-master>Protect Master</h3>
+                            <p>If you own the documentation project, make sure you prevent others from making commits or pushing to the Master branch.
+                                You will be publishing from the Master branch, so you want to maintain its integrity.
+                            </p>
+                            <h3 id=work-on-a-branch>Work On a Branch</h3>
+                            <p>If you’re adding new content, start out on a branch based off of <code>develop</code>.</p>
+                            <h3 id=review>Review</h3>
+                            <p>Changes should be submitted as Pull Requests. Review all changes and merge into your Develop branch, then tag the
+                                release as a release for verification.
+                            </p>
+                            <h3 id=tag-release--publish>Tag, Release & Publish</h3>
+                            <p>After you’ve finalized the new content, merge it into Master, tag it as a release, then publish to Github pages.</p>
+                        </article>
+                        <hr>
+                    </div>
+                </div>
+                <div class="article child" data-roles="All Roles" id=key-concepts-learning-objectives>
+                    <div class=presidium-article-wrapper>
+                        <span class=anchor id=learning-objectives data-id=key-concepts/learning-objectives.md></span>
+                        <div class=article-title>
+                            <h1>Learning Objectives</h1>
+                            <div class=permalink><a class=link-icon href=#learning-objectives title="Permalink to this article"></a></div>
+                        </div>
+                        <article>
+                            <p>You should define the knowledge and skill set of your target audience before starting your documentation.
+                                You can then use this information to avoid wasting time explaining information your audience already knows.
+                            </p>
+                            <p>Just as stories are used to define software, learning objectives can be written using a standard template:
+                                <em>As a [user] of the [solution] I [know a specific piece of information] or can [perform a specific task]</em>
+                            </p>
+                            <p>For each learning objective, you should:</p>
+                            <ul>
+                                <li>Identify what your audience should know and be able to do after they have read the documentation.</li>
+                                <li>Use that information to create a list of learning objectives.</li>
+                            </ul>
+                        </article>
+                        <hr>
+                    </div>
+                </div>
+                <div class="article child" data-roles="All Roles" id=key-concepts-markdown>
+                    <div class=presidium-article-wrapper>
+                        <span class=anchor id=markdown data-id=key-concepts/markdown.md></span>
+                        <div class=article-title>
+                            <h1>Markdown</h1>
+                            <div class=permalink><a class=link-icon href=#markdown title="Permalink to this article"></a></div>
+                        </div>
+                        <article>
+                            <p>Markdown is an ubiquitous, lighweight markup language known to almost any engineer. If you don’t know Markdown,
+                                it’s easy to learn. Presidium uses a version of Markdown known as
+                                <a href=https://guides.github.com/features/mastering-markdown/#GitHub-flavored-markdown target=_blank rel=noopener>Github Flavoured Markdown</a> and
+                                leverages this ‘common tongue’ to enable multiple contributors to create documentation quickly without wasting time doing
+                                <strong>point & click</strong> styling or having to alter HTML and CSS.
+                            </p>
+                            <h3 id=style-guides>Style Guides</h3>
+                            <p>For any documentation project, a Markdown style guide ensures that contributors write documentation that is consistent
+                                with your intended tone and layout.
+                            </p>
+                            <h3 id=flexibility>Flexibility</h3>
+                            <p>If you need more flexibility than Markdown offers, you can also use HTML separately or mixed with Markdown content in
+                                articles.
+                            </p>
+                        </article>
+                        <hr>
+                    </div>
+                </div>
+                <div class="article child" data-roles="All Roles" id=key-concepts-micro-articles>
+                    <div class=presidium-article-wrapper>
+                        <span class=anchor id=micro-articles data-id=key-concepts/micro-articles.md></span>
+                        <div class=article-title>
+                            <h1>Micro-articles</h1>
+                            <div class=permalink><a class=link-icon href=#micro-articles title="Permalink to this article"></a></div>
+                        </div>
+                        <article>
+                            <p>Presidium is built on sound theoretical strategies for developing learning content and managing knowledge assets.
+                                The core of this approach is the development of specific focused micro-articles that explain individual concepts.
+                            </p>
+                            <p>This splits the problem of content development into two parts:</p>
+                            <ol>
+                                <li>
+                                    <p>Defining a site outline based on the concepts that must be documented and how they should be sequenced and presented.</p>
+                                </li>
+                                <li>
+                                    <p>Developing articles that each explain each concept, using a standard template to ensure consistency.
+                                        Micro-articles break the documentation development and maintenance activities into manageable chunks that can be
+                                        prioritized based on need. In many cases, it’s possible to write and review an article in under 20 minutes.
+                                        See <a href=/best-practices/#writing-effective-articles>Writing Effective Articles</a>
+                                    </p>
+                                </li>
+                            </ol>
+                            <p>This Presidium documentation site not only explains the Presidium software but also includes best practice guidelines
+                                for writing your documentation.
+                            </p>
+                        </article>
+                        <hr>
+                    </div>
+                </div>
+                <div class="article child" data-roles="All Roles" id=key-concepts-content-maintenance>
+                    <div class=presidium-article-wrapper>
+                        <span class=anchor id=content-maintenance data-id=key-concepts/content-maintenance.md></span>
+                        <div class=article-title>
+                            <h1>Content Maintenance</h1>
+                            <div class=permalink><a class=link-icon href=#content-maintenance title="Permalink to this article"></a></div>
+                        </div>
+                        <article>
+                            <p>Presidium is designed to make it easy to write and maintain your documentation. Instead of a monolithic document,
+                                Presidium manages a directory structure of micro-articles. The directory structure maps to the sections of your site,
+                                while the articles are joined together to build the content of each section. You can create a directory to add new
+                                sections and sub-sections. Each section contains a sample article template you can use as a starting point when creating
+                                new content. This site explains other best practices for writing articles.
+                            </p>
+                            <p>If you know how to maintain a codebase in a Github repository, you already know how to maintain Presidium documentation.
+                                You can use your team’s current Github workflow to manage the approval and publication process and use Github’s features
+                                to handle merge conflicts and other issues, just as you do for your source code. You can easily modify the suggested
+                                site structure and behavior. Most teams only need to remove a few sections that are not relevant to their project.
+                                Presidium has several configurable features that can be enabled as needed.
+                            </p>
+                        </article>
+                        <hr>
+                    </div>
+                </div>
+            </section>
+            <footer>
+                <div class=spacer></div>
+                <div>
+                    <p>&copy; Copyright 2022 SPAN Digital</p>
+                    <p class=text-muted>Generated on Oct 24, 2022</p>
+                </div>
+            </footer>
+        </div>
+        <div class=col-lg-2></div>
+    </div>
+</div>
+</body>
+</html>

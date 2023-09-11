@@ -1,0 +1,119 @@
+package pkg
+
+import (
+	"errors"
+	"github.com/PuerkitoBio/goquery"
+	log "github.com/sirupsen/logrus"
+	"os"
+	"path/filepath"
+)
+
+var ErrNoContentFound = errors.New("no content found")
+
+type Converter struct {
+	cfg Config
+}
+
+func NewConverter(cfg Config) *Converter {
+	return &Converter{
+		cfg: cfg,
+	}
+}
+
+func (c *Converter) Convert(src string, dst string) error {
+	err := os.MkdirAll(dst, os.ModePerm)
+	if err != nil {
+		return err
+	}
+
+	return filepath.Walk(src, func(path string, info os.FileInfo, err error) error {
+		isHtmlFile, err := filepath.Match("*.html", info.Name())
+		if err != nil {
+			return err
+		}
+
+		if !isHtmlFile {
+			return nil
+		}
+
+		relSrc, err := filepath.Rel(src, path)
+		if err != nil {
+			return err
+		}
+
+		relSrc = filepath.Dir(relSrc)
+		return c.convertFile(info.Name(), path, relSrc, dst)
+	})
+}
+
+func (c *Converter) convertFile(filename, src, rel, dst string) error {
+	content, err := c.readFile(src)
+	if err != nil {
+		if errors.Is(ErrNoContentFound, err) {
+			log.Warnf("No content found, skipped page: %s", filename)
+			return nil
+		}
+		return err
+	}
+
+	markdown := HtmlConverter(rel, c.cfg).Convert(content)
+
+	articles, err := ParseArticles(markdown)
+	if err != nil {
+		return err
+	}
+
+	dst = filepath.Join(dst, rel)
+	path := filepath.Join(dst, FileNameWithoutExt(filename))
+	if filename == "index.html" {
+		path = dst
+	}
+
+	log.Info("Converted: ", path)
+
+	return createArticles(path, articles)
+}
+
+func (c *Converter) readFile(path string) (*goquery.Selection, error) {
+	file, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+
+	defer file.Close()
+
+	doc, err := goquery.NewDocumentFromReader(file)
+	if err != nil {
+		return nil, err
+	}
+
+	content := doc.Find(c.cfg.Html.Selector)
+	if len(content.Nodes) == 0 {
+		return nil, ErrNoContentFound
+	}
+
+	return content, nil
+}
+
+func createArticles(dir string, articles []Article) error {
+	if err := os.MkdirAll(dir, os.ModePerm); err != nil {
+		return err
+	}
+
+	for i, article := range articles {
+		var filename = article.FileName()
+		if i == 0 {
+			filename = "_index.md"
+		}
+
+		article.FrontMatter.Weight = i + 1
+		path := filepath.Join(dir, filename)
+
+		err := os.WriteFile(path, []byte(article.String()), os.ModePerm)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
