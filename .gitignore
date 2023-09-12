@@ -1,0 +1,17 @@
+.idea/
+.vscode/
+_dist/
+dist/
+reports/
+_clone*
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+go.work
+**/cache/
+config.yml
+html2md
