@@ -25,12 +25,19 @@ Run
 go run main.go convert [source] [dest] [flags]
 ```
 
+---
+
 ## Installation
 
 Install from Homebrew
 
 ```bash
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+```
+
+Export Github Access Token
+```bash
+HOMEBREW_GITHUB_API_TOKEN=ghp_abc123...
 ```
 
 Add SPAN's Homebrew tap
@@ -42,6 +49,8 @@ Install html2md
 ```bash
 brew install html2md
 ```
+
+---
 
 ## Usage
 ```bash
@@ -63,15 +72,17 @@ Convert local html files
 html2md convert ./html-files ./presidium --select=.article --headers=h1
 ```
 
+---
+
 ## Advanced usage
 
 
-You can define a config.yml file in the working directory or in`$HOME/.html2md` with additional options to  
-
+You can define a `config.yml` file in your working directory or in`$HOME/.html2md` directory with additional options to control the conversion.
 
 ### Remove HTML
 
-The `html.remove` option allows you to selectively remove specific HTML elements from your source document before converting it to Markdown. This can be useful when you want to clean up your HTML content or remove unwanted elements that have no relevance.
+The `html.remove` option allows you to selectively remove elements from your source document before converting it to Markdown. 
+This can be useful when you want to clean up your HTML content or remove unwanted elements that have no relevance.
 
 **Example Usage:**
 
@@ -103,7 +114,7 @@ In this example, the CSS selector `.tooltips-term` is specified as the element t
 
 > [!NOTE]  
 > In addition to the standard CSS-selectors, `select` allows you to select attributes on the matched element using the `?` prefix. 
-> You can also get the text of the matched element by passing **text** in the select list.
+> You can also get the text of the matched element by passing `text` in the select list.
 > 
 ### Replace Markdown
 Similar to the HTML replace you can also replace markdown based on a Regex pattern.
@@ -136,8 +147,10 @@ markdown:
 
 ```
 
+---
+
 ## Limitations
 
 The article parser assumes that every article will have a title defined by the `--headers` selector. 
-If the article doesn't have a header the parsing will fail. 
+If the article doesn't have a header the parsing will fail with error "expected article to have a header: <path>"
 
