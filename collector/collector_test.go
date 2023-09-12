@@ -12,7 +12,7 @@ import (
 )
 
 func TestCollect(t *testing.T) {
-	var testdata = filepath.Join("../test/data", t.Name())
+	var dataPath = test.DataPath(t)
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
@@ -20,7 +20,7 @@ func TestCollect(t *testing.T) {
 		if path == "/" {
 			path = "index.html"
 		}
-		body := test.MustReadFile(t, filepath.Join(testdata, path))
+		body := test.MustReadFile(t, filepath.Join(dataPath, path))
 		w.Write(body)
 	})
 

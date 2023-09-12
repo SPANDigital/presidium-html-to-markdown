@@ -3,11 +3,14 @@ package parser
 import (
 	"bufio"
 	"bytes"
+	"errors"
 	"gopkg.in/yaml.v2"
 	"htmltomarkdown/models"
 	"io"
 	"strings"
 )
+
+var ErrHeaderNotFound = errors.New("expected article to have a header")
 
 // ParseArticles takes a markdown file and splits it into a list of Article
 // It expects the articles to be delimited with the articleDelimiter
@@ -15,6 +18,11 @@ func ParseArticles(content string, delim string) ([]models.Article, error) {
 	var articles []models.Article
 	scanner := bufio.NewScanner(strings.NewReader(content))
 	scanner.Scan()
+
+	if scanner.Text() != delim {
+		return articles, ErrHeaderNotFound
+	}
+
 	for {
 		article, err := parseArticle(scanner, delim)
 		if err != nil {

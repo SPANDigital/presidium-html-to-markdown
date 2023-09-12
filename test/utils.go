@@ -3,8 +3,13 @@ package test
 import (
 	"encoding/json"
 	"os"
+	"path/filepath"
 	"testing"
 )
+
+func DataPath(t *testing.T) string {
+	return filepath.Join("../test/data", t.Name())
+}
 
 func MustReadFile(t *testing.T, path string) []byte {
 	content, err := os.ReadFile(path)

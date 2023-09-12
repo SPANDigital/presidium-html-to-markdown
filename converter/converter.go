@@ -2,6 +2,7 @@ package converter
 
 import (
 	"errors"
+	"fmt"
 	"github.com/PuerkitoBio/goquery"
 	log "github.com/sirupsen/logrus"
 	"htmltomarkdown/config"
@@ -63,7 +64,7 @@ func (c *Converter) convertFile(filename, src, rel, dst string) error {
 	markdown := HtmlConverter(rel, c.cfg).Convert(content)
 	articles, err := parser.ParseArticles(markdown, ";;;")
 	if err != nil {
-		return err
+		return fmt.Errorf("%s: %s", err, src)
 	}
 
 	dst = filepath.Join(dst, rel)
@@ -109,9 +110,9 @@ func (c *Converter) createArticles(dir string, articles []models.Article) error 
 		}
 
 		article.FrontMatter.Weight = i + 1
-		path := filepath.Join(dir, filename)
+		articlePath := filepath.Join(dir, filename)
 
-		err := os.WriteFile(path, []byte(article.String()), os.ModePerm)
+		err := os.WriteFile(articlePath, []byte(article.String()), os.ModePerm)
 		if err != nil {
 			return err
 		}

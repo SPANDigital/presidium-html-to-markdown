@@ -22,7 +22,7 @@ func init() {
 var convertCmd = &cobra.Command{
 	Use:   "convert [source] [dest]",
 	Short: "convert",
-	Args:  cobra.MatchAll(cobra.MinimumNArgs(2), validateNPaths(1)),
+	Args:  cobra.MatchAll(cobra.MinimumNArgs(2), validateNPaths(2)),
 	RunE:  run,
 }
 
@@ -33,7 +33,7 @@ func run(_ *cobra.Command, args []string) error {
 		if err != nil {
 			return err
 		}
-		//defer os.RemoveAll(srcPath)
+		defer os.RemoveAll(srcPath)
 
 		parsedUrl, err := url.Parse(src)
 		if err != nil {

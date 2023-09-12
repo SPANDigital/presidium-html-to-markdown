@@ -9,13 +9,15 @@ import (
 )
 
 func TestArticlePlugin(t *testing.T) {
-	conv := md.NewConverter("", true, nil)
-	conv.Use(ArticlePlugin([]string{"h1", "h2"}, ";;;"))
+	var dataPath = test.DataPath(t)
 
-	html := test.MustReadFileAsString(t, filepath.Join("../test/data", t.Name(), "page.html"))
-	markdown := test.MustReadFileAsString(t, filepath.Join("../test/data", t.Name(), "page.md"))
+	converter := md.NewConverter("", true, nil)
+	converter.Use(ArticlePlugin([]string{"h1", "h2"}, ";;;"))
 
-	actual, err := conv.ConvertString(html)
+	html := test.MustReadFileAsString(t, filepath.Join(dataPath, "page.html"))
+	markdown := test.MustReadFileAsString(t, filepath.Join(dataPath, "page.md"))
+
+	actual, err := converter.ConvertString(html)
 	assert.NoError(t, err)
 	assert.Equal(t, actual, markdown)
 }

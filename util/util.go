@@ -71,22 +71,22 @@ func EscapeTitle(title string) string {
 
 func FilenameFromTitle(title string) string {
 	if len(title) > 30 {
-		title = ShortenTitle(title)
+		title = ExtractKeywords(title, 3)
 	}
 	return Slugify(title)
 }
 
-func ShortenTitle(title string) string {
-	title = specialCharRe.ReplaceAllString(title, "")
-	title = strings.ToLower(title)
-	candidates := rake.RunRake(title)
+func ExtractKeywords(text string, count int) string {
+	text = specialCharRe.ReplaceAllString(text, "")
+	text = strings.ToLower(text)
+	candidates := rake.RunRake(text)
 	var words []string
 	for _, candidate := range candidates {
 		words = append(words, strings.Fields(candidate.Key)...)
 	}
 
-	lim := minInt(len(words), 3)
-	return trimNonKeywords(title, words[:lim])
+	lim := minInt(len(words), count)
+	return trimNonKeywords(text, words[:lim])
 }
 
 func trimNonKeywords(text string, wordList []string) string {

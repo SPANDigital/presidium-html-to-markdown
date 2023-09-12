@@ -9,12 +9,19 @@ import (
 )
 
 func TestParseArticles(t *testing.T) {
-	var testdata = filepath.Join("../test/data", t.Name())
+	var dataPath = test.DataPath(t)
 	var expected []models.Article
-	test.MustUnmarshal(t, filepath.Join(testdata, "articles.json"), &expected)
+	test.MustUnmarshal(t, filepath.Join(dataPath, "articles.json"), &expected)
 
-	content := test.MustReadFileAsString(t, filepath.Join(testdata, "page.md"))
+	content := test.MustReadFileAsString(t, filepath.Join(dataPath, "page.md"))
 	actual, err := ParseArticles(content, ";;;")
 	assert.NoError(t, err, "failed to parse articles")
 	assert.Equal(t, expected, actual)
+}
+
+func TestParseArticlesError(t *testing.T) {
+	var dataPath = test.DataPath(t)
+	content := test.MustReadFileAsString(t, filepath.Join(dataPath, "page.md"))
+	_, err := ParseArticles(content, ";;;")
+	assert.Equal(t, err, ErrHeaderNotFound)
 }

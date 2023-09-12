@@ -6,14 +6,14 @@ import (
 	"htmltomarkdown/models"
 	"htmltomarkdown/test"
 	"os"
-	"path/filepath"
 	"testing"
 	"testing/fstest"
 )
 
 func TestConvert(t *testing.T) {
-	var testdata = filepath.Join("../test/data", t.Name())
-	c := NewConverter(config.Config{
+	var dataPath = test.DataPath(t)
+
+	converter := NewConverter(config.Config{
 		Html: config.HtmlConfig{
 			HeaderTags: []string{"h1"},
 			Selector:   ".article",
@@ -31,7 +31,7 @@ func TestConvert(t *testing.T) {
 	dstDir := test.TempDir(t)
 	defer os.RemoveAll(dstDir)
 
-	err := c.Convert(testdata, dstDir)
+	err := converter.Convert(dataPath, dstDir)
 	assert.NoError(t, err)
 
 	err = fstest.TestFS(
