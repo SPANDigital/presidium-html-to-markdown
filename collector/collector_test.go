@@ -2,6 +2,7 @@ package collector
 
 import (
 	"github.com/stretchr/testify/assert"
+	"htmltomarkdown/config"
 	"htmltomarkdown/test"
 	"net/http"
 	"net/http/httptest"
@@ -28,7 +29,7 @@ func TestCollect(t *testing.T) {
 	defer os.RemoveAll(dstDir)
 
 	server := httptest.NewServer(mux)
-	err := Collect(server.URL, dstDir)
+	err := Collect(server.URL, dstDir, config.Config{})
 	assert.NoError(t, err)
 
 	err = fstest.TestFS(os.DirFS(dstDir), "index.html", "contact.html", "images/sample.png")

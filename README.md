@@ -154,11 +154,3 @@ whitelist: ['https://spandigital.net/assets/'] # URLs that should be whitelisted
 assetDir: 'assets' # The directory where assets should be saved
 contentDir: 'content' # The directory where the converted markdown files should be saved
 ```
-
----
-
-## Limitations
-
-The article parser assumes that every article will have a title defined by the `--headers` selector. 
-If the article doesn't have a header the parsing will fail with error "expected article to have a header: <path>"
-
