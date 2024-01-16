@@ -15,6 +15,8 @@ import (
 	"strings"
 )
 
+type GetAbsoluteURL func(selection *goquery.Selection, rawURL string, domain string) string
+
 var rules = []html2md.Rule{{
 	Filter: []string{"p", "div"},
 	Replacement: func(content string, selection *goquery.Selection, opt *html2md.Options) *string {
@@ -31,7 +33,7 @@ var rules = []html2md.Rule{{
 
 func HtmlConverter(baseUrl string, cfg config.Config) *html2md.Converter {
 	conv := html2md.NewConverter(baseUrl, true, &html2md.Options{
-		GetAbsoluteURL: getAbsoluteURL,
+		GetAbsoluteURL: getAbsoluteURL(cfg.AssetDir),
 	})
 
 	conv.Before(remove(cfg.Html.Remove), replace(cfg.Html.Replace))
@@ -42,35 +44,38 @@ func HtmlConverter(baseUrl string, cfg config.Config) *html2md.Converter {
 	return conv
 }
 
-func getAbsoluteURL(_ *goquery.Selection, rawURL string, domain string) string {
-	ext := filepath.Ext(rawURL)
-	if len(ext) > 0 && ext != ".html" {
-		mimeType := mime.TypeByExtension(ext)
-		path := util.PathByType(mimeType, rawURL)
-		return fmt.Sprintf("{{%%baseurl%%}}/%s", path)
+func getAbsoluteURL(assetDir string) GetAbsoluteURL {
+	return func(_ *goquery.Selection, rawURL string, domain string) string {
+		ext := filepath.Ext(rawURL)
+		if len(ext) > 0 && ext != ".html" {
+			mimeType := mime.TypeByExtension(ext)
+			path := util.PathByType(mimeType, rawURL, assetDir)
+			return fmt.Sprintf("{{%%baseurl%%}}/%s", path)
+		}
+
+		if util.IsExternalUrl(rawURL) {
+			return rawURL
+		}
+
+		if strings.HasPrefix(rawURL, "#") {
+			return rawURL
+		}
+
+		if filepath.IsAbs(rawURL) {
+			return rawURL
+		}
+
+		filename := filepath.Base(rawURL)
+		if strings.HasPrefix(filename, "index.html") { // remove index.html from url
+			rawURL = filepath.Join(filepath.Dir(rawURL), strings.TrimPrefix(filename, "index.html"))
+		}
+
+		// convert relative url to absolute url
+		absURL := filepath.Join(domain, rawURL)
+		absURL = strings.Replace(absURL, ".html", "", -1)
+
+		return fmt.Sprintf("{{< ref \"%s\" >}}", absURL)
 	}
-
-	if util.IsExternalUrl(rawURL) {
-		return rawURL
-	}
-
-	if strings.HasPrefix(rawURL, "#") {
-		return rawURL
-	}
-
-	if filepath.IsAbs(rawURL) {
-		return rawURL
-	}
-
-	filename := filepath.Base(rawURL)
-	if strings.HasPrefix(filename, "index.html") {
-		rawURL = filepath.Join(filepath.Dir(rawURL), strings.TrimPrefix(filename, "index.html"))
-	}
-
-	absURL := filepath.Join(domain, rawURL)
-	absURL = strings.Replace(absURL, ".html", "", -1)
-
-	return fmt.Sprintf("{{< ref \"%s\" >}}", absURL)
 }
 
 func replace(replacements []models.DocReplacement) html2md.BeforeHook {

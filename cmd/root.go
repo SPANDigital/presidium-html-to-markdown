@@ -1,13 +1,13 @@
 package cmd
 
 import (
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	config2 "htmltomarkdown/config"
-	"log"
+	"htmltomarkdown/config"
 )
 
-var config config2.Config
+var cfg config.Config
 
 func init() {
 	cobra.OnInitialize(initConfig)
@@ -21,6 +21,8 @@ var rootCmd = &cobra.Command{
 }
 
 func Execute() {
+	log.SetLevel(log.InfoLevel)
+
 	if err := rootCmd.Execute(); err != nil {
 		log.Fatal(err)
 	}
@@ -32,6 +34,9 @@ func initConfig() {
 	viper.AddConfigPath(".")
 	viper.AddConfigPath("$HOME/.html2md")
 
+	viper.SetDefault("assetDir", "assets")
+	viper.SetDefault("contentDir", "content")
+
 	if err := viper.ReadInConfig(); err != nil {
 		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
 			return
@@ -39,7 +44,7 @@ func initConfig() {
 		log.Fatalf("fatal error config file: %s", err)
 	}
 
-	if err := viper.Unmarshal(&config); err != nil {
+	if err := viper.Unmarshal(&cfg); err != nil {
 		log.Fatalf("fatal error config file: %s", err)
 	}
 }

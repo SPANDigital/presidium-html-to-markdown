@@ -2,9 +2,9 @@ package collector
 
 import (
 	"errors"
-	"fmt"
 	"github.com/gocolly/colly/v2"
 	log "github.com/sirupsen/logrus"
+	"htmltomarkdown/config"
 	"htmltomarkdown/util"
 	"net/url"
 	"os"
@@ -13,9 +13,9 @@ import (
 	"strings"
 )
 
-func Collect(baseURL string, dst string) error {
+func Collect(baseURL string, dst string, cfg config.Config) error {
 	log.Infof("Collecting: %s", baseURL)
-	filter, err := compileUrlFilter(baseURL)
+	filter, err := compileUrlFilter(baseURL, cfg.WhiteList)
 	if err != nil {
 		return err
 	}
@@ -39,10 +39,10 @@ func Collect(baseURL string, dst string) error {
 
 	c.OnResponse(func(res *colly.Response) {
 		contentType := res.Headers.Get("Content-Type")
-		path := util.PathByType(contentType, res.Request.URL.Path)
-		path = filepath.Join(dst, path)
-		ext := filepath.Ext(path)
+		path := util.PathByType(contentType, res.Request.URL.Path, cfg.AssetDir)
 
+		ext := filepath.Ext(path)
+		path = filepath.Join(dst, path)
 		if strings.HasPrefix(contentType, "text/html") && len(ext) == 0 {
 			path = filepath.Join(path, "index.html")
 		}
@@ -84,8 +84,12 @@ func resolveURL(baseURL *url.URL, link string) string {
 	return baseURL.ResolveReference(ref).String()
 }
 
-func compileUrlFilter(url string) (*regexp.Regexp, error) {
-	urlFilter := regexp.QuoteMeta(url)
-	urlFilter = fmt.Sprintf("%s.*", urlFilter)
-	return regexp.Compile(urlFilter)
+func compileUrlFilter(url string, whitelist []string) (*regexp.Regexp, error) {
+	var escWhitelist []string
+	escWhitelist = append(escWhitelist, regexp.QuoteMeta(url))
+	for _, w := range whitelist {
+		escWhitelist = append(escWhitelist, regexp.QuoteMeta(w))
+	}
+	filter := strings.Join(escWhitelist, ".*|")
+	return regexp.Compile(filter)
 }

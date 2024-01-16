@@ -32,6 +32,10 @@ func (c *Converter) Convert(src string, dst string) error {
 	}
 
 	return filepath.Walk(src, func(path string, info os.FileInfo, err error) error {
+		if info.IsDir() {
+			return nil
+		}
+
 		isHtmlFile, err := filepath.Match("*.html", info.Name())
 		if err != nil {
 			return err
@@ -51,23 +55,23 @@ func (c *Converter) Convert(src string, dst string) error {
 	})
 }
 
-func (c *Converter) convertFile(filename, src, rel, dst string) error {
+func (c *Converter) convertFile(filename, src, relSrc, dst string) error {
 	content, err := c.readFile(src)
 	if err != nil {
 		if errors.Is(ErrNoContentFound, err) {
-			log.Warnf("No content found, skipped page: %s", filename)
+			log.Warnf("No content found, skipped page: %s", relSrc)
 			return nil
 		}
 		return err
 	}
 
-	markdown := HtmlConverter(rel, c.cfg).Convert(content)
+	markdown := HtmlConverter(relSrc, c.cfg).Convert(content)
 	articles, err := parser.ParseArticles(markdown, ";;;")
 	if err != nil {
 		return fmt.Errorf("%s: %s", err, src)
 	}
 
-	dst = filepath.Join(dst, rel)
+	dst = filepath.Join(dst, relSrc)
 	path := filepath.Join(dst, util.FileNameWithoutExt(filename))
 	if filename == "index.html" {
 		path = dst

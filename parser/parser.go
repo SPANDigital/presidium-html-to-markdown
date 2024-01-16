@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
+	log "github.com/sirupsen/logrus"
 	"gopkg.in/yaml.v2"
 	"htmltomarkdown/models"
 	"io"
@@ -17,10 +18,15 @@ var ErrHeaderNotFound = errors.New("expected article to have a header")
 func ParseArticles(content string, delim string) ([]models.Article, error) {
 	var articles []models.Article
 	scanner := bufio.NewScanner(strings.NewReader(content))
-	scanner.Scan()
 
-	if scanner.Text() != delim {
-		return articles, ErrHeaderNotFound
+	for {
+		// skip lines until we find the first article header
+		if scanner.Text() != delim {
+			scanner.Scan()
+			log.Debug("Skipping line: ", scanner.Text())
+		} else {
+			break
+		}
 	}
 
 	for {

@@ -5,6 +5,18 @@ import "htmltomarkdown/models"
 type Config struct {
 	Html     HtmlConfig
 	Markdown MarkdownConfig
+
+	// List of domains to whitelist for links and images
+	WhiteList []string
+
+	// Directory to copy assets to
+	AssetDir string
+
+	// Directory to copy content to
+	ContentDir string
+
+	// Debug mode
+	Debug bool
 }
 
 type HtmlConfig struct {
