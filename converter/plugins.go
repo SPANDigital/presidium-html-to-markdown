@@ -8,6 +8,13 @@ import (
 	"strings"
 )
 
+// ArticlePlugin converts markdown headers to hugo article headers.
+// E.g:
+// # This is a header
+// becomes:
+// ---
+// title: This is a header
+// ---
 func ArticlePlugin(filters []string, delim string) md.Plugin {
 	return func(c *md.Converter) []md.Rule {
 		return []md.Rule{

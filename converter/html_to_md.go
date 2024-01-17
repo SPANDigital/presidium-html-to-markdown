@@ -31,13 +31,20 @@ var rules = []html2md.Rule{{
 	},
 }}
 
+var replacementRules = []models.RegexReplace{{
+	// anchor links are escaped by the converter, this fixes it
+	// e.g (\#anchor) -> (#anchor)
+	Pattern: "\\(\\\\#([^)]+)\\)",
+	With:    "(#$1)",
+}}
+
 func HtmlConverter(baseUrl, path string, cfg config.Config) *html2md.Converter {
 	conv := html2md.NewConverter(path, true, &html2md.Options{
 		GetAbsoluteURL: getAbsoluteURL(baseUrl, cfg.AssetDir),
 	})
 
 	conv.Before(remove(cfg.Html.Remove), replace(cfg.Html.Replace))
-	conv.After(regexReplace(cfg.Markdown.Replace))
+	conv.After(regexReplace(append(replacementRules, cfg.Markdown.Replace...)))
 	conv.Use(plugin.Table(), ArticlePlugin(cfg.Html.HeaderTags, ";;;"))
 	conv.AddRules(rules...)
 
