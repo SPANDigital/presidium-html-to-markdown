@@ -13,7 +13,7 @@ import (
 func TestConvert(t *testing.T) {
 	var dataPath = test.DataPath(t)
 
-	converter := NewConverter(config.Config{
+	converter := NewConverter("/", config.Config{
 		Html: config.HtmlConfig{
 			HeaderTags: []string{"h1"},
 			Selector:   ".article",
