@@ -35,11 +35,6 @@ Install from Homebrew
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
 ```
 
-Export Github Access Token
-```bash
-HOMEBREW_GITHUB_API_TOKEN=ghp_abc123...
-```
-
 Add SPAN's Homebrew tap
 ```bash
 brew tap SPANDigital/homebrew-tap https://github.com/SPANDigital/homebrew-tap.git
@@ -78,6 +73,9 @@ Convert local html files
 html2md convert ./html-files ./presidium --select=.article --headers=h1
 ```
 
+> **Note**  
+> This converter does not output all the files needed to build a complete Presidium website. You will still need to [create a Presidium site](https://presidium.spandigital.net/getting-started/) first or import the converted markdown files into an existing Presidium site.
+> The converted markdown files will be saved in the `content` directory relative to the `dest` path along with assets (images, videos, etc) in the `assets` directory.
 ---
 
 ## Advanced usage
@@ -118,10 +116,10 @@ html:
 
 In this example, the CSS selector `.tooltips-term` is specified as the element to be replaced. The `select` field allows you to capture specific attributes and content relative to the matched element. Finally, the `replace` pattern converts the selected elements into a Markdown tooltip format.
 
-> [!NOTE]  
+> **Note**  
 > In addition to the standard CSS-selectors, `select` allows you to select attributes on the matched element using the `?` prefix. 
 > You can also get the text of the matched element by passing `text` in the select list.
-> 
+
 ### Replace Markdown
 Similar to the HTML replace you can also replace markdown based on a Regex pattern.
 

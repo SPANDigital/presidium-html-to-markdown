@@ -35,19 +35,20 @@ func run(_ *cobra.Command, args []string) error {
 	}
 
 	var src, dst = args[0], args[1]
+	var baseUrl = src
 	if util.IsURL(src) {
-		contentPath, err := collect(src)
+		clonePath, err := collect(src)
 		if err != nil {
 			return err
 		}
-		defer os.RemoveAll(contentPath)
+		defer os.RemoveAll(clonePath)
 
 		parsedUrl, err := url.Parse(src)
 		if err != nil {
 			return err
 		}
 
-		assetSrc := filepath.Join(contentPath, cfg.AssetDir)
+		assetSrc := filepath.Join(clonePath, cfg.AssetDir)
 		assetDst := filepath.Join(dst, cfg.AssetDir)
 		if err := cp.Copy(assetSrc, assetDst); err != nil {
 			if !os.IsNotExist(err) {
@@ -55,11 +56,12 @@ func run(_ *cobra.Command, args []string) error {
 			}
 		}
 
-		src = filepath.Join(contentPath, parsedUrl.Path)
+		baseUrl = parsedUrl.Path
+		src = filepath.Join(clonePath, baseUrl)
 	}
 
 	dst = filepath.Join(dst, cfg.ContentDir)
-	return converter.NewConverter(cfg).Convert(src, dst)
+	return converter.NewConverter(baseUrl, cfg).Convert(src, dst)
 }
 
 func collect(src string) (string, error) {

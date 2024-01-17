@@ -31,9 +31,9 @@ var rules = []html2md.Rule{{
 	},
 }}
 
-func HtmlConverter(baseUrl string, cfg config.Config) *html2md.Converter {
-	conv := html2md.NewConverter(baseUrl, true, &html2md.Options{
-		GetAbsoluteURL: getAbsoluteURL(cfg.AssetDir),
+func HtmlConverter(baseUrl, path string, cfg config.Config) *html2md.Converter {
+	conv := html2md.NewConverter(path, true, &html2md.Options{
+		GetAbsoluteURL: getAbsoluteURL(baseUrl, cfg.AssetDir),
 	})
 
 	conv.Before(remove(cfg.Html.Remove), replace(cfg.Html.Replace))
@@ -44,13 +44,17 @@ func HtmlConverter(baseUrl string, cfg config.Config) *html2md.Converter {
 	return conv
 }
 
-func getAbsoluteURL(assetDir string) GetAbsoluteURL {
-	return func(_ *goquery.Selection, rawURL string, domain string) string {
+func getAbsoluteURL(baseUrl, assetDir string) GetAbsoluteURL {
+	return func(_ *goquery.Selection, rawURL string, path string) string {
 		ext := filepath.Ext(rawURL)
 		if len(ext) > 0 && ext != ".html" {
 			mimeType := mime.TypeByExtension(ext)
 			path := util.PathByType(mimeType, rawURL, assetDir)
 			return fmt.Sprintf("{{%%baseurl%%}}/%s", path)
+		}
+
+		if strings.Contains(rawURL, "github-issues") {
+			log.Warnf("github-issues found: %s", rawURL)
 		}
 
 		if util.IsExternalUrl(rawURL) {
@@ -61,8 +65,9 @@ func getAbsoluteURL(assetDir string) GetAbsoluteURL {
 			return rawURL
 		}
 
+		// remove baseUrl from url e.g /docs/article -> /article
 		if filepath.IsAbs(rawURL) {
-			return rawURL
+			return strings.TrimPrefix(rawURL, baseUrl)
 		}
 
 		filename := filepath.Base(rawURL)
@@ -70,8 +75,8 @@ func getAbsoluteURL(assetDir string) GetAbsoluteURL {
 			rawURL = filepath.Join(filepath.Dir(rawURL), strings.TrimPrefix(filename, "index.html"))
 		}
 
-		// convert relative url to absolute url
-		absURL := filepath.Join(domain, rawURL)
+		// resolve relative urls against the current path
+		absURL := filepath.Join(path, rawURL)
 		absURL = strings.Replace(absURL, ".html", "", -1)
 
 		return fmt.Sprintf("{{< ref \"%s\" >}}", absURL)
