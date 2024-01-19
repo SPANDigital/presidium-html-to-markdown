@@ -19,9 +19,13 @@ func TestParseArticles(t *testing.T) {
 	assert.Equal(t, expected, actual)
 }
 
-func TestParseArticlesError(t *testing.T) {
+func TestParseArticlesNoHeader(t *testing.T) {
 	var dataPath = test.DataPath(t)
+	var expected []models.Article
+	test.MustUnmarshal(t, filepath.Join(dataPath, "articles.json"), &expected)
+
 	content := test.MustReadFileAsString(t, filepath.Join(dataPath, "page.md"))
-	_, err := ParseArticles(content, ";;;")
-	assert.Equal(t, err, ErrHeaderNotFound)
+	actual, err := ParseArticles(content, ";;;")
+	assert.NoError(t, err, "failed to parse articles")
+	assert.Equal(t, expected, actual)
 }
