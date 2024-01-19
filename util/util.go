@@ -46,16 +46,16 @@ func IsExternalUrl(path string) bool {
 		strings.HasPrefix(path, "file:")
 }
 
-func PathByType(contentType string, path string) string {
-	filename := filepath.Base(path)
+func PathByType(contentType, filePath, assetDir string) string {
+	filename := filepath.Base(filePath)
 	if strings.HasPrefix(contentType, "image/") {
-		return filepath.Join("/images", filename)
+		return filepath.Join(assetDir, "/images", filename)
 	} else if strings.HasPrefix(contentType, "video/") {
-		return filepath.Join("/videos", filename)
+		return filepath.Join(assetDir, "/videos", filename)
 	} else if strings.HasPrefix(contentType, "application/") {
-		return filepath.Join("/files", filename)
+		return filepath.Join(assetDir, "/files", filename)
 	}
-	return path
+	return filePath
 }
 
 func FileNameWithoutExt(fileName string) string {
@@ -64,6 +64,7 @@ func FileNameWithoutExt(fileName string) string {
 
 func EscapeTitle(title string) string {
 	if specialCharRe.MatchString(title) {
+		title = strings.ReplaceAll(title, "\"", "")
 		return fmt.Sprintf("\"%s\"", title)
 	}
 	return title

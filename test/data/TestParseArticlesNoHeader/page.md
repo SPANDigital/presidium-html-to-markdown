@@ -1,4 +1,4 @@
-This article doesn't have a header, the parse should fail
+This article doesn't have a header, this content should be skipped
 
 ;;;
 title: Article title

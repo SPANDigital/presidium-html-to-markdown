@@ -16,12 +16,14 @@ import (
 var ErrNoContentFound = errors.New("no content found")
 
 type Converter struct {
-	cfg config.Config
+	baseUrl string
+	cfg     config.Config
 }
 
-func NewConverter(cfg config.Config) *Converter {
+func NewConverter(baseUrl string, cfg config.Config) *Converter {
 	return &Converter{
-		cfg: cfg,
+		baseUrl: baseUrl,
+		cfg:     cfg,
 	}
 }
 
@@ -32,6 +34,10 @@ func (c *Converter) Convert(src string, dst string) error {
 	}
 
 	return filepath.Walk(src, func(path string, info os.FileInfo, err error) error {
+		if info.IsDir() {
+			return nil
+		}
+
 		isHtmlFile, err := filepath.Match("*.html", info.Name())
 		if err != nil {
 			return err
@@ -51,23 +57,23 @@ func (c *Converter) Convert(src string, dst string) error {
 	})
 }
 
-func (c *Converter) convertFile(filename, src, rel, dst string) error {
+func (c *Converter) convertFile(filename, src, relDir, dst string) error {
 	content, err := c.readFile(src)
 	if err != nil {
 		if errors.Is(ErrNoContentFound, err) {
-			log.Warnf("No content found, skipped page: %s", filename)
+			log.Warnf("No content found, skipped page: %s", src)
 			return nil
 		}
 		return err
 	}
 
-	markdown := HtmlConverter(rel, c.cfg).Convert(content)
+	markdown := HtmlConverter(c.baseUrl, relDir, c.cfg).Convert(content)
 	articles, err := parser.ParseArticles(markdown, ";;;")
 	if err != nil {
 		return fmt.Errorf("%s: %s", err, src)
 	}
 
-	dst = filepath.Join(dst, rel)
+	dst = filepath.Join(dst, relDir)
 	path := filepath.Join(dst, util.FileNameWithoutExt(filename))
 	if filename == "index.html" {
 		path = dst

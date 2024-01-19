@@ -3,6 +3,8 @@ package cmd
 import (
 	"errors"
 	"fmt"
+	cp "github.com/otiai10/copy"
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"htmltomarkdown/collector"
 	"htmltomarkdown/converter"
@@ -14,8 +16,9 @@ import (
 
 func init() {
 	flags := convertCmd.Flags()
-	flags.StringVar(&config.Html.Selector, "select", "body", "the part of the page to select and convert")
-	flags.StringSliceVar(&config.Html.HeaderTags, "headers", []string{"h1", "h2"}, "article header tags")
+	flags.StringVar(&cfg.Html.Selector, "select", "body", "the part of the page to select and convert")
+	flags.StringSliceVar(&cfg.Html.HeaderTags, "headers", []string{"h1", "h2"}, "article header tags")
+	flags.BoolVarP(&cfg.Debug, "debug", "d", false, "enable debug logging")
 	rootCmd.AddCommand(convertCmd)
 }
 
@@ -27,22 +30,38 @@ var convertCmd = &cobra.Command{
 }
 
 func run(_ *cobra.Command, args []string) error {
+	if cfg.Debug {
+		log.SetLevel(log.DebugLevel)
+	}
+
 	var src, dst = args[0], args[1]
+	var baseUrl = src
 	if util.IsURL(src) {
-		srcPath, err := collect(src)
+		clonePath, err := collect(src)
 		if err != nil {
 			return err
 		}
-		defer os.RemoveAll(srcPath)
+		defer os.RemoveAll(clonePath)
 
 		parsedUrl, err := url.Parse(src)
 		if err != nil {
 			return err
 		}
 
-		src = filepath.Join(srcPath, parsedUrl.Path)
+		assetSrc := filepath.Join(clonePath, cfg.AssetDir)
+		assetDst := filepath.Join(dst, cfg.AssetDir)
+		if err := cp.Copy(assetSrc, assetDst); err != nil {
+			if !os.IsNotExist(err) {
+				return err
+			}
+		}
+
+		baseUrl = parsedUrl.Path
+		src = filepath.Join(clonePath, baseUrl)
 	}
-	return converter.NewConverter(config).Convert(src, dst)
+
+	dst = filepath.Join(dst, cfg.ContentDir)
+	return converter.NewConverter(baseUrl, cfg).Convert(src, dst)
 }
 
 func collect(src string) (string, error) {
@@ -51,7 +70,7 @@ func collect(src string) (string, error) {
 		return tmp, err
 	}
 
-	if err := collector.Collect(src, tmp); err != nil {
+	if err := collector.Collect(src, tmp, cfg); err != nil {
 		return tmp, err
 	}
 

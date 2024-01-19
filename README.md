@@ -35,11 +35,6 @@ Install from Homebrew
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
 ```
 
-Export Github Access Token
-```bash
-HOMEBREW_GITHUB_API_TOKEN=ghp_abc123...
-```
-
 Add SPAN's Homebrew tap
 ```bash
 brew tap SPANDigital/homebrew-tap https://github.com/SPANDigital/homebrew-tap.git
@@ -58,10 +53,16 @@ Usage:
   html2md convert [source] [dest] [flags]
 
 Flags:
+  -d, --debug             enable debug logging
       --headers strings   article header tags (default [h1,h2])
       --select string     the part of the page to select and convert (default "body")
 ```
 
+### Params
+`source` is the url of the website or the path to the local html file(s).  
+`dest` is the path to the directory where the converted markdown files will be saved.
+
+### Examples
 Download and convert the [Presidium](https://presidium.spandigital.net/) website
 ```bash
 html2md convert https://presidium.spandigital.net/ ./presidium --select="#presidium-content"
@@ -72,6 +73,9 @@ Convert local html files
 html2md convert ./html-files ./presidium --select=.article --headers=h1
 ```
 
+> **Note**  
+> This converter does not output all the files needed to build a complete Presidium website. You will still need to [create a Presidium site](https://presidium.spandigital.net/getting-started/) first or import the converted markdown files into an existing Presidium site.
+> The converted markdown files will be saved in the `content` directory relative to the `dest` path along with assets (images, videos, etc) in the `assets` directory.
 ---
 
 ## Advanced usage
@@ -93,29 +97,29 @@ html:
 
 ```
 
-In this example, all element matching the CSS selectors `.nav-link` and `#warning` will be removed before conversion.
+In this example, all element matching the CSS selectors `.nav-link` or `#warning` will be removed before conversion.
 
 ### Replace HTML
 The `html.replace` option allows you to transform specific HTML elements into custom Markdown syntax, giving you greater control over the appearance and structure of your converted document.
 
 **Example Usage:**
 
-Suppose you have HTML content that includes tooltips, and you want to convert them into Markdown-friendly tooltips. Here's how you can achieve this using the "Replace HTML" feature:
+Suppose you have HTML content that includes [tooltips](https://presidium.spandigital.net/reference/markdown/#tooltips), and you want to convert them into Markdown-friendly syntax. Here's how you can achieve this using the "Replace HTML" feature:
 ```yaml
 html:
   replace:
-  - match: '.tooltips-term'
-    select: ['?href', '.tooltips-text']
-    replace: '{{< tooltip "$1" text="$2" >}}'
+  - match: '.tooltips-term' # CSS selector for the element to be replaced
+    select: ['?href', '.tooltips-text'] # ?href selects the href attribute of the matched element, .tooltips-text selects the content of a child element with the class "tooltips-text"
+    replace: '{{< tooltip "$1" text="$2" >}}' # $1 and $2 are the selected elements
 
 ```
 
 In this example, the CSS selector `.tooltips-term` is specified as the element to be replaced. The `select` field allows you to capture specific attributes and content relative to the matched element. Finally, the `replace` pattern converts the selected elements into a Markdown tooltip format.
 
-> [!NOTE]  
+> **Note**  
 > In addition to the standard CSS-selectors, `select` allows you to select attributes on the matched element using the `?` prefix. 
 > You can also get the text of the matched element by passing `text` in the select list.
-> 
+
 ### Replace Markdown
 Similar to the HTML replace you can also replace markdown based on a Regex pattern.
 
@@ -144,13 +148,7 @@ markdown:
     - pattern: '\[([^]]+)\]\(([^\)]+)\)' # Regex pattern used for selecting and capturing specific content.
       # The captured content is then utilized in the replacement pattern below.
       with: "[$1]({{%baseurl%}}/$2)" # This is the replacement pattern for converting Markdown links.
-
+whitelist: ['https://spandigital.net/assets/'] # URLs that should be whitelisted for conversion
+assetDir: 'assets' # The directory where assets should be saved
+contentDir: 'content' # The directory where the converted markdown files should be saved
 ```
-
----
-
-## Limitations
-
-The article parser assumes that every article will have a title defined by the `--headers` selector. 
-If the article doesn't have a header the parsing will fail with error "expected article to have a header: <path>"
-
