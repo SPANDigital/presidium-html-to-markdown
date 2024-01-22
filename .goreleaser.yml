@@ -15,6 +15,7 @@ builds:
         goarch: 386
       - goos: windows
         goarch: arm64
+    binary: html2md
 archives:
   - id: presidium
     name_template: >-
@@ -36,7 +37,7 @@ changelog:
       - '^test:'
 brews:
   - name: html2md
-    homepage: "https://github.com/spandigital/presidium"
+    homepage: "https://github.com/SPANDigital/presidium-html-to-markdown"
     description: "Presidium is a software documentation management system for agile teams"
     tap:
       owner: spandigital
