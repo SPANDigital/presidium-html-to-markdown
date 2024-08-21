@@ -2,10 +2,6 @@ package converter
 
 import (
 	"fmt"
-	html2md "github.com/JohannesKaufmann/html-to-markdown"
-	"github.com/JohannesKaufmann/html-to-markdown/plugin"
-	"github.com/PuerkitoBio/goquery"
-	log "github.com/sirupsen/logrus"
 	"htmltomarkdown/config"
 	"htmltomarkdown/models"
 	"htmltomarkdown/util"
@@ -13,6 +9,11 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
+
+	html2md "github.com/JohannesKaufmann/html-to-markdown"
+	"github.com/JohannesKaufmann/html-to-markdown/plugin"
+	"github.com/PuerkitoBio/goquery"
+	log "github.com/sirupsen/logrus"
 )
 
 type GetAbsoluteURL func(selection *goquery.Selection, rawURL string, domain string) string
@@ -46,6 +47,7 @@ func HtmlConverter(baseUrl, path string, cfg config.Config) *html2md.Converter {
 	conv.Before(remove(cfg.Html.Remove), replace(cfg.Html.Replace))
 	conv.After(regexReplace(append(replacementRules, cfg.Markdown.Replace...)))
 	conv.Use(plugin.Table(), ArticlePlugin(cfg.Html.HeaderTags, ";;;"))
+	conv.Use(handleExternalLinks())
 	conv.AddRules(rules...)
 
 	return conv

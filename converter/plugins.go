@@ -2,10 +2,12 @@ package converter
 
 import (
 	"fmt"
-	md "github.com/JohannesKaufmann/html-to-markdown"
-	"github.com/PuerkitoBio/goquery"
 	"htmltomarkdown/util"
 	"strings"
+
+	md "github.com/JohannesKaufmann/html-to-markdown"
+	"github.com/PuerkitoBio/goquery"
+	log "github.com/sirupsen/logrus"
 )
 
 // ArticlePlugin converts markdown headers to hugo article headers.
@@ -48,4 +50,28 @@ func ArticlePlugin(filters []string, delim string) md.Plugin {
 
 func articleHeader(title string, delim string) string {
 	return fmt.Sprintf("\n%s\ntitle: %s\n%s\n", delim, title, delim)
+}
+
+func handleExternalLinks() md.Plugin {
+	return func(c *md.Converter) []md.Rule {
+		return []md.Rule{
+			{
+				Filter: []string{"a"},
+				Replacement: func(content string, selec *goquery.Selection, opt *md.Options) *string {
+
+					href := selec.Nodes[len(selec.Nodes)-1].Attr[0]
+
+					log.Debug("href ", href)
+					log.Debug("href val ", href.Val)
+
+					link := href.Val
+					log.Debug("link ", link)
+
+					content = "[" + content + "](" + link + ")"
+
+					return &content
+				},
+			},
+		}
+	}
 }
