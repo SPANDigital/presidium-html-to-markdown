@@ -59,16 +59,33 @@ func handleExternalLinks() md.Plugin {
 				Filter: []string{"a"},
 				Replacement: func(content string, selec *goquery.Selection, opt *md.Options) *string {
 
-					href := selec.Nodes[len(selec.Nodes)-1].Attr[0]
+					nodeAttr := selec.Nodes[len(selec.Nodes)-1].Attr
 
-					log.Debug("href ", href)
-					log.Debug("href val ", href.Val)
+					log.Debug(nodeAttr)
 
-					link := href.Val
-					log.Debug("link ", link)
+					for i := 0; i < len(nodeAttr); i++ {
+						log.Debug(nodeAttr[i])
 
-					content = "[" + content + "](" + link + ")"
+						key := nodeAttr[i].Key
 
+						log.Debug(key)
+
+						if key == "href" {
+
+							href := nodeAttr[i]
+
+							log.Debug("href ", href)
+							log.Debug("href val ", href.Val)
+
+							link := href.Val
+							log.Debug("link ", link)
+
+							content = "[" + content + "](" + link + ")"
+						}
+
+					}
+
+					log.Debug("content ", content)
 					return &content
 				},
 			},
