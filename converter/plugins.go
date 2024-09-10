@@ -8,7 +8,21 @@ import (
 	md "github.com/JohannesKaufmann/html-to-markdown"
 	"github.com/PuerkitoBio/goquery"
 	log "github.com/sirupsen/logrus"
+	"golang.org/x/net/html"
 )
+
+const curlBrkOp = "{"
+const curlBrkCl = "}"
+const href = "href"
+const ref = "ref"
+const colon = "\""
+const ltSign = "<"
+const gtSign = ">"
+const htmlEx = ".html"
+const emptyStr = ""
+const http = "http"
+const https = "https"
+const space = " "
 
 // ArticlePlugin converts markdown headers to hugo article headers.
 // E.g:
@@ -63,27 +77,7 @@ func handleExternalLinks() md.Plugin {
 
 					log.Debug(nodeAttr)
 
-					for i := 0; i < len(nodeAttr); i++ {
-						log.Debug(nodeAttr[i])
-
-						key := nodeAttr[i].Key
-
-						log.Debug(key)
-
-						if key == "href" {
-
-							href := nodeAttr[i]
-
-							log.Debug("href ", href)
-							log.Debug("href val ", href.Val)
-
-							link := href.Val
-							log.Debug("link ", link)
-
-							content = "[" + content + "](" + link + ")"
-						}
-
-					}
+					content = processAttr(content, nodeAttr)
 
 					log.Debug("content ", content)
 					return &content
@@ -91,4 +85,56 @@ func handleExternalLinks() md.Plugin {
 			},
 		}
 	}
+}
+
+func processInternalRef(link string) string {
+
+	iniStr := curlBrkOp + curlBrkOp + ltSign + space + ref + space + colon
+	endStr := colon + space + gtSign + curlBrkCl + curlBrkCl
+
+	innerLink := iniStr + strings.Replace(link, htmlEx, emptyStr, -1) + endStr
+
+	return innerLink
+
+}
+
+func processPrefix(content string, link string) string {
+
+	if strings.HasPrefix(link, http) || strings.HasPrefix(link, https) {
+		content = "[" + content + "](" + link + ")"
+	} else {
+		content = "[" + content + "](" + processInternalRef(link) + ")"
+	}
+
+	return content
+
+}
+
+func processAttr(content string, nodeAttr []html.Attribute) string {
+
+	for i := 0; i < len(nodeAttr); i++ {
+		log.Debug(nodeAttr[i])
+
+		key := nodeAttr[i].Key
+
+		log.Debug(key)
+
+		if key == href {
+
+			href := nodeAttr[i]
+
+			log.Debug("href ", href)
+			log.Debug("href val ", href.Val)
+
+			link := href.Val
+			log.Debug("link ", link)
+
+			content = processPrefix(content, link)
+
+		}
+
+	}
+
+	return content
+
 }
