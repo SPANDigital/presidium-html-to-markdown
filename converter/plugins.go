@@ -23,6 +23,8 @@ const emptyStr = ""
 const http = "http"
 const https = "https"
 const space = " "
+const mailto = "mailto:"
+const rdar = "rdar:"
 
 // ArticlePlugin converts markdown headers to hugo article headers.
 // E.g:
@@ -100,13 +102,40 @@ func processInternalRef(link string) string {
 
 func processPrefix(content string, link string) string {
 
-	if strings.HasPrefix(link, http) || strings.HasPrefix(link, https) {
+	if strings.HasPrefix(link, http) || strings.HasPrefix(link, https) || linkContainsReservedString(link) {
 		content = "[" + content + "](" + link + ")"
 	} else {
 		content = "[" + content + "](" + processInternalRef(link) + ")"
 	}
 
 	return content
+
+}
+
+func linkContainsReservedString(link string) bool {
+
+	contains := false
+
+	for key := range getReservedStringsMap() {
+
+		if strings.Contains(link, key) {
+			contains = true
+		}
+
+	}
+
+	return contains
+
+}
+
+func getReservedStringsMap() map[string]bool {
+
+	reservedStr := map[string]bool{
+		mailto: true,
+		rdar:   true,
+	}
+
+	return reservedStr
 
 }
 
