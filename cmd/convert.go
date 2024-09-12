@@ -3,15 +3,16 @@ package cmd
 import (
 	"errors"
 	"fmt"
-	cp "github.com/otiai10/copy"
-	log "github.com/sirupsen/logrus"
-	"github.com/spf13/cobra"
 	"htmltomarkdown/collector"
 	"htmltomarkdown/converter"
 	"htmltomarkdown/util"
 	"net/url"
 	"os"
 	"path/filepath"
+
+	cp "github.com/otiai10/copy"
+	log "github.com/sirupsen/logrus"
+	"github.com/spf13/cobra"
 )
 
 func init() {
@@ -37,6 +38,10 @@ func run(_ *cobra.Command, args []string) error {
 	var src, dst = args[0], args[1]
 	var baseUrl = src
 	if util.IsURL(src) {
+		if cfg.AssetDir == "" {
+			cfg.AssetDir = "source-html"
+		}
+
 		clonePath, err := collect(src)
 		if err != nil {
 			return err
@@ -48,9 +53,13 @@ func run(_ *cobra.Command, args []string) error {
 			return err
 		}
 
-		assetSrc := filepath.Join(clonePath, cfg.AssetDir)
 		assetDst := filepath.Join(dst, cfg.AssetDir)
-		if err := cp.Copy(assetSrc, assetDst); err != nil {
+		err = os.MkdirAll(assetDst, os.ModePerm)
+		if err != nil {
+			return err
+		}
+
+		if err := cp.Copy(clonePath, assetDst); err != nil {
 			if !os.IsNotExist(err) {
 				return err
 			}
