@@ -15,6 +15,9 @@ type Config struct {
 	// Directory to copy content to
 	ContentDir string
 
+	// Confluence Personal Access Token
+	ConfluencePAT string
+
 	// Debug mode
 	Debug bool
 }
