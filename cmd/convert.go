@@ -26,6 +26,7 @@ func init() {
 var convertCmd = &cobra.Command{
 	Use:   "convert [source] [dest]",
 	Short: "convert",
+	Long:  "CLI tool for converting HTML to Presidium ready Markdown content",
 	Args:  cobra.MatchAll(cobra.MinimumNArgs(2), validateNPaths(2)),
 	RunE:  run,
 }
@@ -38,10 +39,6 @@ func run(_ *cobra.Command, args []string) error {
 	var src, dst = args[0], args[1]
 	var baseUrl = src
 	if util.IsURL(src) {
-		if cfg.AssetDir == "" {
-			cfg.AssetDir = "source-html"
-		}
-
 		clonePath, err := collect(src)
 		if err != nil {
 			return err
@@ -53,13 +50,9 @@ func run(_ *cobra.Command, args []string) error {
 			return err
 		}
 
+		assetSrc := filepath.Join(clonePath, cfg.AssetDir)
 		assetDst := filepath.Join(dst, cfg.AssetDir)
-		err = os.MkdirAll(assetDst, os.ModePerm)
-		if err != nil {
-			return err
-		}
-
-		if err := cp.Copy(clonePath, assetDst); err != nil {
+		if err := cp.Copy(assetSrc, assetDst); err != nil {
 			if !os.IsNotExist(err) {
 				return err
 			}
