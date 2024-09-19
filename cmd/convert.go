@@ -3,15 +3,16 @@ package cmd
 import (
 	"errors"
 	"fmt"
-	cp "github.com/otiai10/copy"
-	log "github.com/sirupsen/logrus"
-	"github.com/spf13/cobra"
 	"htmltomarkdown/collector"
 	"htmltomarkdown/converter"
 	"htmltomarkdown/util"
 	"net/url"
 	"os"
 	"path/filepath"
+
+	cp "github.com/otiai10/copy"
+	log "github.com/sirupsen/logrus"
+	"github.com/spf13/cobra"
 )
 
 func init() {
@@ -25,6 +26,7 @@ func init() {
 var convertCmd = &cobra.Command{
 	Use:   "convert [source] [dest]",
 	Short: "convert",
+	Long:  "CLI tool for converting HTML to Presidium ready Markdown content",
 	Args:  cobra.MatchAll(cobra.MinimumNArgs(2), validateNPaths(2)),
 	RunE:  run,
 }
