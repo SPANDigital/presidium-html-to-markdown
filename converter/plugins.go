@@ -17,7 +17,7 @@ func ArticlePlugin(filters []string, delim string) md.Plugin {
 			{
 				Filter: filters,
 				Replacement: func(content string, selection *goquery.Selection, opt *md.Options) *string {
-					if isContentEmpty(content) {
+					if strings.TrimSpace(content) == "" {
 						return nil
 					}
 
@@ -42,11 +42,6 @@ func ArticlePlugin(filters []string, delim string) md.Plugin {
 			},
 		}
 	}
-}
-
-// Determines if the content is empty after trimming.
-func isContentEmpty(content string) bool {
-	return strings.TrimSpace(content) == ""
 }
 
 // Plugin to handle nested unordered and ordered lists in Markdown.
