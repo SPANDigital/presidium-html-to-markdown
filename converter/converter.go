@@ -3,14 +3,15 @@ package converter
 import (
 	"errors"
 	"fmt"
-	"github.com/PuerkitoBio/goquery"
-	log "github.com/sirupsen/logrus"
 	"htmltomarkdown/config"
 	"htmltomarkdown/models"
 	"htmltomarkdown/parser"
 	"htmltomarkdown/util"
 	"os"
 	"path/filepath"
+
+	"github.com/PuerkitoBio/goquery"
+	log "github.com/sirupsen/logrus"
 )
 
 var ErrNoContentFound = errors.New("no content found")

@@ -9,6 +9,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"regexp"
 
 	cp "github.com/otiai10/copy"
 	log "github.com/sirupsen/logrus"
@@ -19,6 +20,7 @@ func init() {
 	flags := convertCmd.Flags()
 	flags.StringVar(&cfg.Html.Selector, "select", "body", "the part of the page to select and convert")
 	flags.StringSliceVar(&cfg.Html.HeaderTags, "headers", []string{"h1", "h2"}, "article header tags")
+	flags.StringVar(&cfg.ConfluencePAT, "confluence-pat", "", "confluence personal access token")
 	flags.BoolVarP(&cfg.Debug, "debug", "d", false, "enable debug logging")
 	rootCmd.AddCommand(convertCmd)
 }
@@ -37,8 +39,16 @@ func run(_ *cobra.Command, args []string) error {
 	}
 
 	var src, dst = args[0], args[1]
+
 	var baseUrl = src
 	if util.IsURL(src) {
+		fmt.Println("Collecting-", src, " to-", dst, " pat-", cfg.ConfluencePAT, " debug-", cfg.Debug, IsConfluenceURL(src))
+		if IsConfluenceURL(src) {
+			if cfg.ConfluencePAT == "" {
+				return errors.New("confluence personal access token is required")
+			}
+		}
+
 		clonePath, err := collect(src)
 		if err != nil {
 			return err
@@ -96,4 +106,12 @@ func validateNPaths(n int) cobra.PositionalArgs {
 		}
 		return nil
 	}
+}
+
+// IsConfluenceURL checks if the given URL is a Confluence domain.
+func IsConfluenceURL(url string) bool {
+	// Regular expression to match Confluence Cloud and Server URLs
+	confluenceRegex := regexp.MustCompile(`^(https?://)?(confluence\.sd\.apple\.com|confluence\.atlassian\.com)(.*)$`)
+
+	return confluenceRegex.MatchString(url)
 }

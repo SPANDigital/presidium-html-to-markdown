@@ -2,8 +2,7 @@ package collector
 
 import (
 	"errors"
-	"github.com/gocolly/colly/v2"
-	log "github.com/sirupsen/logrus"
+	"fmt"
 	"htmltomarkdown/config"
 	"htmltomarkdown/util"
 	"net/url"
@@ -11,6 +10,9 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
+
+	"github.com/gocolly/colly/v2"
+	log "github.com/sirupsen/logrus"
 )
 
 func Collect(baseURL string, dst string, cfg config.Config) error {
@@ -24,6 +26,13 @@ func Collect(baseURL string, dst string, cfg config.Config) error {
 		colly.URLFilters(filter),
 		colly.CacheDir("./cache"),
 	)
+
+	// Set headers, including the Authorization header with the personal access token
+	c.OnRequest(func(r *colly.Request) {
+		fmt.Println("Visiting", r.URL.String())
+		r.Headers.Set("Authorization", "Bearer "+cfg.ConfluencePAT)
+		r.Headers.Set("User-Agent", "Mozilla/5.0")
+	})
 
 	c.OnHTML("a[href]", func(e *colly.HTMLElement) {
 		href := e.Attr("href")
