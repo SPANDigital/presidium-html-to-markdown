@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>SLI Catalog &#8212; ACI Kafka Docs</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+    <link rel="stylesheet" type="text/css" href="_static/basic.css?v=eeb27264" />
+    <link rel="stylesheet" href="_static/styleguide.css" type="text/css" />
+    <link rel="stylesheet" href="_static/fonts.css" type="text/css" />
+    <link rel="stylesheet" href="_static/app.css" type="text/css" />
+    <link rel="stylesheet" href="_static/toc.css" type="text/css" />
+    <script src="_static/documentation_options.js?v=b9a12352"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within ACI Kafka Docs"
+          href="_static/opensearch.xml"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Development and CI" href="dev-and-ci.html" />
+    <link rel="prev" title="Kafka Client OpenTelemetry integration" href="monitoring/kafka_client_open_telemetry.html" />
+
+<meta name="viewport" content="width=1172">
+<script type="text/javascript" src="_static/app.js "></script>
+
+<script>
+window.Columbo=window.Columbo||function(o,u){"function"==typeof o?u=o:Columbo.config=o,u&&(Columbo.q=Columbo.q||[]).push(u)};
+Columbo({
+    appConfig: {
+        version: 'v0',
+        columboId: '09707287240ae779c2d02d07465ae16b5129de94c93704236a70c9d51a5f43fc'
+    }
+});
+</script>
+<script async src="_static/cw.js"></script>
+
+  </head><body>
+
+  <header class="globalHeader">
+  <div class="headerWrapper">
+    <h1 class="globalTitle" data-toc-skip><a href="https://aci.apple.com">Apple Cloud Infrastructure</a></h1>
+    <span class="globalNavigation">
+      <a href="https://aci.apple.com/office-hours/">Office Hours</a>
+      <a href="/">Documentation</a>
+      <a href="https://status.aci.apple.com/">Status</a>
+    </span>
+  </div>
+</header>
+
+<article>
+  
+    <header class="siteHeader">
+  <div class="headerWrapper">
+    <h1 class="siteTitle" data-toc-skip>
+      <a href="index.html">
+        ACI Kafka</a>
+    </h1>
+    
+      
+<nav class="navbarLinks">
+    
+      <a class="tabbed-navigation--item " href="contents.html">Site Map</a>
+    
+    
+      <a class="tabbed-navigation--item" href="https://docs.aci.apple.com/kafka/public_api.html">API Docs</a>
+    
+</nav>
+
+    
+    
+      
+<form class="siteSearch" action="search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="text-input--base text-input--medium searchInput" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+    
+  </div>
+</header>
+
+  <div class="pageWrapper">
+    <div class="pageContent column global_and_site_headers" role="main">
+      
+  <section id="sli-catalog">
+<h1>SLI Catalog<a class="headerlink" href="#sli-catalog" title="Link to this heading">¶</a></h1>
+<p>We set targets for the reliability of the ACI Kafka service (service level
+objectives, SLOs). Our actual performance is measured (service level indicators,
+SLIs) and compared with these targets. In the case where we fail to meet these
+targets we commit to take action to improve (service level agreement, SLA).</p>
+<p>Our SLIs and SLOs are visible at the <a class="reference external" href="https://slo.apple.com/?name=%2FACS%2FACI%2FKafka&amp;amp;s_perf=too-good&amp;amp;s_perf=good&amp;amp;s_perf=miss&amp;amp;sort_by=name-asc">Apple SLO Dashboard</a>.
+This page offers an explanation of the SLIs that we track and how they are
+derived. If you have any questions about our SLIs, SLOs or SLAs please
+<a class="reference internal" href="contact.html"><span class="std std-doc">contact us</span></a>.</p>
+<section id="kafka">
+<h2>Kafka<a class="headerlink" href="#kafka" title="Link to this heading">¶</a></h2>
+<p>Kafka is the core of the ACI Kafka service. We measure the availability
+of Kafka for produce and consume requests.</p>
+<section id="produce-availability">
+<h3>Produce Availability<a class="headerlink" href="#produce-availability" title="Link to this heading">¶</a></h3>
+<p>We measure produce availability in two ways:</p>
+<ul class="simple">
+<li><p><strong>ISR Correlation</strong> Kafka natively understands <em>availability to
+receive produce requests</em> as being those requests made whilst the
+topic has at least the minimum number of in-sync replicas (aka
+MinISR). Therefore, we count the number of produce requests made when
+the number of ISRs is below MinISR and classify these as failed.
+Produce requests made when the number of ISRs is equal to or above
+MinISR are classified as succeeding. Availability, therefore, is the
+ratio of failed to successful produce requests.</p></li>
+<li><p><strong>Failed vs. Errored Requests</strong> we also measure availability as the
+ratio of produce requests which result in an error to those that do
+not.</p></li>
+</ul>
+</section>
+<section id="consume-availability">
+<h3>Consume Availability<a class="headerlink" href="#consume-availability" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>Failed vs. Errored Requests</strong> we measure consume availability as
+the ratio of consume requests which result in an error to those that
+do not.</p></li>
+</ul>
+</section>
+<section id="kafka-consume-latency">
+<h3>Kafka Consume Latency<a class="headerlink" href="#kafka-consume-latency" title="Link to this heading">¶</a></h3>
+<p>We measure consume latency as the Broker’s TotalTimeMs, which is the
+total time for a consumer fetch to complete.</p>
+</section>
+<section id="kafka-produce-latency">
+<h3>Kafka Produce Latency<a class="headerlink" href="#kafka-produce-latency" title="Link to this heading">¶</a></h3>
+<p>We measure produce latency as the Broker’s LocalTimeMs, which is the
+time the request is being processed by the leader locally.</p>
+</section>
+</section>
+<section id="mirrors">
+<h2>Mirrors<a class="headerlink" href="#mirrors" title="Link to this heading">¶</a></h2>
+<p>Mirrors is a new service - still in controlled availability - which
+replicates messages from one topic to another, typically between
+clusters in different physical locations. Mirrors offer an “at-least-once”
+message delivery guarantee, we aim to minimize the number of duplicates, although in
+some circumstances duplicates can still occur.</p>
+<section id="mirroring-latency">
+<h3>Mirroring Latency<a class="headerlink" href="#mirroring-latency" title="Link to this heading">¶</a></h3>
+<p>We measure mirror latency at the mirror cluster, as the number of
+messages that we have processed that have a timestamp older than 5
+minutes at the point of mirroring. Please note that latencies will
+increase depending on network distance.</p>
+<p>As a note, we have two SLOs for Mirrors, one for clusters that have
+China as a Source / Destination, and the other for all other
+production Mirror clusters. We currently offer a lower SLO for China
+as we have observed a higher chance for network failures, due to the increase in
+network physical distances.</p>
+<p>We plan to measure latency for Mirrors as being the time taken for a
+message to be read from the source topic and written to the destination
+topic.</p>
+</section>
+<section id="mirroring-availability">
+<h3>Mirroring Availability<a class="headerlink" href="#mirroring-availability" title="Link to this heading">¶</a></h3>
+<p>We measure mirror availability in two ways:</p>
+<ul class="simple">
+<li><p><strong>Attempts vs Exceptions</strong> We get exceptions if we encounter any
+terminal issues - this is one of the ways that it is possible to
+loose data when being mirrored.</p></li>
+<li><p><strong>Attempts vs Attempts - Successes</strong> we also measure availability as
+the ratio of attempts to attempts that didn’t end up as being
+recorded as a success.</p></li>
+</ul>
+</section>
+</section>
+<section id="kaffe">
+<h2>Kaffe<a class="headerlink" href="#kaffe" title="Link to this heading">¶</a></h2>
+<p>Kaffe supports the service discovery mechanism in our ACI Kafka client. Its
+availability is important for clients, because they query Kaffe during startup
+to obtain a list of Kafka brokers. We probe two endpoints (heartbeat and watch
+resource) of the Kaffe service from three AODC Kube regions (<code class="docutils literal notranslate"><span class="pre">us-east-1a</span></code>,
+<code class="docutils literal notranslate"><span class="pre">us-west-1a</span></code> and <code class="docutils literal notranslate"><span class="pre">us-west-2a</span></code>) using
+<a class="reference external" href="https://prober.apple.com/workspace/aci-kafka">Prober</a> against its GSLB
+endpoint. The watch resource endpoint is queried for client, cluster and
+namespace resources, each for existing and non-existing resources.</p>
+<section id="availability">
+<h3>Availability<a class="headerlink" href="#availability" title="Link to this heading">¶</a></h3>
+<p>The availability is defined as the number of failed requests over the number of
+total requests, expressed as a percentage: <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">-</span> <span class="pre">(failures</span> <span class="pre">/</span> <span class="pre">total_requests)</span></code></p>
+</section>
+<section id="latency">
+<h3>Latency<a class="headerlink" href="#latency" title="Link to this heading">¶</a></h3>
+<p>The latency is defined as the number of slow requests over the number of total
+requests, expressed as a percentage: <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">-</span> <span class="pre">(slow_requests</span> <span class="pre">/</span> <span class="pre">total_requests)</span></code>. In
+the case of Kaffe, a request is considered to be slow if it took more than
+3000ms.</p>
+</section>
+</section>
+<section id="iris">
+<h2>Iris<a class="headerlink" href="#iris" title="Link to this heading">¶</a></h2>
+<p>Iris is a service which serves public keys for message recipients and encrypted
+private keys to allow asymmetric encryption of messages. Its availability is
+important for clients as they fetch keys at initialization time and periodically
+thereafter. We probe three endpoints (health, public and private key) of the
+Iris service from three AODC Kube regions (<code class="docutils literal notranslate"><span class="pre">us-east-1a</span></code>, <code class="docutils literal notranslate"><span class="pre">us-west-1a</span></code> and
+<code class="docutils literal notranslate"><span class="pre">us-west-2a</span></code>) using <a class="reference external" href="https://prober.apple.com/workspace/aci-kafka">Prober</a>
+against its GSLB endpoint. The public and private key endpoints are each queried
+for existing and non-existing topics.</p>
+<section id="id1">
+<h3>Availability<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h3>
+<p>The availability is defined as the number of failed requests over the number of
+total requests, expressed as a percentage: <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">-</span> <span class="pre">(failures</span> <span class="pre">/</span> <span class="pre">total_requests)</span></code></p>
+</section>
+<section id="id2">
+<h3>Latency<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h3>
+<p>The latency is defined as the number of slow requests over the number of total
+requests, expressed as a percentage: <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">-</span> <span class="pre">(slow_requests</span> <span class="pre">/</span> <span class="pre">total_requests)</span></code>. In
+the case of Iris, a request is considered to be slow if it took more than 3000ms.</p>
+</section>
+</section>
+<section id="api">
+<h2>API<a class="headerlink" href="#api" title="Link to this heading">¶</a></h2>
+<section id="controller">
+<h3>Controller<a class="headerlink" href="#controller" title="Link to this heading">¶</a></h3>
+<p>Controller is part of Kubernetes CRDs based API which allows you to manage ACI Kafka resources via Kube.
+API Operator is implemented as a collection of controllers where each controller watches a specific resource type.
+Each resource contains a definition of desired state of the world which need to be reconciled by API operator.</p>
+<section id="reconciliation-latency">
+<h4>Reconciliation Latency<a class="headerlink" href="#reconciliation-latency" title="Link to this heading">¶</a></h4>
+<p>We measure the reconciliation latency as the percentage of reconciliations that took less than 10 minutes to complete: <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">-</span> <span class="pre">(slow</span> <span class="pre">reconciliations</span> <span class="pre">/</span> <span class="pre">total</span> <span class="pre">reconciliations)</span></code></p>
+</section>
+<section id="reconciliation-availability">
+<h4>Reconciliation Availability<a class="headerlink" href="#reconciliation-availability" title="Link to this heading">¶</a></h4>
+<p>Due to the nature of Kube events it can take several reconciliation cycles before a resource becomes <code class="docutils literal notranslate"><span class="pre">Ready</span></code> and fully reconciled.
+Controller infinitely retries on errors, so technically it is always available.
+That’s why we measure the reconciliation availability as the percentage of events that took more than 10 minutes to complete: <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">-</span> <span class="pre">(slow</span> <span class="pre">reconciliations</span> <span class="pre">/</span> <span class="pre">total</span> <span class="pre">reconciliations)</span></code>
+Please note that we differentiate between user errors caused by invalid input and internal or upstream API errors.
+User errors are excluded from the calculation.</p>
+</section>
+</section>
+<section id="webhook">
+<h3>Webhook<a class="headerlink" href="#webhook" title="Link to this heading">¶</a></h3>
+<p>Webhook is part of Kubernetes CRDs based API which allows you to manage ACI Kafka resources via Kube.
+API Operator performs a set of validations on each Create/Update/Delete request to Kube API in order to reject bad input from users sooner rather than later.</p>
+<section id="id3">
+<h4>Latency<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h4>
+<p>We measure the webhook latency as the percentage of requests that took less than 10 seconds to complete: <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">-</span> <span class="pre">(slow</span> <span class="pre">requests</span> <span class="pre">/</span> <span class="pre">total</span> <span class="pre">requests)</span></code></p>
+</section>
+<section id="id4">
+<h4>Availability<a class="headerlink" href="#id4" title="Link to this heading">¶</a></h4>
+<p>We measure the webhook availability as the percentage of requests that didn’t result in an error: <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">-</span> <span class="pre">(failed</span> <span class="pre">requests</span> <span class="pre">/</span> <span class="pre">total</span> <span class="pre">requests)</span></code>
+Note: requests that were rejected due to bad user input are not considered as failed and are excluded from the calculation.</p>
+</section>
+</section>
+</section>
+<section id="forthcoming-slis-slos">
+<h2>Forthcoming SLIs/SLOs<a class="headerlink" href="#forthcoming-slis-slos" title="Link to this heading">¶</a></h2>
+<p>The following services/SLIs are not yet configured.</p>
+<ul class="simple">
+<li><p>Kafka Latency</p></li>
+<li><p>ACI Kafka Public API - the service through which you can administer
+your namespace, client, accesses etc.</p></li>
+<li><p>GG based services</p></li>
+</ul>
+</section>
+</section>
+
+
+    </div>
+    
+  <div class="pageTOC">
+    <nav class="toc nav global_and_site_headers">
+      <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="overview.html#getting-started">Getting Started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="overview.html#offerings">Offerings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="overview.html#roadmap">Roadmap</a></li>
+<li class="toctree-l2"><a class="reference internal" href="overview.html#reference">Reference</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="concepts.html">Concepts</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="concepts.html#customer-group">Customer group</a></li>
+<li class="toctree-l2"><a class="reference internal" href="concepts.html#client-identities">Client identities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="concepts.html#namespace">Namespace</a></li>
+<li class="toctree-l2"><a class="reference internal" href="concepts.html#topic">Topic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="concepts.html#cluster-traffic-quota">Cluster traffic quota</a></li>
+<li class="toctree-l2"><a class="reference internal" href="concepts.html#client-identity-topic-access">Client identity topic access</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="onboarding.html">On-Boarding &amp; Expansion</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="onboarding.html#expansion-for-existing-customers">Expansion for Existing Customers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="onboarding.html#getting-started-for-new-customers">Getting Started for New Customers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="onboarding.html#general-process">General Process</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="self-service/index.html">Self Service</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="self-service/kube.html">Kubernetes CRDs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="self-service/kafka_cli.html">ACI Kafka CLI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="self-service/public_api.html">Public API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="self-service/inspector.html">Inspector</a></li>
+<li class="toctree-l2"><a class="reference internal" href="monitoring/broker_metrics.html">Broker metrics</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="client/index.html">Client</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="client/quick_start.html">Quick Start</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client/kafka_for_all.html">Kafka for All (non-Java clients)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client/using_client.html">Using the client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client/envelope.html"><code class="docutils literal notranslate"><span class="pre">PieEnvelope</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="client/producer_client.html">Producer Client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client/producer_settings.html">Producer Recommendations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client/consumer_client.html">Consumer Client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client/consumer_settings.html">Consumer Recommendations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client/security_settings.html">Security Settings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client/kaffe.html">Kaffe</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client/client_secrets_distribution.html">Client Secrets Distribution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client/default_config_injection.html">Default Configuration Injection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client/lag_metrics.html">Consumer Group’s lag metrics</a></li>
+<li class="toctree-l2"><a class="reference external" href="https://github.pie.apple.com/aci/kafka-examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="monitoring/index.html">Monitoring and auditing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="monitoring/new_metrics_2024.html">New Mosaic broker metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="monitoring/kafka_hubble_reporter.html">Kafka Hubble Reporter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="monitoring/kafka_server_hubble_reporter.html">Kafka Hubble Yammer Reporter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="monitoring/kafka_client_hubble_dashboards.html">Kafka Client Hubble Dashboard Templates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="monitoring/broker_metrics.html">Broker metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="monitoring/kafka_client_open_telemetry.html">Kafka Client OpenTelemetry integration</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">SLI Catalog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#kafka">Kafka</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mirrors">Mirrors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#kaffe">Kaffe</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#iris">Iris</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#api">API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#forthcoming-slis-slos">Forthcoming SLIs/SLOs</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dev-and-ci.html">Development and CI</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dev-and-ci.html#getting-started">Getting Started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev-and-ci.html#local-environments">Local Environments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev-and-ci.html#continuous-integration">Continuous Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev-and-ci.html#client-configuration">Client Configuration</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="faq/index.html">FAQ</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="faq/index.html#getting-started">Getting Started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq/index.html#namespaces">Namespaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq/index.html#connectivity">Connectivity</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting/index.html">Troubleshooting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="troubleshooting/general.html">General troubleshooting guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="troubleshooting/client.html">Common Client Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="troubleshooting/connectivity.html">Checking connectivity to ACI Kafka cluster</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="glossary.html">Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contact.html">Contact Us</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="contact.html#general-support">General Support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contact.html#on-boarding-or-expansion">On-boarding or Expansion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contact.html#announcements">Announcements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contact.html#slack">Slack</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contact.html#paging-for-urgent-support">Paging for Urgent Support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contact.html#design-development-apple-internal">Design &amp; Development (Apple Internal)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contact.html#office-hours">Office Hours</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="roadmap.html">Roadmap</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="roadmap.html#present">Present</a></li>
+<li class="toctree-l2"><a class="reference internal" href="roadmap.html#future">Future</a></li>
+<li class="toctree-l2"><a class="reference internal" href="roadmap.html#past">Past</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="releases/index.html">Releases</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="releases/index.html#recommended-release">Recommended release</a></li>
+<li class="toctree-l2"><a class="reference internal" href="releases/index.html#announcement-procedure">Announcement Procedure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="releases/index.html#release-announcements">Release Announcements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="releases/index.html#apache-kafka-version-mapping">Apache Kafka Version Mapping</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="china.html">China (GCBD)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="china.html#aci-kafka-clusters">ACI Kafka Clusters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="china.html#sdr-identity-certificates">SDR Identity Certificates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="china.html#kaffe">Kaffe</a></li>
+<li class="toctree-l2"><a class="reference internal" href="china.html#broker-tls">Broker TLS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="china.html#kafka-for-all-vips">Kafka For All VIPs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="china.html#apple-network-policies-anps">Apple Network Policies (ANPs)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="china.html#self-service">Self Service</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="internals/index.html">Internals</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="internals/kafka_internal_setup.html">Kafka Internal Setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="internals/verifiable_producer_consumer.html">Verifiable Producer/Consumer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="internals/index.html#qtip">QTIP</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="compliance.html">Compliance</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="compliance.html#supported-data-types"><strong>Supported Data Types</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="compliance.html#end-user-responsibilities-to-use-the-platform-by-data-tier">End user responsibilities to use the platform by data tier</a></li>
+</ul>
+</li>
+</ul>
+
+    </nav>
+  </div>
+    
+  </div>
+</article>
+  
+
+
+<footer class="footer">
+  <p>© Copyright <script>document.write(new Date().getFullYear())</script>, Apple Inc. All rights reserved. Apple Confidential.</p><a href="mailto:aci-queue-support@group.apple.com" alt="contact pie">Contact</a> | <a href="rdar://new/problem/component=ACI%20Queue&version=Kafka%20Support">Report an Issue</a>
+    | <a href="https://github.pie.apple.com/pie/kafka-tools/edit/develop/docs/source/sli_catalogue.md" alt="Edit on ACS GitHub">Edit on ACS GitHub</a>
+</footer>
+  </body>
+</html>

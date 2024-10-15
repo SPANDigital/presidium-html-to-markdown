@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Producer Client &#8212; ACI Kafka Docs</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css?v=eeb27264" />
+    <link rel="stylesheet" href="../_static/styleguide.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/fonts.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/app.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/toc.css" type="text/css" />
+    <script src="../_static/documentation_options.js?v=b9a12352"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within ACI Kafka Docs"
+          href="../_static/opensearch.xml"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Producer Recommendations" href="producer_settings.html" />
+    <link rel="prev" title="PieEnvelope" href="envelope.html" />
+
+<meta name="viewport" content="width=1172">
+<script type="text/javascript" src="../_static/app.js "></script>
+
+<script>
+window.Columbo=window.Columbo||function(o,u){"function"==typeof o?u=o:Columbo.config=o,u&&(Columbo.q=Columbo.q||[]).push(u)};
+Columbo({
+    appConfig: {
+        version: 'v0',
+        columboId: '09707287240ae779c2d02d07465ae16b5129de94c93704236a70c9d51a5f43fc'
+    }
+});
+</script>
+<script async src="../_static/cw.js"></script>
+
+  </head><body>
+
+  <header class="globalHeader">
+  <div class="headerWrapper">
+    <h1 class="globalTitle" data-toc-skip><a href="https://aci.apple.com">Apple Cloud Infrastructure</a></h1>
+    <span class="globalNavigation">
+      <a href="https://aci.apple.com/office-hours/">Office Hours</a>
+      <a href="/">Documentation</a>
+      <a href="https://status.aci.apple.com/">Status</a>
+    </span>
+  </div>
+</header>
+
+<article>
+  
+    <header class="siteHeader">
+  <div class="headerWrapper">
+    <h1 class="siteTitle" data-toc-skip>
+      <a href="../index.html">
+        ACI Kafka</a>
+    </h1>
+    
+      
+<nav class="navbarLinks">
+    
+      <a class="tabbed-navigation--item " href="../contents.html">Site Map</a>
+    
+    
+      <a class="tabbed-navigation--item" href="https://docs.aci.apple.com/kafka/public_api.html">API Docs</a>
+    
+</nav>
+
+    
+    
+      
+<form class="siteSearch" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="text-input--base text-input--medium searchInput" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+    
+  </div>
+</header>
+
+  <div class="pageWrapper">
+    <div class="pageContent column global_and_site_headers" role="main">
+      
+  <section id="producer-client">
+<h1>Producer Client<a class="headerlink" href="#producer-client" title="Link to this heading">¶</a></h1>
+<p>Here we list some key concepts and configurations that any producer needs to be familiar with before changing the settings in a Kafka Producer application.</p>
+<section id="main-architecture">
+<h2>Main architecture<a class="headerlink" href="#main-architecture" title="Link to this heading">¶</a></h2>
+<p><img alt="" src="../_images/producer_arch.png" /></p>
+<p>The diagram above shows the producer flow when the application invokes <code class="docutils literal notranslate"><span class="pre">kafkaProducer.send(record)</span></code>.
+As shown in the diagram, the record needs to go through five key stages/threads at the client-side before the record reaches the broker.
+Understanding these stages is critical to tune and design any Kafka Producer.</p>
+</section>
+<section id="serializer">
+<h2>1. Serializer<a class="headerlink" href="#serializer" title="Link to this heading">¶</a></h2>
+<p>Kafka writes data as bytes, so when a producer prepares a record to be sent, it first needs to serialize the record from an object into bytes.
+This step is controlled by <code class="docutils literal notranslate"><span class="pre">key.serializer</span></code> and <code class="docutils literal notranslate"><span class="pre">value.serializer</span></code>. Both of these are vital config for any producer client.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Serializer is also used to apply encryption and add more info into record headers. Both features are provided by ACI Kafka,
+for more details check <a class="reference internal" href="envelope.html"><span class="std std-doc">PieEnvelope</span></a> and <a class="reference internal" href="security_settings.html"><span class="std std-doc">encryption</span></a>.</p>
+</div>
+</section>
+<section id="partitioner">
+<h2>2. Partitioner<a class="headerlink" href="#partitioner" title="Link to this heading">¶</a></h2>
+<p>The Partitioner decides which partition of the topic a record should be written to.
+For example, suppose the record has a key (a.k.a compacted topic). In that case, a partition will be chosen based on a unique hash code for the key.
+If a key is not presented Kafka will try to allocate the record into some partition in a round-robin fashion to achieve an even balance between partition sizes.
+The Partitioner will do nothing if the Producer specified a partition in <code class="docutils literal notranslate"><span class="pre">ProducerRecord</span></code>.
+This generally is not recommended for most applications as it will interfere with the partitioner and may lead to skewed partitions.</p>
+<section id="record-accumulator">
+<h3>3. Record accumulator<a class="headerlink" href="#record-accumulator" title="Link to this heading">¶</a></h3>
+<p>At this step, the Producer will group records into batches per partition based on <code class="docutils literal notranslate"><span class="pre">batch.size</span></code> configuration.
+It’s important to remember the <code class="docutils literal notranslate"><span class="pre">send</span></code> method will return at this point and doesn’t need to wait for records to be actually
+sent out as the Producer will keep accumulating the records till it reaches the desired batch size, or it reached <code class="docutils literal notranslate"><span class="pre">linger.ms</span></code>
+which is the time to wait before sending data to brokers.</p>
+<p>Remember that the buffer is stored locally, so depending on the producer configuration, the buffer may reach <code class="docutils literal notranslate"><span class="pre">buffer.memory</span></code>. In such a situation, the Producer will be blocked from invoking <code class="docutils literal notranslate"><span class="pre">send</span></code> until the producer frees buffer space by sending batches to the broker. To see the recommended configuration for <code class="docutils literal notranslate"><span class="pre">buffer.memory</span></code>, check our <a class="reference internal" href="producer_settings.html#best-delivery-guarantee"><span class="std std-ref">recommendations</span></a>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>By default, send is non-blocking, so if the Producer wants to block until message sent to the brokers,
+it will need to invoke <code class="docutils literal notranslate"><span class="pre">send(record).get()</span></code> . By using <code class="docutils literal notranslate"><span class="pre">get()</span></code> the Producer is forced to wait for a reply from Kafka.
+This method will throw an exception if the record is not sent successfully to Kafka.</p>
+</div>
+</section>
+<section id="compression">
+<h3>4. Compression<a class="headerlink" href="#compression" title="Link to this heading">¶</a></h3>
+<p>The stage at which the batch records will get compressed before it gets sent to the broker.</p>
+<p>By default, compression is not enabled, but it’s recommended to enable it specially when producing to a multi-tenant Kafka cluster (like ACI Kafka).
+All tenant should reduce their request size, network bandwidth usage as well as reducing their disk footprint.</p>
+<p>The configuration <code class="docutils literal notranslate"><span class="pre">compression.type</span></code> can be set to <code class="docutils literal notranslate"><span class="pre">snappy</span></code>, <code class="docutils literal notranslate"><span class="pre">gzip</span></code>, <code class="docutils literal notranslate"><span class="pre">lz4</span></code>, or <code class="docutils literal notranslate"><span class="pre">zstd</span></code>.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Type</p></th>
+<th class="head"><p>CPU usage</p></th>
+<th class="head"><p>Bandwidth usage</p></th>
+<th class="head"><p>Compression ratio</p></th>
+<th class="head"><p>Compression Speed</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">zstd</span></code> (recommended)</p></td>
+<td><p>Moderate</p></td>
+<td><p>Medium</p></td>
+<td><p>Medium</p></td>
+<td><p>Moderate</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">snappy</span></code></p></td>
+<td><p>Moderate</p></td>
+<td><p>Medium</p></td>
+<td><p>Medium</p></td>
+<td><p>Moderate</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">gzip</span></code></p></td>
+<td><p>High</p></td>
+<td><p>Low</p></td>
+<td><p>High</p></td>
+<td><p>Slow</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">lz4</span></code></p></td>
+<td><p>Low</p></td>
+<td><p>High</p></td>
+<td><p>Low</p></td>
+<td><p>Fast</p></td>
+</tr>
+</tbody>
+</table>
+<p>Check our recommendations for <a class="reference internal" href="producer_settings.html#optimize-for-latency-vs-throughput"><span class="std std-ref">compression</span></a>.</p>
+</section>
+<section id="sender-thread">
+<h3>5. Sender Thread<a class="headerlink" href="#sender-thread" title="Link to this heading">¶</a></h3>
+<p>The sender thread is a background thread that groups the batches from all partitions by broker to open one connection with the broker.
+The thread will send batches whenever <code class="docutils literal notranslate"><span class="pre">batch.size</span></code> or <code class="docutils literal notranslate"><span class="pre">linger.ms</span></code> is met first.</p>
+<p>The thread will keep retrying to send the batches till it succeeds, or it reaches the retries configuration.</p>
+<p>For more details about the Producer, check <a class="reference external" href="https://learning.oreilly.com/library/view/kafka-the-definitive/9781491936153/ch03.html">Chapter 3 - Kafka: The Definitive Guide, 2nd Edition</a></p>
+</section>
+</section>
+<section id="kafka-write-semantics">
+<h2>Kafka Write semantics<a class="headerlink" href="#kafka-write-semantics" title="Link to this heading">¶</a></h2>
+<section id="at-least-once">
+<h3>At-Least-Once<a class="headerlink" href="#at-least-once" title="Link to this heading">¶</a></h3>
+<p>By default, Kafka Producer guarantees at-least-once delivery with <code class="docutils literal notranslate"><span class="pre">retries</span></code> set to 2147483647 by default.
+This value allows the Producer never to drop a message but might duplicate the occasional message.</p>
+</section>
+</section>
+<section id="at-most-once">
+<h2>At-Most-Once<a class="headerlink" href="#at-most-once" title="Link to this heading">¶</a></h2>
+<p>At-most-once writes means that the Producer will never retry to write message twice; instead, it will skip writing the message on failure.
+This semantic can be achieved if <code class="docutils literal notranslate"><span class="pre">retries</span></code> is set to 0.</p>
+</section>
+<section id="exactly-once">
+<h2>Exactly-Once<a class="headerlink" href="#exactly-once" title="Link to this heading">¶</a></h2>
+<p>EOS means the Producer will deliver all messages without any duplications.
+This semantic can be achieved in Kafka by switching the Producer to an <strong>Idempotent Producer</strong>;
+this can be achieved by configuring <code class="docutils literal notranslate"><span class="pre">enable.idempotence=true</span></code>, <code class="docutils literal notranslate"><span class="pre">acks=all</span></code> and <code class="docutils literal notranslate"><span class="pre">retries</span> <span class="pre">&gt;</span> <span class="pre">0</span></code>.
+For more about configuring idempotent Producer, check <a class="reference internal" href="producer_settings.html#idempotent-producer-and-transactional-producer"><span class="std std-ref">recommended configurations</span></a>.</p>
+<p><strong>Idempotent Producer</strong> adds two fields to each record it sends</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">ProducerID</span></code></p></li>
+<li><p>Sequence Number (Epoch)</p></li>
+</ul>
+<p>So if an <strong>Idempotent Producer</strong> tries to send the same record with the same epoch, the broker will ignore it and send an acknowledgment response back to the Producer.</p>
+<p><img alt="" src="../_images/producer-idempotent.png" /></p>
+<p>For more details on Idempotent Producer check <a class="reference external" href="https://www.confluent.io/blog/exactly-once-semantics-are-possible-heres-how-apache-kafka-does-it/">EOS blog</a>).</p>
+</section>
+<section id="transactional">
+<h2>Transactional<a class="headerlink" href="#transactional" title="Link to this heading">¶</a></h2>
+<p>Transactions enable atomic writes to multiple Kafka topics and partitions where all the messages included in the transaction will be successfully written,
+or none of them will be. This producer mode is known as <strong>Transactional Producer</strong>;
+the first step to switching a Kafka Producer to a Transactional producer is to set <code class="docutils literal notranslate"><span class="pre">transactional.id</span></code> to a unique value.</p>
+<p>The following steps are how a producer can send a transaction.</p>
+<ol class="arabic">
+<li><p>Initialize a transaction:</p>
+<p>This step is where the producer registers a transaction using <code class="docutils literal notranslate"><span class="pre">transactional.id</span></code>.
+As part of this step, Kafka cluster will elect a Kafka server (broker) to be the <strong>Transactional Coordinator</strong>.
+The coordinator will oversee the transactions state and the health of the producers.</p>
+<p>Keep in mind that each producer instance needs to have its unique <code class="docutils literal notranslate"><span class="pre">transactional.id</span></code>,
+check <a class="reference internal" href="producer_settings.html#idempotent-producer-and-transactional-producer"><span class="std std-ref">recommended configurations</span></a> for how to set <code class="docutils literal notranslate"><span class="pre">transactional.id</span></code>.</p>
+</li>
+<li><p>Every time a producer needs to send a transaction, it must inform the coordinator that a new transaction starts shortly.</p></li>
+<li><p>Send messages to multiple topics/partitions.</p></li>
+<li><p>Commit/Abort Transaction:</p>
+<p>Once all messages get written successfully, the producer must inform the coordinator that the transaction finished successfully by committing the transactions.
+If something goes wrong, the producer must inform the coordinator that this transaction failed by sending an abort request.</p>
+<p>The transactional coordinator will add a marker to all the records as either committed or aborted in these transactions.
+Consumers use this marker to consume only the successful transactions and skip aborted transactions.</p>
+</li>
+</ol>
+<p><img alt="" src="../_images/transactional_producer.png" /></p>
+<p>For more details on <a class="reference external" href="https://www.confluent.io/blog/transactions-apache-kafka/">Transactions
+API</a>.</p>
+</section>
+<section id="key-configuration">
+<h2>Key configuration<a class="headerlink" href="#key-configuration" title="Link to this heading">¶</a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Configuration</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Should leave it at default?</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">acks</span></code></p></td>
+<td><p>The number of partition’s replicas need to acknowledge the request before the producer receive and acknowledge response for <code class="docutils literal notranslate"><span class="pre">send</span></code>.</p></td>
+<td><p>all</p></td>
+<td><p>No, changing the value will impact the delivery guarantees.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">max.block.ms</span></code></p></td>
+<td><p>Timeout bounds the total time waiting for buffer allocation</p></td>
+<td><p>60000</p></td>
+<td><p>Yes, set this to Long.MAX_VALUE for delivery guarantees</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">buffer.memory</span></code></p></td>
+<td><p>The allocated buffer where records is waiting to be sent to the broker.</p></td>
+<td><p>33554432</p></td>
+<td><p>Maybe, check <a class="reference internal" href="producer_settings.html"><span class="std std-doc">our recommendations</span></a>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">retries</span></code></p></td>
+<td><p>Number of times to resend same batch when error detected.</p></td>
+<td><p>2147483647</p></td>
+<td><p>No, changing the value will impact the delivery guarantees.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">max.in.flight.requests.per.connection</span></code></p></td>
+<td><p>The maximum number of unacknowledged requests the client will send on a single connection before blocking</p></td>
+<td><p>5</p></td>
+<td><p>Yes, change this to 1 will impact the record order.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">batch.size</span></code></p></td>
+<td><p>The producer will attempt to batch records together into fewer requests  whenever multiple records are being sent to the same partition.</p></td>
+<td><p>16384</p></td>
+<td><p>Maybe, increasing this for better throughput.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">linger.ms</span></code></p></td>
+<td><p>The time to wait before sending data to brokers.</p></td>
+<td><p>0</p></td>
+<td><p>Maybe, adjust this will impact latency</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">compression.type</span></code></p></td>
+<td><p>The compression type for all data generated by the producer.</p></td>
+<td><p>none</p></td>
+<td><p>Maybe, enabling this may improve throughput.</p></td>
+</tr>
+</tbody>
+</table>
+<p>For more details about producer configuration check <a class="reference external" href="https://docs.confluent.io/platform/current/installation/configuration/producer-configs.html">Upstream Producer Configs</a>.</p>
+</section>
+</section>
+
+
+    </div>
+    
+  <div class="pageTOC">
+    <nav class="toc nav global_and_site_headers">
+      <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../overview.html#getting-started">Getting Started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../overview.html#offerings">Offerings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../overview.html#roadmap">Roadmap</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../overview.html#reference">Reference</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../concepts.html">Concepts</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../concepts.html#customer-group">Customer group</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../concepts.html#client-identities">Client identities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../concepts.html#namespace">Namespace</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../concepts.html#topic">Topic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../concepts.html#cluster-traffic-quota">Cluster traffic quota</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../concepts.html#client-identity-topic-access">Client identity topic access</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../onboarding.html">On-Boarding &amp; Expansion</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../onboarding.html#expansion-for-existing-customers">Expansion for Existing Customers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../onboarding.html#getting-started-for-new-customers">Getting Started for New Customers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../onboarding.html#general-process">General Process</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../self-service/index.html">Self Service</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../self-service/kube.html">Kubernetes CRDs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../self-service/kafka_cli.html">ACI Kafka CLI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../self-service/public_api.html">Public API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../self-service/inspector.html">Inspector</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../monitoring/broker_metrics.html">Broker metrics</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Client</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="quick_start.html">Quick Start</a></li>
+<li class="toctree-l2"><a class="reference internal" href="kafka_for_all.html">Kafka for All (non-Java clients)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="using_client.html">Using the client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="envelope.html"><code class="docutils literal notranslate"><span class="pre">PieEnvelope</span></code></a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Producer Client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="producer_settings.html">Producer Recommendations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="consumer_client.html">Consumer Client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="consumer_settings.html">Consumer Recommendations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="security_settings.html">Security Settings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="kaffe.html">Kaffe</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client_secrets_distribution.html">Client Secrets Distribution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="default_config_injection.html">Default Configuration Injection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lag_metrics.html">Consumer Group’s lag metrics</a></li>
+<li class="toctree-l2"><a class="reference external" href="https://github.pie.apple.com/aci/kafka-examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../monitoring/index.html">Monitoring and auditing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../monitoring/new_metrics_2024.html">New Mosaic broker metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../monitoring/kafka_hubble_reporter.html">Kafka Hubble Reporter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../monitoring/kafka_server_hubble_reporter.html">Kafka Hubble Yammer Reporter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../monitoring/kafka_client_hubble_dashboards.html">Kafka Client Hubble Dashboard Templates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../monitoring/broker_metrics.html">Broker metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../monitoring/kafka_client_open_telemetry.html">Kafka Client OpenTelemetry integration</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../sli_catalogue.html">SLI Catalog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../sli_catalogue.html#kafka">Kafka</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../sli_catalogue.html#mirrors">Mirrors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../sli_catalogue.html#kaffe">Kaffe</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../sli_catalogue.html#iris">Iris</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../sli_catalogue.html#api">API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../sli_catalogue.html#forthcoming-slis-slos">Forthcoming SLIs/SLOs</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../dev-and-ci.html">Development and CI</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../dev-and-ci.html#getting-started">Getting Started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dev-and-ci.html#local-environments">Local Environments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dev-and-ci.html#continuous-integration">Continuous Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dev-and-ci.html#client-configuration">Client Configuration</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../faq/index.html">FAQ</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../faq/index.html#getting-started">Getting Started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/index.html#namespaces">Namespaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/index.html#connectivity">Connectivity</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../troubleshooting/index.html">Troubleshooting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../troubleshooting/general.html">General troubleshooting guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../troubleshooting/client.html">Common Client Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../troubleshooting/connectivity.html">Checking connectivity to ACI Kafka cluster</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../glossary.html">Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contact.html">Contact Us</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../contact.html#general-support">General Support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contact.html#on-boarding-or-expansion">On-boarding or Expansion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contact.html#announcements">Announcements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contact.html#slack">Slack</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contact.html#paging-for-urgent-support">Paging for Urgent Support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contact.html#design-development-apple-internal">Design &amp; Development (Apple Internal)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contact.html#office-hours">Office Hours</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../roadmap.html">Roadmap</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../roadmap.html#present">Present</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../roadmap.html#future">Future</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../roadmap.html#past">Past</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../releases/index.html">Releases</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../releases/index.html#recommended-release">Recommended release</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../releases/index.html#announcement-procedure">Announcement Procedure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../releases/index.html#release-announcements">Release Announcements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../releases/index.html#apache-kafka-version-mapping">Apache Kafka Version Mapping</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../china.html">China (GCBD)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../china.html#aci-kafka-clusters">ACI Kafka Clusters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../china.html#sdr-identity-certificates">SDR Identity Certificates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../china.html#kaffe">Kaffe</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../china.html#broker-tls">Broker TLS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../china.html#kafka-for-all-vips">Kafka For All VIPs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../china.html#apple-network-policies-anps">Apple Network Policies (ANPs)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../china.html#self-service">Self Service</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../internals/index.html">Internals</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../internals/kafka_internal_setup.html">Kafka Internal Setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../internals/verifiable_producer_consumer.html">Verifiable Producer/Consumer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../internals/index.html#qtip">QTIP</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../compliance.html">Compliance</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../compliance.html#supported-data-types"><strong>Supported Data Types</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../compliance.html#end-user-responsibilities-to-use-the-platform-by-data-tier">End user responsibilities to use the platform by data tier</a></li>
+</ul>
+</li>
+</ul>
+
+    </nav>
+  </div>
+    
+  </div>
+</article>
+  
+
+
+<footer class="footer">
+  <p>© Copyright <script>document.write(new Date().getFullYear())</script>, Apple Inc. All rights reserved. Apple Confidential.</p><a href="mailto:aci-queue-support@group.apple.com" alt="contact pie">Contact</a> | <a href="rdar://new/problem/component=ACI%20Queue&version=Kafka%20Support">Report an Issue</a>
+    | <a href="https://github.pie.apple.com/pie/kafka-tools/edit/develop/docs/source/client/producer_client.md" alt="Edit on ACS GitHub">Edit on ACS GitHub</a>
+</footer>
+  </body>
+</html>

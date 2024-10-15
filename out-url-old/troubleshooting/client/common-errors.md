@@ -1,0 +1,46 @@
+---
+title: "Common Errors¶"
+weight: 2
+---
+
+This section lists some of the common messages from the Kafka client you might see in your application logs.
+
+### Connection to node 0000 could not be established [¶](#connection-to-node-0000-could-not-be-established "Link to this heading")
+
+This warning is frequently logged by the client in response to normal cluster maintenance operations.
+It does not always suggest an issue by itself.
+If you’re seeing an impact on your service, please refer to the instructions in [Too many logs saying Broker may not be available](#too-many-logs-saying-broker-may-not-be-available).
+
+### Disconnecting from node 0000 due to … timeout [¶](#disconnecting-from-node-0000-due-to-timeout "Link to this heading")
+
+This warning is frequently logged by the client in response to normal cluster maintenance operations.
+It does not always suggest an issue by itself.
+If you’re seeing an impact on your service, please refer to the instructions in [Too many logs saying Broker may not be available](#too-many-logs-saying-broker-may-not-be-available).
+
+### Timeout of 60000ms expired before … [¶](#timeout-of-60000ms-expired-before "Link to this heading")
+
+Very large timeouts (>30s) often indicate a network problem.
+A good start is to check [you have connectivity to the brokers from the affected application instance]({{< ref "troubleshooting/connectivity" >}}) and that the [cluster is healthy]({{%baseurl%}}/general.html#checking-cluster-health).
+
+Similar messages to look for:
+
+- `Failed to update metadata after 60000 ms.`
+- Other instances of `org.apache.kafka.common.errors.TimeoutException`
+
+### Not authorized to access topics [¶](#not-authorized-to-access-topics "Link to this heading")
+
+Make sure you’re using the [fully qualified topic name]({{%baseurl%}}/../concepts.html#topic-name) and [the topic allows access for your client identity]({{%baseurl%}}/../concepts.html#client-identity-topic-access).
+You should also check that [`bootstrap.servers` configuration]({{%baseurl%}}/../client/kafka_for_all.html#bootstrap-servers) is matching the correct cluster for the topic’s namespace.
+
+Similar messages to look for:
+
+- Other instances of `org.apache.kafka.common.errors.TopicAuthorizationException`
+
+### Member … sending LeaveGroup request to coordinator … [¶](#member-sending-leavegroup-request-to-coordinator "Link to this heading")
+
+Please see the section on [consumer group experiencing too many rebalancing events](#consumer-group-is-experiencing-too-many-rebalancing-events)
+
+Similar messages to look for:
+
+- `... due to consumer poll timeout has expired`
+

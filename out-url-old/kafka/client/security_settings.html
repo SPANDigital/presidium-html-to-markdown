@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Security Settings &#8212; ACI Kafka Docs</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css?v=eeb27264" />
+    <link rel="stylesheet" href="../_static/styleguide.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/fonts.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/app.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/toc.css" type="text/css" />
+    <script src="../_static/documentation_options.js?v=b9a12352"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within ACI Kafka Docs"
+          href="../_static/opensearch.xml"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Kaffe" href="kaffe.html" />
+    <link rel="prev" title="Consumer Recommendations" href="consumer_settings.html" />
+
+<meta name="viewport" content="width=1172">
+<script type="text/javascript" src="../_static/app.js "></script>
+
+<script>
+window.Columbo=window.Columbo||function(o,u){"function"==typeof o?u=o:Columbo.config=o,u&&(Columbo.q=Columbo.q||[]).push(u)};
+Columbo({
+    appConfig: {
+        version: 'v0',
+        columboId: '09707287240ae779c2d02d07465ae16b5129de94c93704236a70c9d51a5f43fc'
+    }
+});
+</script>
+<script async src="../_static/cw.js"></script>
+
+  </head><body>
+
+  <header class="globalHeader">
+  <div class="headerWrapper">
+    <h1 class="globalTitle" data-toc-skip><a href="https://aci.apple.com">Apple Cloud Infrastructure</a></h1>
+    <span class="globalNavigation">
+      <a href="https://aci.apple.com/office-hours/">Office Hours</a>
+      <a href="/">Documentation</a>
+      <a href="https://status.aci.apple.com/">Status</a>
+    </span>
+  </div>
+</header>
+
+<article>
+  
+    <header class="siteHeader">
+  <div class="headerWrapper">
+    <h1 class="siteTitle" data-toc-skip>
+      <a href="../index.html">
+        ACI Kafka</a>
+    </h1>
+    
+      
+<nav class="navbarLinks">
+    
+      <a class="tabbed-navigation--item " href="../contents.html">Site Map</a>
+    
+    
+      <a class="tabbed-navigation--item" href="https://docs.aci.apple.com/kafka/public_api.html">API Docs</a>
+    
+</nav>
+
+    
+    
+      
+<form class="siteSearch" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="text-input--base text-input--medium searchInput" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+    
+  </div>
+</header>
+
+  <div class="pageWrapper">
+    <div class="pageContent column global_and_site_headers" role="main">
+      
+  <section id="security-settings">
+<h1>Security Settings<a class="headerlink" href="#security-settings" title="Link to this heading">¶</a></h1>
+<p>These security settings are relevant when connecting to ASE Kafka
+clusters. <strong>If connecting to a development instance that you are running
+yourself, they can be ignored.</strong> Some of the configurations listed here
+are highly sensitive. Follow instructions on <a class="reference internal" href="client_secrets_distribution.html"><span class="std std-doc">Client Secrets
+Distribution</span></a> to get them.</p>
+<section id="tls-and-authentication-settings-required">
+<h2>TLS and Authentication Settings (required)<a class="headerlink" href="#tls-and-authentication-settings-required" title="Link to this heading">¶</a></h2>
+<p>The ASE Kafka client communicates with brokers over TLS, and depending
+on the platform where the brokers are running, brokers will use
+certificates signed different Root CAs. The client can be configured
+to trust the broker’s certificate with the following configuration:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>ssl.truststore.type=PEM
+ssl.truststore.location=path/to/trusted-roots.pem
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">trusted-root.pem</span></code> file should include is available <a href="../_static/trusted-roots.pem">here</a>.</p>
+<p>In some cases the JVM may trust the broker’s certificate by default, but the <a class="reference external" href="https://java.apple.com/faq.html#q-my-application-needs-root-certificate-xxx-why-is-it-not-included-in-applejdk">Apple JVM recommendation</a> is “not to rely upon the default trust store that comes with AppleJDK for your production use cases, and instead pull in a trust store that is appropriate for your environment and expected/trusted peers”.</p>
+<p>ASE Kafka expects plain-text SASL authentication over this encrypted
+connection.</p>
+<section id="sasl-settings">
+<h3>SASL Settings<a class="headerlink" href="#sasl-settings" title="Link to this heading">¶</a></h3>
+<p>For most environments, the following properties are sufficient to enable
+SASL/PLAIN-based authentication over TLS for producer and consumer
+clients:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>security.protocol=SASL_SSL
+sasl.mechanism=PLAIN
+# Keep this property secret as it includes a password
+sasl.jaas.config = org.apache.kafka.common.security.plain.PlainLoginModule required username=&quot;&lt;username&gt;&quot; password=&quot;&lt;password&gt;&quot;;
+</pre></div>
+</div>
+<p><strong>If you have enabled</strong> <a class="reference internal" href="default_config_injection.html"><span class="std std-doc">Kaffe configuration
+injection</span></a>, <strong>then you don’t require
+to set these properties.</strong></p>
+<p><strong>If you are using Apache client version 2.0+, then you need to include
+this extra property:</strong></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>ssl.endpoint.identification.algorithm=   # an empty string
+</pre></div>
+</div>
+</section>
+</section>
+<section id="payload-encryption-and-decryption-settings">
+<h2>Payload encryption and decryption settings<a class="headerlink" href="#payload-encryption-and-decryption-settings" title="Link to this heading">¶</a></h2>
+<p>The new end-to-end encryption design for Kafka allows users to own their encryption keys and adds support for arm64.
+The design and implementation has been reviewed by ACS Security.</p>
+<p>The design requires an individual group, called “context owner(s)” to “manage” an encryption context.
+Managing an encryption context involves:</p>
+<ul class="simple">
+<li><p>Creating the encryption context</p></li>
+<li><p>Storing the key associated with the encryption context</p></li>
+<li><p>Granting decrypt permission to a consumer</p></li>
+<li><p>Revoking consumer’s decryption permissions</p></li>
+</ul>
+<section id="requirements">
+<h3>Requirements<a class="headerlink" href="#requirements" title="Link to this heading">¶</a></h3>
+<p>Please ensure your consumers and producers are configured to use at least <code class="docutils literal notranslate"><span class="pre">com.apple.pie.queue:kafka-pie-client:0.28.3</span></code>.
+This is a general availability (GA) release of the ASE Kafka client, based on upstream Apache Kafka 3.6.
+It supports both the old and new encryption schemes.</p>
+<p>In addition, the context owners must install <code class="docutils literal notranslate"><span class="pre">kafkacli</span></code> from <a class="reference external" href="https://github.pie.apple.com/homebrew/brew">Homebrew</a> using:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>brew<span class="w"> </span>update
+brew<span class="w"> </span>install<span class="w"> </span>apple/ase/kafkacli
+</pre></div>
+</div>
+</section>
+<section id="setup">
+<h3>Setup<a class="headerlink" href="#setup" title="Link to this heading">¶</a></h3>
+<section id="creating-an-encryption-context">
+<h4>Creating an encryption context<a class="headerlink" href="#creating-an-encryption-context" title="Link to this heading">¶</a></h4>
+<p>The context owner may execute the following command to create an encryption context:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>kafkacli<span class="w"> </span>encryption<span class="w"> </span>--env<span class="w"> </span>if1<span class="w"> </span>create<span class="w"> </span>&lt;context_id&gt;
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">context_id</span></code> must be fully qualified and be of the form <code class="docutils literal notranslate"><span class="pre">&lt;customerName&gt;.&lt;groupName&gt;.&lt;environtmentName&gt;.{contextName}</span></code>.</p>
+<p>The owner MUST have write permissions for the customer group <code class="docutils literal notranslate"><span class="pre">&lt;customerName&gt;.&lt;groupName&gt;.&lt;environtmentName&gt;</span></code>.</p>
+<p>Please, note down the context master secret key that’s printed in the console and save it securely (i.e., <a class="reference external" href="https://whisper.corp.apple.com/">Whisper</a>, <a class="reference external" href="https://github.com/getsops/sops">sops</a>, macOS Keychain or 1Password).</p>
+<p>Alternatively, the key can be stored and retrieved automatically using Whisper if the relevant flags are used:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>--whisper-bucket<span class="w">       </span>whisper<span class="w"> </span>bucket<span class="w"> </span>to<span class="w"> </span>use
+--whisper-namespace<span class="w">    </span>whisper<span class="w"> </span>namespace<span class="w"> </span>to<span class="w"> </span>use
+--whisper-cert<span class="w">         </span>whisper<span class="w"> </span>certificate<span class="w"> </span>to<span class="w"> </span>use.<span class="w"> </span>If<span class="w"> </span>empty,<span class="w"> </span>defaults<span class="w"> </span>to<span class="w"> </span>current<span class="w"> </span>AppleConnect<span class="w"> </span>user.
+--whisper-key<span class="w">          </span>whisper<span class="w"> </span>key<span class="w"> </span>to<span class="w"> </span>use.<span class="w"> </span>If<span class="w"> </span>empty,<span class="w"> </span>defaults<span class="w"> </span>to<span class="w"> </span>current<span class="w"> </span>AppleConnect<span class="w"> </span>user
+</pre></div>
+</div>
+</section>
+<section id="grant-a-consumer-decryption-access">
+<h4>Grant a consumer decryption access<a class="headerlink" href="#grant-a-consumer-decryption-access" title="Link to this heading">¶</a></h4>
+<p>The context owner may grant a consumer identity decryption access with:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>kafkacli<span class="w"> </span>encryption<span class="w"> </span>--env<span class="w"> </span>if1<span class="w"> </span>grant-decrypt<span class="w"> </span>&lt;context_id&gt;<span class="w"> </span>&lt;identity_id&gt;
+</pre></div>
+</div>
+<p>where <code class="docutils literal notranslate"><span class="pre">context_id</span></code> and <code class="docutils literal notranslate"><span class="pre">identity_id</span></code> are fully qualified.</p>
+</section>
+<section id="revoke-a-consumer-decryption-access">
+<h4>Revoke a consumer decryption access<a class="headerlink" href="#revoke-a-consumer-decryption-access" title="Link to this heading">¶</a></h4>
+<p>The context owner may revoke a consumer identity decryption access with:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>kafkacli<span class="w"> </span>encryption<span class="w"> </span>--env<span class="w"> </span>if1<span class="w"> </span>revoke-decrypt<span class="w"> </span>&lt;context_id&gt;<span class="w"> </span>&lt;identity_id&gt;
+</pre></div>
+</div>
+<p>where <code class="docutils literal notranslate"><span class="pre">context_id</span></code> and <code class="docutils literal notranslate"><span class="pre">identity_id</span></code> are fully qualified.</p>
+<p><strong><code class="docutils literal notranslate"><span class="pre">kafkacli</span></code> will prompt for confirmation before updating the encryption context’s public state.
+This is done to allow all consumers to be configured with the rolled private states or pick them up automatically from <a class="reference internal" href="kaffe.html"><span class="std std-doc">Kaffe</span></a>.
+You should confirm the revocation only when all consumers are up-to-date with the new epoch.</strong></p>
+</section>
+<section id="configuring-producers-and-consumers">
+<h4>Configuring producers and consumers<a class="headerlink" href="#configuring-producers-and-consumers" title="Link to this heading">¶</a></h4>
+<p>Encryption and decryption are disabled by default and can be enabled by
+setting the following producer or consumer properties for <strong>ASE Kafka
+client version 0.28.3+</strong>:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span># For producers:
+aci.queue.encryption.context=&lt;context_id&gt;
+
+# For consumers:
+aci.queue.decryption.context=&lt;context_id&gt;
+pie.queue.crypto.decrypt.enable=true
+# Note that if a topic contains both encrypted (old and new scheme) and unencrypted messages, you will need to set this property to `true` to handle both kind of messages.
+</pre></div>
+</div>
+<p>We <strong>strongly recommend</strong> enabling <a class="reference internal" href="default_config_injection.html"><span class="std std-doc">Kaffe configuration injection</span></a> if enabling encryption or/and decryption.
+In GCBD, or if Kaffe configuration injection isn’t enabled, you need these additional properties:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span># For producers:
+aci.queue.encryption.context.public.state=&lt;context_public_state&gt;
+
+# For consumers:
+aci.queue.decryption.encrypted.context.private.state=&lt;encrypted_context_private_state&gt;
+pie.queue.crypto.consumer.id=&lt;provided by ASE Kafka team&gt;
+pie.queue.crypto.consumer.secret.key=&lt;provided by ASE Kafka team and required only to support old encryption scheme&gt; (Keep this secret)
+
+# For both producers and consumers:
+pie.queue.crypto.iris.connect=&lt;Iris service connect address - https://kafka-iris-if1.pie.apple.com for if1, https://kafka-iris-prod.pie.apple.com for if-prod&gt;
+</pre></div>
+</div>
+<p>where <code class="docutils literal notranslate"><span class="pre">context_public_state</span></code> and <code class="docutils literal notranslate"><span class="pre">encrypted_context_private_state</span></code> are retrieved from the CLI:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>kafkacli<span class="w"> </span>encryption<span class="w"> </span>--env<span class="w"> </span>if1<span class="w"> </span>public-state<span class="w"> </span>&lt;context_id&gt;
+kafkacli<span class="w"> </span>encryption<span class="w"> </span>--env<span class="w"> </span>if1<span class="w"> </span>private-state<span class="w"> </span>&lt;context_id&gt;<span class="w"> </span>&lt;identity_id&gt;
+</pre></div>
+</div>
+<p>Should you have any questions, do not hesitate to <a class="reference internal" href="../contact.html"><span class="std std-doc">reach out to us</span></a>.</p>
+</section>
+<section id="faq">
+<h4>FAQ<a class="headerlink" href="#faq" title="Link to this heading">¶</a></h4>
+<section id="what-if-producer-or-consumer-is-required-to-use-a-different-encryption-context-for-multiple-topics">
+<h5>What if producer or consumer is required to use a different encryption context for multiple topics?<a class="headerlink" href="#what-if-producer-or-consumer-is-required-to-use-a-different-encryption-context-for-multiple-topics" title="Link to this heading">¶</a></h5>
+<p>In this case, you need to provide a comma-separated list of all context ids and topic ids mapping:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span># For producers:
+aci.queue.encryption.context=&lt;context_id_1&gt;,&lt;context_id_2&gt;,&lt;context_id_3&gt;
+aci.queue.encryption.context.topic.map=&lt;topic_id_1&gt;:&lt;context_id_1&gt;,&lt;topic_id_2&gt;:&lt;context_id_2&gt;,&lt;topic_id_3&gt;:&lt;context_id_3&gt;,
+
+# For consumers:
+aci.queue.decryption.context=&lt;context_id_1&gt;,&lt;context_id_2&gt;,&lt;context_id_3&gt;
+</pre></div>
+</div>
+<p>In GCBD or if Kaffe configuration injection isn’t enabled, you also need these additional properties:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span># For producers:
+aci.queue.encryption.context.public.state=&lt;context_public_state_1&gt;,&lt;context_public_state_2&gt;,&lt;context_public_state_3&gt;
+
+# For consumers:
+aci.queue.decryption.encrypted.context.private.state=&lt;encrypted_context_private_state_1&gt;,&lt;encrypted_context_private_state_2&gt;,&lt;encrypted_context_private_state_3&gt;
+</pre></div>
+</div>
+</section>
+<section id="i-don-t-trust-ase-kafka-team-to-persist-the-encrypted-context-master-secret-can-i-persist-encrypted-context-master-secret-locally-on-disk">
+<h5>I don’t trust ASE Kafka team to persist the encrypted context master secret. Can I persist encrypted context master secret locally on disk?<a class="headerlink" href="#i-don-t-trust-ase-kafka-team-to-persist-the-encrypted-context-master-secret-can-i-persist-encrypted-context-master-secret-locally-on-disk" title="Link to this heading">¶</a></h5>
+<p>Yes, you can provide <code class="docutils literal notranslate"><span class="pre">--manager=fs</span></code> flag when you interact with <code class="docutils literal notranslate"><span class="pre">kafkacli</span></code> to achieve that.</p>
+<p>In addition to responsibility of keeping the encrypted context master secret on disk safely, you also need to provide a <code class="docutils literal notranslate"><span class="pre">--consumer-public-key-path</span></code> for the identity on each <code class="docutils literal notranslate"><span class="pre">grant-decrypt</span></code> command.</p>
+</section>
+</section>
+</section>
+</section>
+</section>
+
+
+    </div>
+    
+  <div class="pageTOC">
+    <nav class="toc nav global_and_site_headers">
+      <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../overview.html#getting-started">Getting Started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../overview.html#offerings">Offerings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../overview.html#roadmap">Roadmap</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../overview.html#reference">Reference</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../concepts.html">Concepts</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../concepts.html#customer-group">Customer group</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../concepts.html#client-identities">Client identities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../concepts.html#namespace">Namespace</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../concepts.html#topic">Topic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../concepts.html#cluster-traffic-quota">Cluster traffic quota</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../concepts.html#client-identity-topic-access">Client identity topic access</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../onboarding.html">On-Boarding &amp; Expansion</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../onboarding.html#expansion-for-existing-customers">Expansion for Existing Customers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../onboarding.html#getting-started-for-new-customers">Getting Started for New Customers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../onboarding.html#general-process">General Process</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../self-service/index.html">Self Service</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../self-service/kube.html">Kubernetes CRDs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../self-service/kafka_cli.html">ACI Kafka CLI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../self-service/public_api.html">Public API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../self-service/inspector.html">Inspector</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../monitoring/broker_metrics.html">Broker metrics</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Client</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="quick_start.html">Quick Start</a></li>
+<li class="toctree-l2"><a class="reference internal" href="kafka_for_all.html">Kafka for All (non-Java clients)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="using_client.html">Using the client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="envelope.html"><code class="docutils literal notranslate"><span class="pre">PieEnvelope</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="producer_client.html">Producer Client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="producer_settings.html">Producer Recommendations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="consumer_client.html">Consumer Client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="consumer_settings.html">Consumer Recommendations</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Security Settings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="kaffe.html">Kaffe</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client_secrets_distribution.html">Client Secrets Distribution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="default_config_injection.html">Default Configuration Injection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lag_metrics.html">Consumer Group’s lag metrics</a></li>
+<li class="toctree-l2"><a class="reference external" href="https://github.pie.apple.com/aci/kafka-examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../monitoring/index.html">Monitoring and auditing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../monitoring/kafka_hubble_reporter.html">Kafka Hubble Reporter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../monitoring/kafka_server_hubble_reporter.html">Kafka Hubble Yammer Reporter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../monitoring/kafka_client_hubble_dashboards.html">Kafka Client Hubble Dashboard Templates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../monitoring/broker_metrics.html">Broker metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../monitoring/kafka_client_open_telemetry.html">Kafka Client OpenTelemetry integration</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../sli_catalogue.html">SLI Catalog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../sli_catalogue.html#kafka">Kafka</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../sli_catalogue.html#mirrors">Mirrors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../sli_catalogue.html#kaffe">Kaffe</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../sli_catalogue.html#iris">Iris</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../sli_catalogue.html#api">API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../sli_catalogue.html#forthcoming-slis-slos">Forthcoming SLIs/SLOs</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../dev-and-ci.html">Development and CI</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../dev-and-ci.html#getting-started">Getting Started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dev-and-ci.html#local-environments">Local Environments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dev-and-ci.html#continuous-integration">Continuous Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dev-and-ci.html#client-configuration">Client Configuration</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../faq/index.html">FAQ</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../faq/index.html#getting-started">Getting Started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/index.html#namespaces">Namespaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/index.html#connectivity">Connectivity</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../troubleshooting/index.html">Troubleshooting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../troubleshooting/general.html">General troubleshooting guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../troubleshooting/client.html">Common Client Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../troubleshooting/connectivity.html">Checking connectivity to ACI Kafka cluster</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../glossary.html">Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contact.html">Contact Us</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../contact.html#general-support">General Support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contact.html#on-boarding-or-expansion">On-boarding or Expansion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contact.html#announcements">Announcements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contact.html#slack">Slack</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contact.html#paging-for-urgent-support">Paging for Urgent Support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contact.html#design-development-apple-internal">Design &amp; Development (Apple Internal)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contact.html#office-hours">Office Hours</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../roadmap.html">Roadmap</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../roadmap.html#present">Present</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../roadmap.html#future">Future</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../roadmap.html#past">Past</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../releases/index.html">Releases</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../releases/index.html#recommended-release">Recommended release</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../releases/index.html#announcement-procedure">Announcement Procedure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../releases/index.html#release-announcements">Release Announcements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../releases/index.html#apache-kafka-version-mapping">Apache Kafka Version Mapping</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../china.html">China (GCBD)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../china.html#aci-kafka-clusters">ACI Kafka Clusters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../china.html#sdr-identity-certificates">SDR Identity Certificates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../china.html#kaffe">Kaffe</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../china.html#broker-tls">Broker TLS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../china.html#kafka-for-all-vips">Kafka For All VIPs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../china.html#apple-network-policies-anps">Apple Network Policies (ANPs)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../china.html#self-service">Self Service</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../internals/index.html">Internals</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../internals/kafka_internal_setup.html">Kafka Internal Setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../internals/verifiable_producer_consumer.html">Verifiable Producer/Consumer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../internals/index.html#qtip">QTIP</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../compliance.html">Compliance</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../compliance.html#supported-data-types"><strong>Supported Data Types</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../compliance.html#end-user-responsibilities-to-use-the-platform-by-data-tier">End user responsibilities to use the platform by data tier</a></li>
+</ul>
+</li>
+</ul>
+
+    </nav>
+  </div>
+    
+  </div>
+</article>
+  
+
+
+<footer class="footer">
+  <p>© Copyright <script>document.write(new Date().getFullYear())</script>, Apple Inc. All rights reserved. Apple Confidential.</p><a href="mailto:aci-queue-support@group.apple.com" alt="contact pie">Contact</a> | <a href="rdar://new/problem/component=ACI%20Queue&version=Kafka%20Support">Report an Issue</a>
+    | <a href="https://github.pie.apple.com/pie/kafka-tools/edit/develop/docs/source/client/security_settings.md" alt="Edit on ACS GitHub">Edit on ACS GitHub</a>
+</footer>
+  </body>
+</html>

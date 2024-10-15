@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Kaffe &#8212; ACI Kafka Docs</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css?v=eeb27264" />
+    <link rel="stylesheet" href="../_static/styleguide.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/fonts.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/app.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/toc.css" type="text/css" />
+    <script src="../_static/documentation_options.js?v=b9a12352"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within ACI Kafka Docs"
+          href="../_static/opensearch.xml"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Client Secrets Distribution" href="client_secrets_distribution.html" />
+    <link rel="prev" title="Security Settings" href="security_settings.html" />
+
+<meta name="viewport" content="width=1172">
+<script type="text/javascript" src="../_static/app.js "></script>
+
+<script>
+window.Columbo=window.Columbo||function(o,u){"function"==typeof o?u=o:Columbo.config=o,u&&(Columbo.q=Columbo.q||[]).push(u)};
+Columbo({
+    appConfig: {
+        version: 'v0',
+        columboId: '09707287240ae779c2d02d07465ae16b5129de94c93704236a70c9d51a5f43fc'
+    }
+});
+</script>
+<script async src="../_static/cw.js"></script>
+
+  </head><body>
+
+  <header class="globalHeader">
+  <div class="headerWrapper">
+    <h1 class="globalTitle" data-toc-skip><a href="https://aci.apple.com">Apple Cloud Infrastructure</a></h1>
+    <span class="globalNavigation">
+      <a href="https://aci.apple.com/office-hours/">Office Hours</a>
+      <a href="/">Documentation</a>
+      <a href="https://status.aci.apple.com/">Status</a>
+    </span>
+  </div>
+</header>
+
+<article>
+  
+    <header class="siteHeader">
+  <div class="headerWrapper">
+    <h1 class="siteTitle" data-toc-skip>
+      <a href="../index.html">
+        ACI Kafka</a>
+    </h1>
+    
+      
+<nav class="navbarLinks">
+    
+      <a class="tabbed-navigation--item " href="../contents.html">Site Map</a>
+    
+    
+      <a class="tabbed-navigation--item" href="https://docs.aci.apple.com/kafka/public_api.html">API Docs</a>
+    
+</nav>
+
+    
+    
+      
+<form class="siteSearch" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="text-input--base text-input--medium searchInput" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+    
+  </div>
+</header>
+
+  <div class="pageWrapper">
+    <div class="pageContent column global_and_site_headers" role="main">
+      
+  <section id="kaffe">
+<h1>Kaffe<a class="headerlink" href="#kaffe" title="Link to this heading">¶</a></h1>
+<p>This section aims to explain how Kaffe works. <strong>Kaffe is only relevant
+when connecting to ACI Kafka clusters.</strong></p>
+<section id="what-is-kaffe">
+<h2>What is Kaffe?<a class="headerlink" href="#what-is-kaffe" title="Link to this heading">¶</a></h2>
+<p>Kaffe has multiple functions:</p>
+<ul class="simple">
+<li><p>Resolve namespaces for clients.</p></li>
+<li><p>Enable ACI Kafka to set good defaults for your properties.</p></li>
+<li><p>Report configuration to the ACI Kafka team to provide better
+service.</p></li>
+</ul>
+<p>For people familiar with the ACI Cassandra offering, Kaffe is similar to
+Casserole.</p>
+<p>Kaffe is a lightweight, read-only service built using
+<a class="reference external" href="https://grpc.io/">Grpc</a> and
+<a class="reference external" href="https://github.pie.apple.com/pie-frameworks/service-talk">Service-Talk</a>.</p>
+</section>
+<section id="configuring-your-client-with-kaffe">
+<h2>Configuring your client with Kaffe<a class="headerlink" href="#configuring-your-client-with-kaffe" title="Link to this heading">¶</a></h2>
+<p>Kaffe configuration is meant to be easy to plug into your existing
+client.</p>
+<p>The <a class="reference external" href="https://github.pie.apple.com/pie/kafka-tools/tree/develop/kaffe-client">Kaffe client
+library</a>
+is hooked into the kafka-pie-client thanks to a ClusterResolver
+implementation.</p>
+<p>To be able to start using Kaffe, all you need to do is to set a
+configuration interceptor, point to the right Kaffe URL (without a trailing slash <code class="docutils literal notranslate"><span class="pre">/</span></code>), and set your
+clientId and the namespace you want to use:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span># Producers:
+config.interceptors.classes=com.apple.pie.queue.kafka.client.configinterceptors.KaffeProducerConfigurationInterceptor
+# Consumers:
+config.interceptors.classes=com.apple.pie.queue.kafka.client.configinterceptors.KaffeConsumerConfigurationInterceptor
+# Both producers and consumers:
+pie.queue.kaffe.connect=&lt;kaffe-url&gt;
+pie.queue.kaffe.client.id=&lt;client-id-given-out-by-PIE&gt;
+pie.queue.kaffe.namespace.id=&lt;namespace-id-given-out-by-PIE&gt;
+</pre></div>
+</div>
+<p>To make it easier we also provide
+<code class="docutils literal notranslate"><span class="pre">KafkaClientUtils.createPieConsumer(config)</span></code> and
+<code class="docutils literal notranslate"><span class="pre">KafkaClientUtils.createPieProducer(config)</span></code> which set the
+right configuration interceptors.</p>
+</section>
+<section id="kaffe-endpoints">
+<h2>Kaffe Endpoints<a class="headerlink" href="#kaffe-endpoints" title="Link to this heading">¶</a></h2>
+<p>The following Kaffe endpoints are available for configuring
+pie.queue.kaffe.connect:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head text-left"><p>Cluster Environment</p></th>
+<th class="head"><p>Endpoint</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-left"><p>IF1/QA</p></td>
+<td><p>https://kaffe-if1.kafka.g.apple.com</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>IF/PROD</p></td>
+<td><p>https://kaffe-prod.kafka.g.apple.com</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="what-will-kaffe-do">
+<h2>What will Kaffe do?<a class="headerlink" href="#what-will-kaffe-do" title="Link to this heading">¶</a></h2>
+<section id="when-you-instantiate-a-consumer-or-a-producer">
+<h3>When you instantiate a consumer or a producer<a class="headerlink" href="#when-you-instantiate-a-consumer-or-a-producer" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>The Kaffe client will propagate the properties passed to the
+consumer or producer constructor, as well as some extra metadata, to
+the Kaffe service.</p></li>
+<li><p>The Kaffe client will establish a Session with a UUID (we will call
+this a sessionId). A session lasts for as long as the producer or
+consumer is running, and the sessionId is unique.</p></li>
+<li><p>The Kaffe service will send down possibly modified properties for
+the client to use.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>You may have sensitive information (e.g. passwords, secrets…) which shouldn’t be sent to Kaffe.
+You can hide these by using a
+<a class="reference external" href="https://github.pie.apple.com/pie/kafka-tools/blob/develop/kafka-pie-client/src/main/java/com/apple/pie/queue/kafka/client/kaffe/configfilter/ConfigFilter.java">ConfigFilter</a>
+and then specifying its path in the producer/consumer property
+<code class="docutils literal notranslate"><span class="pre">pie.queue.kaffe.config.filter.class</span></code>. The property
+<code class="docutils literal notranslate"><span class="pre">pie.queue.kaffe.config.filter.class</span></code> takes in a list of
+<code class="docutils literal notranslate"><span class="pre">ConfigFilter</span></code> classes. You can also use the default
+filters list which contains a version configuration filter and a regex
+obfuscation filter. The version filter will enable us to know the
+Kafka and client JAR versions for troubleshooting. The regex filter
+will use regexes passed in the property:
+<code class="docutils literal notranslate"><span class="pre">com.apple.pie.queue.kaffe.config.filter.simple.regex</span></code> (the default
+regex suppresses properties that contain <em>secret</em>, <em>password</em>, or
+<em>jaas</em>).</p></li>
+<li><p>We only log properties on our side in order to provide more efficient
+troubleshooting. Kaffe does not yet modify properties passed in. In
+the future, Kaffe will set properties to correct defaults, but this is
+not yet implemented.</p></li>
+</ul>
+</div>
+</section>
+<section id="when-you-start-consuming-or-producing-to-a-new-topic">
+<h3>When you start consuming or producing to a new topic<a class="headerlink" href="#when-you-start-consuming-or-producing-to-a-new-topic" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>The client validates that the topic belongs to the configured
+namespace (fully qualified topic names begin with the namespace
+name)</p></li>
+<li><p>The information of the topic contains the location of the topic and
+a cluster, Kafka then calls Kaffe to know the bootstrap string for
+this cluster</p></li>
+<li><p>The client creates an instance of the producer/consumer for this
+cluster.</p></li>
+</ul>
+<p>Kaffe will select the appropriate listener/port based on the client
+configuration for <code class="docutils literal notranslate"><span class="pre">security.protocol</span></code>. If there is no option for the
+selected protocol, an exception will be thrown by the ClusterResolver
+(see javadoc for detailed information).</p>
+<p>The cluster lookup is cached and is done only once per cluster.</p>
+</section>
+</section>
+<section id="tracing-a-session">
+<h2>Tracing a session<a class="headerlink" href="#tracing-a-session" title="Link to this heading">¶</a></h2>
+<p>One of the big advantages of Kaffe is that it enables us to know how
+your clients are configured and what they are up to.</p>
+<p>Whenever you are investigating a problem and reaching out to us, please
+retrieve the sessionId which is logged on startup in a message:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Client started sessionId=&#39;{}&#39; client=&#39;{}&#39;&quot;
+</pre></div>
+</div>
+<p>Once we have this we can look at our state tracker (currently Splunk)
+and see your client version, the different things you’ve been asking
+Kaffe for, and the properties you are using.</p>
+<p>This session tracing also enables us to know which clients are running
+which version and be proactive in the case a serious bug is discovered.</p>
+</section>
+<section id="kaffe-metrics">
+<h2>Kaffe metrics<a class="headerlink" href="#kaffe-metrics" title="Link to this heading">¶</a></h2>
+<p>Both Kaffe client and server are able to publish their own Metrics. The server uses the raw Hubble agent, whereas the
+client uses a regular reporter so that you can retrieve these metrics in other systems as well.</p>
+<p>KPIs need to be improved, but they are all described in
+<a class="reference external" href="https://github.pie.apple.com/pie/kafka-tools/blob/develop/kaffe-client/src/main/java/com/apple/pie/queue/kaffe/KaffeClientEvents.java">KaffeClientEvents</a>
+and
+<a class="reference external" href="https://github.pie.apple.com/pie/kafka-tools/blob/develop/kaffe-service/src/main/java/com/apple/pie/queue/kaffe/server/KaffeServerEvents.java">KaffeServerEvents</a>.</p>
+</section>
+<section id="kaffe-architecture">
+<h2>Kaffe architecture<a class="headerlink" href="#kaffe-architecture" title="Link to this heading">¶</a></h2>
+<section id="protocol">
+<h3>Protocol<a class="headerlink" href="#protocol" title="Link to this heading">¶</a></h3>
+<p>Kaffe is a gRPC service. It’s <a class="reference external" href="https://github.pie.apple.com/pie/kafka-tools/blob/develop/kaffe-client/src/main/proto/kaffe.proto">protocol
+definition</a>
+is available in <code class="docutils literal notranslate"><span class="pre">kafka-tools</span></code>.</p>
+<p>For simplicity, a common header called <code class="docutils literal notranslate"><span class="pre">ProtoInfo</span></code> is always sent. It
+contains the version. The version has nothing to do with ACI Kafka
+versions and only identifies the variant of the protocol in use.</p>
+<p>Passing a clear protocol version with each RPC enables ACI Kafka to
+easily determine which versions are still in use and make educated
+decisions about deprecating older clients.</p>
+<p>Kaffe works with a watch system. Each request contains a <code class="docutils literal notranslate"><span class="pre">ResourceId</span></code> and
+<code class="docutils literal notranslate"><span class="pre">Metadata</span></code>. <code class="docutils literal notranslate"><span class="pre">ResourceId</span></code> defines the type (namespace, cluster, client), id,
+and the last know version of the entity. <code class="docutils literal notranslate"><span class="pre">Metadata</span></code> is just a dictionary
+of extra information. The way Kaffe works is that it will park a request
+until it knows of a version higher than the one sent in the request.
+This enables clients to never miss an update.</p>
+</section>
+</section>
+</section>
+
+
+    </div>
+    
+  <div class="pageTOC">
+    <nav class="toc nav global_and_site_headers">
+      <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../overview.html#getting-started">Getting Started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../overview.html#offerings">Offerings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../overview.html#roadmap">Roadmap</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../overview.html#reference">Reference</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../concepts.html">Concepts</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../concepts.html#customer-group">Customer group</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../concepts.html#client-identities">Client identities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../concepts.html#namespace">Namespace</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../concepts.html#topic">Topic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../concepts.html#cluster-traffic-quota">Cluster traffic quota</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../concepts.html#client-identity-topic-access">Client identity topic access</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../onboarding.html">On-Boarding &amp; Expansion</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../onboarding.html#expansion-for-existing-customers">Expansion for Existing Customers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../onboarding.html#getting-started-for-new-customers">Getting Started for New Customers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../onboarding.html#general-process">General Process</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../self-service/index.html">Self Service</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../self-service/kube.html">Kubernetes CRDs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../self-service/kafka_cli.html">ACI Kafka CLI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../self-service/public_api.html">Public API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../self-service/inspector.html">Inspector</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../monitoring/broker_metrics.html">Broker metrics</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Client</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="quick_start.html">Quick Start</a></li>
+<li class="toctree-l2"><a class="reference internal" href="kafka_for_all.html">Kafka for All (non-Java clients)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="using_client.html">Using the client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="envelope.html"><code class="docutils literal notranslate"><span class="pre">PieEnvelope</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="producer_client.html">Producer Client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="producer_settings.html">Producer Recommendations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="consumer_client.html">Consumer Client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="consumer_settings.html">Consumer Recommendations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="security_settings.html">Security Settings</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Kaffe</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client_secrets_distribution.html">Client Secrets Distribution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="default_config_injection.html">Default Configuration Injection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lag_metrics.html">Consumer Group’s lag metrics</a></li>
+<li class="toctree-l2"><a class="reference external" href="https://github.pie.apple.com/aci/kafka-examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../monitoring/index.html">Monitoring and auditing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../monitoring/new_metrics_2024.html">New Mosaic broker metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../monitoring/kafka_hubble_reporter.html">Kafka Hubble Reporter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../monitoring/kafka_server_hubble_reporter.html">Kafka Hubble Yammer Reporter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../monitoring/kafka_client_hubble_dashboards.html">Kafka Client Hubble Dashboard Templates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../monitoring/broker_metrics.html">Broker metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../monitoring/kafka_client_open_telemetry.html">Kafka Client OpenTelemetry integration</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../sli_catalogue.html">SLI Catalog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../sli_catalogue.html#kafka">Kafka</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../sli_catalogue.html#mirrors">Mirrors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../sli_catalogue.html#kaffe">Kaffe</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../sli_catalogue.html#iris">Iris</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../sli_catalogue.html#api">API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../sli_catalogue.html#forthcoming-slis-slos">Forthcoming SLIs/SLOs</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../dev-and-ci.html">Development and CI</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../dev-and-ci.html#getting-started">Getting Started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dev-and-ci.html#local-environments">Local Environments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dev-and-ci.html#continuous-integration">Continuous Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dev-and-ci.html#client-configuration">Client Configuration</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../faq/index.html">FAQ</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../faq/index.html#getting-started">Getting Started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/index.html#namespaces">Namespaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/index.html#connectivity">Connectivity</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../troubleshooting/index.html">Troubleshooting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../troubleshooting/general.html">General troubleshooting guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../troubleshooting/client.html">Common Client Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../troubleshooting/connectivity.html">Checking connectivity to ACI Kafka cluster</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../glossary.html">Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contact.html">Contact Us</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../contact.html#general-support">General Support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contact.html#on-boarding-or-expansion">On-boarding or Expansion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contact.html#announcements">Announcements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contact.html#slack">Slack</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contact.html#paging-for-urgent-support">Paging for Urgent Support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contact.html#design-development-apple-internal">Design &amp; Development (Apple Internal)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contact.html#office-hours">Office Hours</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../roadmap.html">Roadmap</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../roadmap.html#present">Present</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../roadmap.html#future">Future</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../roadmap.html#past">Past</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../releases/index.html">Releases</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../releases/index.html#recommended-release">Recommended release</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../releases/index.html#announcement-procedure">Announcement Procedure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../releases/index.html#release-announcements">Release Announcements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../releases/index.html#apache-kafka-version-mapping">Apache Kafka Version Mapping</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../china.html">China (GCBD)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../china.html#aci-kafka-clusters">ACI Kafka Clusters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../china.html#sdr-identity-certificates">SDR Identity Certificates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../china.html#kaffe">Kaffe</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../china.html#broker-tls">Broker TLS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../china.html#kafka-for-all-vips">Kafka For All VIPs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../china.html#apple-network-policies-anps">Apple Network Policies (ANPs)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../china.html#self-service">Self Service</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../internals/index.html">Internals</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../internals/kafka_internal_setup.html">Kafka Internal Setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../internals/verifiable_producer_consumer.html">Verifiable Producer/Consumer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../internals/index.html#qtip">QTIP</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../compliance.html">Compliance</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../compliance.html#supported-data-types"><strong>Supported Data Types</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../compliance.html#end-user-responsibilities-to-use-the-platform-by-data-tier">End user responsibilities to use the platform by data tier</a></li>
+</ul>
+</li>
+</ul>
+
+    </nav>
+  </div>
+    
+  </div>
+</article>
+  
+
+
+<footer class="footer">
+  <p>© Copyright <script>document.write(new Date().getFullYear())</script>, Apple Inc. All rights reserved. Apple Confidential.</p><a href="mailto:aci-queue-support@group.apple.com" alt="contact pie">Contact</a> | <a href="rdar://new/problem/component=ACI%20Queue&version=Kafka%20Support">Report an Issue</a>
+    | <a href="https://github.pie.apple.com/pie/kafka-tools/edit/develop/docs/source/client/kaffe.md" alt="Edit on ACS GitHub">Edit on ACS GitHub</a>
+</footer>
+  </body>
+</html>

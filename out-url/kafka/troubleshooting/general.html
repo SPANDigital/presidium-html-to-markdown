@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>General troubleshooting guide &#8212; ACI Kafka Docs</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css?v=eeb27264" />
+    <link rel="stylesheet" href="../_static/styleguide.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/fonts.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/app.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/toc.css" type="text/css" />
+    <script src="../_static/documentation_options.js?v=b9a12352"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within ACI Kafka Docs"
+          href="../_static/opensearch.xml"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Common Client Problems" href="client.html" />
+    <link rel="prev" title="Troubleshooting" href="index.html" />
+
+<meta name="viewport" content="width=1172">
+<script type="text/javascript" src="../_static/app.js "></script>
+
+<script>
+window.Columbo=window.Columbo||function(o,u){"function"==typeof o?u=o:Columbo.config=o,u&&(Columbo.q=Columbo.q||[]).push(u)};
+Columbo({
+    appConfig: {
+        version: 'v0',
+        columboId: '09707287240ae779c2d02d07465ae16b5129de94c93704236a70c9d51a5f43fc'
+    }
+});
+</script>
+<script async src="../_static/cw.js"></script>
+
+  </head><body>
+
+  <header class="globalHeader">
+  <div class="headerWrapper">
+    <h1 class="globalTitle" data-toc-skip><a href="https://aci.apple.com">Apple Cloud Infrastructure</a></h1>
+    <span class="globalNavigation">
+      <a href="https://aci.apple.com/office-hours/">Office Hours</a>
+      <a href="/">Documentation</a>
+      <a href="https://status.aci.apple.com/">Status</a>
+    </span>
+  </div>
+</header>
+
+<article>
+  
+    <header class="siteHeader">
+  <div class="headerWrapper">
+    <h1 class="siteTitle" data-toc-skip>
+      <a href="../index.html">
+        ACI Kafka</a>
+    </h1>
+    
+      
+<nav class="navbarLinks">
+    
+      <a class="tabbed-navigation--item " href="../contents.html">Site Map</a>
+    
+    
+      <a class="tabbed-navigation--item" href="https://docs.aci.apple.com/kafka/public_api.html">API Docs</a>
+    
+</nav>
+
+    
+    
+      
+<form class="siteSearch" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="text-input--base text-input--medium searchInput" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+    
+  </div>
+</header>
+
+  <div class="pageWrapper">
+    <div class="pageContent column global_and_site_headers" role="main">
+      
+  <section id="general-troubleshooting-guide">
+<h1>General troubleshooting guide<a class="headerlink" href="#general-troubleshooting-guide" title="Link to this heading">¶</a></h1>
+<p>When investigating timeouts, delays or other issues related to Kafka, the first step is to try and identify the impact and the source of the problem.</p>
+<p>There are three common categories of problems users run into:</p>
+<ol class="arabic simple">
+<li><p>Client-side and application issues</p></li>
+<li><p>Network or ACL problems</p></li>
+<li><p>Issues with the Kafka cluster</p></li>
+</ol>
+<p>Useful questions to try to answer in order to identify the cause include:</p>
+<ol class="arabic simple">
+<li><p>Is the issue happening on all service/application instances or a subset / single instance?
+A single instance showing errors could indicate a hardware issue with the host for example.</p></li>
+<li><p>Have there been any changes recently (like a new deployment or a configuration change) that correlate with the time you’ve started seeing issues?</p></li>
+<li><p>What is the impact on your application?
+A lot of <a class="reference internal" href="client.html#common-errors"><span class="std std-ref">client errors</span></a> are retryable and don’t always indicate an immediate problem.</p></li>
+</ol>
+<section id="identifying-your-topic-namespace-and-cluster">
+<h2>Identifying your topic, namespace and cluster<a class="headerlink" href="#identifying-your-topic-namespace-and-cluster" title="Link to this heading">¶</a></h2>
+<p>You will usually find your topic name in the logs or client metrics that first indicated a problem.
+Your ACI Kafka topic name will be prefixed with your <a class="reference internal" href="../concepts.html#namespace"><span class="std std-ref">customer group and namespace</span></a>.
+For example <code class="docutils literal notranslate"><span class="pre">icloud.ck-content.prod.dc1.topic123</span></code> topic belongs to the <code class="docutils literal notranslate"><span class="pre">icloud.ck-content.prod.dc1</span></code> namespace (which itself belongs to the <code class="docutils literal notranslate"><span class="pre">icloud.ck-content.prod</span></code> customer group).</p>
+<section id="finding-your-aci-kafka-cluster-name">
+<h3>Finding your ACI Kafka cluster name<a class="headerlink" href="#finding-your-aci-kafka-cluster-name" title="Link to this heading">¶</a></h3>
+<p>Once you know your customer group and namespace name you can find the name of the ACI Kafka cluster your client is connecting to by fetching your Namespace information.
+The cluster name will be listed in the <code class="docutils literal notranslate"><span class="pre">cluster-id</span></code> field of your ACI Kafka namespace.</p>
+<section id="using-the-cli-or-the-api">
+<h4>Using the CLI or the API<a class="headerlink" href="#using-the-cli-or-the-api" title="Link to this heading">¶</a></h4>
+<p>You can use <a class="reference internal" href="../self-service/kafka_cli.html#fetch-single-namespace"><span class="std std-ref">the CLI</span></a> or <a class="reference internal" href="../self-service/public_api.html#fetch-single-namespace"><span class="std std-ref">the Public API</span></a> if you’re familiar with them.</p>
+</section>
+<section id="using-the-api-in-the-browser">
+<h4>Using the API in the browser<a class="headerlink" href="#using-the-api-in-the-browser" title="Link to this heading">¶</a></h4>
+<p>You can view your Namespace info in your browser by filling the customer group (e.g. <code class="docutils literal notranslate"><span class="pre">icloud.ck-content.prod</span></code>) and namespace name (e.g. <code class="docutils literal notranslate"><span class="pre">dc1</span></code>) in the following URL:</p>
+<p><a class="reference external" href="https://ui-prod.aci-kafka.apple.com/api/public/v2/groups/(group-id)/namespaces/(namespace)">https://ui-prod.aci-kafka.apple.com/api/public/v2/groups/(group-id)/namespaces/(namespace)</a></p>
+</section>
+<section id="from-the-bootstrap-servers">
+<h4>From the bootstrap.servers<a class="headerlink" href="#from-the-bootstrap-servers" title="Link to this heading">¶</a></h4>
+<p>If you’re configuring <code class="docutils literal notranslate"><span class="pre">bootstrap.servers</span></code> in your Kafka client configuration it should contain the name of the cluster:</p>
+<div class="highlight-properties notranslate"><div class="highlight"><pre><span></span><span class="c1"># GSLB bootstrap endpoints</span>
+<span class="na">bootstrap.servers</span><span class="o">=</span><span class="s">a.&lt;cluster-name-with-dashes&gt;.clusters.kafka.g.apple.com:65506,...</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Legacy bootstrap endpoints</span>
+<span class="n">bootstrap</span><span class="o">.</span><span class="n">servers</span><span class="o">=&lt;</span><span class="n">cluster</span><span class="o">-</span><span class="n">name</span><span class="o">-</span><span class="k">with</span><span class="o">-</span><span class="n">dashes</span><span class="o">&gt;-</span><span class="n">piekafka</span><span class="o">.&lt;</span><span class="n">dc</span><span class="o">&gt;.</span><span class="k">if</span><span class="o">.</span><span class="n">apple</span><span class="o">.</span><span class="n">com</span><span class="p">:</span><span class="mi">65506</span>
+</pre></div>
+</div>
+<p>Replace any <code class="docutils literal notranslate"><span class="pre">-</span></code> characters with <code class="docutils literal notranslate"><span class="pre">_</span></code> to get the cluster name.</p>
+</section>
+</section>
+</section>
+<section id="checking-cluster-health">
+<h2>Checking cluster health<a class="headerlink" href="#checking-cluster-health" title="Link to this heading">¶</a></h2>
+<p>You can check if the Kafka cluster is generally healthy using the
+<a class="reference external" href="https://aci-kafka.grafana.telemetry.g.apple.com/d/d421ddc0-a18f-467f-93ae-3b71132999cf/synthetic-monitor">Synthetic Monitor dashboard</a>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If you can’t access the dashboard please self-join <a class="reference external" href="adir://joingroup/670759">aci-kafka-announce Apple Directory group</a>.
+It might take some time for the Grafana access to sync.</p>
+</div>
+<p>Once you select your environment and cluster name you should be able to see round trip latency, broker coverage and failure counts.</p>
+</section>
+<section id="checking-connectivity">
+<h2>Checking connectivity<a class="headerlink" href="#checking-connectivity" title="Link to this heading">¶</a></h2>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>When checking connectivity to the brokers make sure you’re running the command from the same host, pod or instance that is logging the errors or timeouts.</p>
+</div>
+<p><a class="reference external" href="https://aci-kafka.grafana.telemetry.g.apple.com/d/d421ddc0-a18f-467f-93ae-3b71132999cf/synthetic-monitor">Synthetic Monitor dashboard</a> should display a command you can use to test connectivity to online brokers.</p>
+<p>You can find out more about <a class="reference internal" href="connectivity.html"><span class="std std-doc">testing and establishing connectivity in the dedicated guide</span></a>.</p>
+</section>
+<section id="troubleshooting-client-issues">
+<h2>Troubleshooting client issues<a class="headerlink" href="#troubleshooting-client-issues" title="Link to this heading">¶</a></h2>
+<p>If the cluster looks healthy and you haven’t identified a network issue there might be an issue with your client configuration.
+Please follow the <a class="reference internal" href="client.html"><span class="std std-doc">common client issues guide</span></a> to help identify and fix this.</p>
+</section>
+<section id="getting-help">
+<h2>Getting help<a class="headerlink" href="#getting-help" title="Link to this heading">¶</a></h2>
+<p>If none of the steps have helped you can reach the Kafka team on <a class="reference internal" href="../contact.html#slack"><span class="std std-ref">Slack</span></a> or contact us for <a class="reference internal" href="../contact.html#paging-for-urgent-support"><span class="std std-ref">urgent support</span></a>.</p>
+</section>
+</section>
+
+
+    </div>
+    
+  <div class="pageTOC">
+    <nav class="toc nav global_and_site_headers">
+      <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../overview.html#getting-started">Getting Started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../overview.html#offerings">Offerings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../overview.html#roadmap">Roadmap</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../overview.html#reference">Reference</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../concepts.html">Concepts</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../concepts.html#customer-group">Customer group</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../concepts.html#client-identities">Client identities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../concepts.html#namespace">Namespace</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../concepts.html#topic">Topic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../concepts.html#cluster-traffic-quota">Cluster traffic quota</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../concepts.html#client-identity-topic-access">Client identity topic access</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../onboarding.html">On-Boarding &amp; Expansion</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../onboarding.html#expansion-for-existing-customers">Expansion for Existing Customers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../onboarding.html#getting-started-for-new-customers">Getting Started for New Customers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../onboarding.html#general-process">General Process</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../self-service/index.html">Self Service</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../self-service/kube.html">Kubernetes CRDs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../self-service/kafka_cli.html">ACI Kafka CLI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../self-service/public_api.html">Public API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../self-service/inspector.html">Inspector</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../monitoring/broker_metrics.html">Broker metrics</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../client/index.html">Client</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../client/quick_start.html">Quick Start</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../client/kafka_for_all.html">Kafka for All (non-Java clients)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../client/using_client.html">Using the client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../client/envelope.html"><code class="docutils literal notranslate"><span class="pre">PieEnvelope</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../client/producer_client.html">Producer Client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../client/producer_settings.html">Producer Recommendations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../client/consumer_client.html">Consumer Client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../client/consumer_settings.html">Consumer Recommendations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../client/security_settings.html">Security Settings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../client/kaffe.html">Kaffe</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../client/client_secrets_distribution.html">Client Secrets Distribution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../client/default_config_injection.html">Default Configuration Injection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../client/lag_metrics.html">Consumer Group’s lag metrics</a></li>
+<li class="toctree-l2"><a class="reference external" href="https://github.pie.apple.com/aci/kafka-examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../monitoring/index.html">Monitoring and auditing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../monitoring/new_metrics_2024.html">New Mosaic broker metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../monitoring/kafka_hubble_reporter.html">Kafka Hubble Reporter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../monitoring/kafka_server_hubble_reporter.html">Kafka Hubble Yammer Reporter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../monitoring/kafka_client_hubble_dashboards.html">Kafka Client Hubble Dashboard Templates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../monitoring/broker_metrics.html">Broker metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../monitoring/kafka_client_open_telemetry.html">Kafka Client OpenTelemetry integration</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../sli_catalogue.html">SLI Catalog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../sli_catalogue.html#kafka">Kafka</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../sli_catalogue.html#mirrors">Mirrors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../sli_catalogue.html#kaffe">Kaffe</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../sli_catalogue.html#iris">Iris</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../sli_catalogue.html#api">API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../sli_catalogue.html#forthcoming-slis-slos">Forthcoming SLIs/SLOs</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../dev-and-ci.html">Development and CI</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../dev-and-ci.html#getting-started">Getting Started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dev-and-ci.html#local-environments">Local Environments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dev-and-ci.html#continuous-integration">Continuous Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dev-and-ci.html#client-configuration">Client Configuration</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../faq/index.html">FAQ</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../faq/index.html#getting-started">Getting Started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/index.html#namespaces">Namespaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/index.html#connectivity">Connectivity</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Troubleshooting</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">General troubleshooting guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client.html">Common Client Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="connectivity.html">Checking connectivity to ACI Kafka cluster</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../glossary.html">Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contact.html">Contact Us</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../contact.html#general-support">General Support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contact.html#on-boarding-or-expansion">On-boarding or Expansion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contact.html#announcements">Announcements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contact.html#slack">Slack</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contact.html#paging-for-urgent-support">Paging for Urgent Support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contact.html#design-development-apple-internal">Design &amp; Development (Apple Internal)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contact.html#office-hours">Office Hours</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../roadmap.html">Roadmap</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../roadmap.html#present">Present</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../roadmap.html#future">Future</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../roadmap.html#past">Past</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../releases/index.html">Releases</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../releases/index.html#recommended-release">Recommended release</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../releases/index.html#announcement-procedure">Announcement Procedure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../releases/index.html#release-announcements">Release Announcements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../releases/index.html#apache-kafka-version-mapping">Apache Kafka Version Mapping</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../china.html">China (GCBD)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../china.html#aci-kafka-clusters">ACI Kafka Clusters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../china.html#sdr-identity-certificates">SDR Identity Certificates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../china.html#kaffe">Kaffe</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../china.html#broker-tls">Broker TLS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../china.html#kafka-for-all-vips">Kafka For All VIPs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../china.html#apple-network-policies-anps">Apple Network Policies (ANPs)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../china.html#self-service">Self Service</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../internals/index.html">Internals</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../internals/kafka_internal_setup.html">Kafka Internal Setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../internals/verifiable_producer_consumer.html">Verifiable Producer/Consumer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../internals/index.html#qtip">QTIP</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../compliance.html">Compliance</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../compliance.html#supported-data-types"><strong>Supported Data Types</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../compliance.html#end-user-responsibilities-to-use-the-platform-by-data-tier">End user responsibilities to use the platform by data tier</a></li>
+</ul>
+</li>
+</ul>
+
+    </nav>
+  </div>
+    
+  </div>
+</article>
+  
+
+
+<footer class="footer">
+  <p>© Copyright <script>document.write(new Date().getFullYear())</script>, Apple Inc. All rights reserved. Apple Confidential.</p><a href="mailto:aci-queue-support@group.apple.com" alt="contact pie">Contact</a> | <a href="rdar://new/problem/component=ACI%20Queue&version=Kafka%20Support">Report an Issue</a>
+    | <a href="https://github.pie.apple.com/pie/kafka-tools/edit/develop/docs/source/troubleshooting/general.md" alt="Edit on ACS GitHub">Edit on ACS GitHub</a>
+</footer>
+  </body>
+</html>

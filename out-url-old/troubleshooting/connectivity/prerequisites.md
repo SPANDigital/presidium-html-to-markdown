@@ -1,0 +1,27 @@
+---
+title: "Prerequisites¶"
+weight: 2
+---
+
+To run the sample commands below you will first need to:
+
+- Ensure you have `brew` setup and configured using the [internal Homebrew @ Apple](https://github.pie.apple.com/homebrew/brew)
+- Install [jq](https://stedolan.github.io/jq/) and [grpcurl](https://github.com/fullstorydev/grpcurl):
+
+
+  ```
+  brew install jq
+  brew install grpcurl
+
+  ```
+
+- Set up [IAS client credentials]({{%baseurl%}}/../self-service/public_api.html#setting-up-ias-client-environment-variables) and [`kcurl` helper function]({{%baseurl%}}/../self-service/public_api.html#kcurl)
+- Download the Kaffe protobuf source file:
+
+
+  ```
+  curl https://docs.aci.apple.com/kafka/kaffe.proto > kaffe.proto
+
+  ```
+
+

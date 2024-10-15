@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Concepts &#8212; ACI Kafka Docs</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+    <link rel="stylesheet" type="text/css" href="_static/basic.css?v=eeb27264" />
+    <link rel="stylesheet" href="_static/styleguide.css" type="text/css" />
+    <link rel="stylesheet" href="_static/fonts.css" type="text/css" />
+    <link rel="stylesheet" href="_static/app.css" type="text/css" />
+    <link rel="stylesheet" href="_static/toc.css" type="text/css" />
+    <script src="_static/documentation_options.js?v=b9a12352"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within ACI Kafka Docs"
+          href="_static/opensearch.xml"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="On-Boarding &amp; Expansion" href="onboarding.html" />
+    <link rel="prev" title="Overview" href="overview.html" />
+
+<meta name="viewport" content="width=1172">
+<script type="text/javascript" src="_static/app.js "></script>
+
+<script>
+window.Columbo=window.Columbo||function(o,u){"function"==typeof o?u=o:Columbo.config=o,u&&(Columbo.q=Columbo.q||[]).push(u)};
+Columbo({
+    appConfig: {
+        version: 'v0',
+        columboId: '09707287240ae779c2d02d07465ae16b5129de94c93704236a70c9d51a5f43fc'
+    }
+});
+</script>
+<script async src="_static/cw.js"></script>
+
+  </head><body>
+
+  <header class="globalHeader">
+  <div class="headerWrapper">
+    <h1 class="globalTitle" data-toc-skip><a href="https://aci.apple.com">Apple Cloud Infrastructure</a></h1>
+    <span class="globalNavigation">
+      <a href="https://aci.apple.com/office-hours/">Office Hours</a>
+      <a href="/">Documentation</a>
+      <a href="https://status.aci.apple.com/">Status</a>
+    </span>
+  </div>
+</header>
+
+<article>
+  
+    <header class="siteHeader">
+  <div class="headerWrapper">
+    <h1 class="siteTitle" data-toc-skip>
+      <a href="index.html">
+        ACI Kafka</a>
+    </h1>
+    
+      
+<nav class="navbarLinks">
+    
+      <a class="tabbed-navigation--item " href="contents.html">Site Map</a>
+    
+    
+      <a class="tabbed-navigation--item" href="https://docs.aci.apple.com/kafka/public_api.html">API Docs</a>
+    
+</nav>
+
+    
+    
+      
+<form class="siteSearch" action="search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="text-input--base text-input--medium searchInput" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+    
+  </div>
+</header>
+
+  <div class="pageWrapper">
+    <div class="pageContent column global_and_site_headers" role="main">
+      
+  <section id="concepts">
+<h1>Concepts<a class="headerlink" href="#concepts" title="Link to this heading">¶</a></h1>
+<p>This section aims to provide basic information about <em>customer groups</em>, <em>client identities</em>, <em>namespaces</em>, <em>topics</em>, <em>topic accesses</em>, and <em>topic quotas</em> related to Apple Cloud Infrastructure (ACI) Kafka services and offerings.</p>
+<p>ACI Kafka provides an abstraction of clusters for the following reasons:</p>
+<ul class="simple">
+<li><p>To provide you with topics and client identities in a managed environment.
+We take care of the size of the clusters and the configuration of the underlying brokers.</p></li>
+<li><p>Abstraction enables ACI Kafka to make operational changes without requiring you to modify your configurations.</p></li>
+<li><p>Provides multi-tenant clusters, allowing ACI Kafka to better utilize existing capacity.</p></li>
+</ul>
+<section id="customer-group">
+<h2>Customer group<a class="headerlink" href="#customer-group" title="Link to this heading">¶</a></h2>
+<p><em>Customer groups</em> provide a mechanism to group client identities and namespaces.
+A customer group consists of a <em>customer name</em>, a <em>group name</em>, and a logical <em>environment</em> (as defined by the group owner).</p>
+<p>Customer names are determined by the ACI Kafka team and indicate high-level ownership.
+Customer names have a maximum length of 15 characters and can contain letters, numbers, and <code class="docutils literal notranslate"><span class="pre">_</span></code> or <code class="docutils literal notranslate"><span class="pre">-</span></code> characters.</p>
+<p>Group names indicate a team-level or use-case-level ownership.
+Customer names have a maximum length of 31 characters and can contain letters, numbers, and <code class="docutils literal notranslate"><span class="pre">_</span></code> or <code class="docutils literal notranslate"><span class="pre">-</span></code> characters.</p>
+<p>You can request one or more customer groups based on the number of separate environments your team or project needs.
+Environment names have a maximum length of 15 characters and can contain letters, numbers, and <code class="docutils literal notranslate"><span class="pre">_</span></code> or <code class="docutils literal notranslate"><span class="pre">-</span></code> characters.</p>
+<p>Below are examples of fully qualified customer group identifiers:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">aci.queue.prod</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">icloud.messaging.qa1</span></code></p></li>
+</ul>
+<section id="customer-group-access-control">
+<h3>Customer group access control<a class="headerlink" href="#customer-group-access-control" title="Link to this heading">¶</a></h3>
+<p><em>Customer groups</em> define access controls for namespaces, topics, and client identities owned by the group.
+Access permissions are managed through the <em>Modification Groups</em> and <em>Visibility Groups</em> as defined below.</p>
+<p><strong>Modification Groups</strong>: Users with membership in any of the modification Apple Directory groups can create and edit ACI Kafka resources like topics, client identities, and topic accesses.</p>
+<p><strong>Visibility Groups</strong>: Users with membership in any of the visibility Apple Directory groups have read-only access to the ACI Kafka resources.</p>
+</section>
+<section id="customer-group-contact-information">
+<h3>Customer group contact information<a class="headerlink" href="#customer-group-contact-information" title="Link to this heading">¶</a></h3>
+<p><em>Customer group contact information</em> should contain your team’s support and contact details as specified below.
+It should include valid Apple Directory groups that are email-enabled and can accept emails from anyone in Apple.</p>
+<p><strong>Contact Group</strong>: Used to send automated reports and ACI Kafka announcements.</p>
+<p><strong>Pager Contact Group</strong>: Used to page your team (for example using <strong>PagerDuty</strong>) if required to resolve an active incident.</p>
+<p><strong>Alert Contact Group</strong>: Used to communicate alerts and important maintenance activities.</p>
+</section>
+</section>
+<section id="client-identities">
+<h2>Client identities<a class="headerlink" href="#client-identities" title="Link to this heading">¶</a></h2>
+<p>Each interaction with an ACI Kafka cluster uses a <em>client identity</em>.
+Each client identity is owned by a customer group and usually maps to a specific application or service.
+Client identities can be configured with permissions to <em>consume from</em> or <em>produce to</em> multiple topics as explained in <a class="reference internal" href="#client-identity-topic-access"><span class="std std-ref">Client identity topic access</span></a>.</p>
+<p>Client identity names have a maximum length of 63 characters and can contain letters, numbers, and <code class="docutils literal notranslate"><span class="pre">_</span></code> or <code class="docutils literal notranslate"><span class="pre">-</span></code> characters.</p>
+<p>Client identity name is prefixed by the customer group name.
+For example a client identity name <code class="docutils literal notranslate"><span class="pre">publisher</span></code> in the <code class="docutils literal notranslate"><span class="pre">icloud.Messaging.QA1</span></code> customer group uses a fully qualified identifier: <code class="docutils literal notranslate"><span class="pre">icloud.Messaging.QA1.publisher</span></code></p>
+<p>Client identities can’t be changed after creation and contain two fields: name and public key.</p>
+<p>To identify your client to <a class="reference external" href="https://docs.aci.apple.com/kafka/client/kaffe.html#kaffe">Kaffe</a>, <code class="docutils literal notranslate"><span class="pre">pie.queue.kaffe.client.id</span></code> property must be configured in ACI Kafka <em>producers</em> and <em>consumers</em> with the fully-qualified client identity name.</p>
+<p>The client identity’s private key file can be configured with the property <code class="docutils literal notranslate"><span class="pre">pie.queue.kaffe.client.private.key.location</span></code>.</p>
+<p>To learn more about generating public and private key pairs and the related configuration, see <a class="reference internal" href="client/client_secrets_distribution.html#client-secrets-distribution"><span class="std std-ref">Client Secrets
+Distribution</span></a>.</p>
+<section id="consumer-group">
+<h3>Consumer group<a class="headerlink" href="#consumer-group" title="Link to this heading">¶</a></h3>
+<p>When subscribing to topics, <a class="reference external" href="https://docs.aci.apple.com/kafka/client/consumer_client.html"><em>consumer clients</em></a> configure a <a class="reference external" href="https://docs.aci.apple.com/kafka/client/consumer_client.html#consumer-group-a-k-a-group-id-config"><em>consumer group</em></a> using the prefix property: <code class="docutils literal notranslate"><span class="pre">group.id</span></code></p>
+<p>In ACI Kafka, consumer groups must use the Kaffe client id prefix (noted above) to enforce Kafka ACLs and protect against unauthorized access to a topic’s consumer offsets.</p>
+<p>For more information, see <a class="reference internal" href="client/consumer_settings.html#consumer-group-and-aci-kafka-client"><span class="std std-ref">Consumer Group Convention</span></a>.</p>
+</section>
+</section>
+<section id="namespace">
+<h2>Namespace<a class="headerlink" href="#namespace" title="Link to this heading">¶</a></h2>
+<p>A <em>namespace</em> represents a logical and physical grouping of related Kafka topics.
+Each namespace is unique across ACI Kafka and is linked to a customer group.</p>
+<p>All topics within a namespace are located on the same Kafka cluster.</p>
+<p>Each namespace may have constraints that limit the movement of its topics. For example, a namespace may be restricted to clusters running in a specific datacenter.</p>
+<p>Namespace names have a maximum length of 63 characters and can contain letters, numbers, and <code class="docutils literal notranslate"><span class="pre">_</span></code> or <code class="docutils literal notranslate"><span class="pre">-</span></code> characters.</p>
+<p>A fully qualified namespace identifier is written as: <code class="docutils literal notranslate"><span class="pre">customer.group.env.name</span></code>, for example:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">pie.queue.prod.pv</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">icloud.cloudkit.icloud4.p02</span></code></p></li>
+</ul>
+<p>A namespace is used as a prefix before the topic name, separated by a period (‘.’).</p>
+<section id="namespace-quotas">
+<h3>Namespace quotas<a class="headerlink" href="#namespace-quotas" title="Link to this heading">¶</a></h3>
+<p>ACI Kafka requires configuring namespace quotas for <em>produce</em>, <em>consume</em>, and <em>storage</em> resources.
+These namespace-level quotas act as a budget for all topics within the same namespace as defined below:</p>
+<p><strong>Produce quota</strong>: The rate at which clients will cumulatively <em>produce</em> (also known as <em>Bandwidth IN</em>) messages to topics in a namespace.</p>
+<p><strong>Consume quota</strong>: The rate at which clients will cumulatively <em>consume</em> (also known as <em>Bandwidth OUT</em>) messages from topics in a namespace.</p>
+<p><strong>Storage quota</strong>: The total allocated <em>storage</em> (also known as <em>Namespace Storage</em>) capacity for a namespace defines the upper limit for the sum of storage requirements for all topics within the namespace.</p>
+<p>Consume and produce quotas are used for cluster capacity planning and are not enforced by Kafka.</p>
+<p>Any operation, like creating new topics or updating existing topics that would result in the namespace exceeding the quotas will be rejected.</p>
+<p>When requesting ACI Kafka onboarding, you should know your storage and throughput requirements.
+These are captured in the questionnaire in the form of produce, consume, and storage numbers.
+Providing these requirements ensures quicker onboarding.</p>
+</section>
+</section>
+<section id="topic">
+<h2>Topic<a class="headerlink" href="#topic" title="Link to this heading">¶</a></h2>
+<p>ACI Kafka <em>topics</em> are used to manage Kafka topics and include:</p>
+<ul class="simple">
+<li><p>Number of partitions</p></li>
+<li><p>Set of configuration parameters</p></li>
+<li><p>Produce and consume quotas</p></li>
+</ul>
+<p>ACI Kafka clusters use a replication factor of four as it provides the best operational simplicity.</p>
+<section id="topic-name">
+<h3>Topic name<a class="headerlink" href="#topic-name" title="Link to this heading">¶</a></h3>
+<p>Topic names have a maximum length of 95 characters and can contain letters, numbers, and <code class="docutils literal notranslate"><span class="pre">_</span></code> or <code class="docutils literal notranslate"><span class="pre">-</span></code> characters.</p>
+<p>Topics will appear on the cluster with their fully qualified name, which is prefixed by the namespace.
+For example <em>topic name</em> <code class="docutils literal notranslate"><span class="pre">topic123</span></code> in the namespace <code class="docutils literal notranslate"><span class="pre">icloud.ck-content.prod.dc1</span></code> appears on a cluster as: <code class="docutils literal notranslate"><span class="pre">icloud.ck-content.prod.dc1.topic123</span></code></p>
+<p>The ACI Kafka Java client provides a class to create fully qualified topic names for producers and consumers:</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">String</span><span class="w"> </span><span class="n">namespaceId</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;icloud.ck-content.prod.dc1&quot;</span><span class="p">;</span>
+<span class="n">String</span><span class="w"> </span><span class="n">topicName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;topic123&quot;</span><span class="p">;</span>
+
+<span class="n">PieTopicName</span><span class="w"> </span><span class="n">pieTopic</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">PieTopicName</span><span class="p">(</span><span class="n">PieNamespaceName</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="n">namespaceId</span><span class="p">),</span><span class="w"> </span><span class="n">topicName</span><span class="p">);</span>
+<span class="n">String</span><span class="w"> </span><span class="n">fqTopicName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pieTopic</span><span class="p">.</span><span class="na">getFullName</span><span class="p">();</span>
+</pre></div>
+</div>
+</section>
+<section id="topic-retention">
+<h3>Topic retention<a class="headerlink" href="#topic-retention" title="Link to this heading">¶</a></h3>
+<p>ACI Kafka topics require configuring retention size to allow for easier capacity planning of Kafka clusters.</p>
+<p>If <strong>time-based retention</strong> <em>(optional)</em> and <strong>sized-based retention</strong> <em>(required)</em> are configured, data is deleted by brokers when the first retention rule is met.</p>
+<p>Size-based retention is configured per partition.
+Computationally, a topic with 100 partitions at 10 GB size-based retention will consume 4 TB of storage: 100 partitions x 10 GB x replication factor of 4.</p>
+<p>For example, if a topic with one partition is configured with a size-based retention of 1 GB and a 24-hour time-based retention limit, only the latest 1 GB of data is retained.
+All data older than 24 hours is deleted.</p>
+<p>From the <a class="reference external" href="https://kafka.apache.org/documentation.html#topicconfigs">Kafka Topic-Level Configuration Documentation</a>:</p>
+<p><strong>retention.bytes</strong></p>
+<blockquote>
+<div><p>This configuration controls the maximum size a partition (which
+consists of log segments) can grow to before we will discard old log
+segments to free up space if we are using the “delete” retention
+policy. By default there is no size limit only a time limit. Since
+this limit is enforced at the partition level, multiply it by the
+number of partitions to compute the topic retention in bytes.</p>
+</div></blockquote>
+<p><strong>retention.ms</strong></p>
+<blockquote>
+<div><p>(default: 21 days) This configuration controls the maximum time we will retain a log
+before we will discard old log segments to free up space if we are
+using the default “delete” retention policy. This represents an SLA on how
+soon consumers must read their data.</p>
+</div></blockquote>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>To ensure reliable cluster operations, we limit <code class="docutils literal notranslate"><span class="pre">retention.bytes</span></code> to <code class="docutils literal notranslate"><span class="pre">&lt;=</span> <span class="pre">250GB</span></code>.
+We also limit the number of partitions to 512 when using self-service API.</p>
+<p>Please contact us if your use case requires a higher limit.</p>
+</div>
+</section>
+<section id="topic-quotas">
+<h3>Topic quotas<a class="headerlink" href="#topic-quotas" title="Link to this heading">¶</a></h3>
+<p>You must configure all topic quotas for expected bytes in and bytes out when using ACI Kafka.
+These topic-level quotas are used to budget the cluster and are not enforced on the actual produce or consume usage.</p>
+</section>
+</section>
+<section id="cluster-traffic-quota">
+<h2>Cluster traffic quota<a class="headerlink" href="#cluster-traffic-quota" title="Link to this heading">¶</a></h2>
+<p>ACI Kafka provides a high traffic quota for all multi-tenant clusters.
+The quota is enforced on all <a class="reference internal" href="#client-identities">client identities</a> on a per-broker basis to safeguard multi-tenant clusters.
+By default, the quota is 35% of the broker bandwidth capacity.</p>
+<p>For example if an ACI Kafka cluster has a default produce and consume quota of 315 MB/s and 315 MB/s, respectively, then each client identity will be throttled on a broker when it exceeds 315 MB/s <em>produce</em> or 315 MB/s <em>consume</em> from one broker.</p>
+<p>To learn more about the Apache Kafka quota management design, see <a class="reference external" href="https://cwiki.apache.org/confluence/display/KAFKA/KIP-13+-+Quotas">KIP-13 - Quotas</a>.</p>
+</section>
+<section id="client-identity-topic-access">
+<h2>Client identity topic access<a class="headerlink" href="#client-identity-topic-access" title="Link to this heading">¶</a></h2>
+<p>Access grants a specific client identity permissions to produce to or consume from a given topic.</p>
+<p>Topic accesses include a produce or consume quota measured in megabytes.
+This quota is only used as a guideline and is not enforced.
+A client identity can still produce or consume up to the cluster quota limit as mentioned above.
+The per assignment quota will be deprecated in the future.</p>
+</section>
+</section>
+
+
+    </div>
+    
+  <div class="pageTOC">
+    <nav class="toc nav global_and_site_headers">
+      <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="overview.html#getting-started">Getting Started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="overview.html#offerings">Offerings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="overview.html#roadmap">Roadmap</a></li>
+<li class="toctree-l2"><a class="reference internal" href="overview.html#reference">Reference</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Concepts</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#customer-group">Customer group</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#client-identities">Client identities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#namespace">Namespace</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#topic">Topic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#cluster-traffic-quota">Cluster traffic quota</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#client-identity-topic-access">Client identity topic access</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="onboarding.html">On-Boarding &amp; Expansion</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="onboarding.html#expansion-for-existing-customers">Expansion for Existing Customers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="onboarding.html#getting-started-for-new-customers">Getting Started for New Customers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="onboarding.html#general-process">General Process</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="self-service/index.html">Self Service</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="self-service/kube.html">Kubernetes CRDs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="self-service/kafka_cli.html">ACI Kafka CLI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="self-service/public_api.html">Public API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="self-service/inspector.html">Inspector</a></li>
+<li class="toctree-l2"><a class="reference internal" href="monitoring/broker_metrics.html">Broker metrics</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="client/index.html">Client</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="client/quick_start.html">Quick Start</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client/kafka_for_all.html">Kafka for All (non-Java clients)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client/using_client.html">Using the client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client/envelope.html"><code class="docutils literal notranslate"><span class="pre">PieEnvelope</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="client/producer_client.html">Producer Client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client/producer_settings.html">Producer Recommendations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client/consumer_client.html">Consumer Client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client/consumer_settings.html">Consumer Recommendations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client/security_settings.html">Security Settings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client/kaffe.html">Kaffe</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client/client_secrets_distribution.html">Client Secrets Distribution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client/default_config_injection.html">Default Configuration Injection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client/lag_metrics.html">Consumer Group’s lag metrics</a></li>
+<li class="toctree-l2"><a class="reference external" href="https://github.pie.apple.com/aci/kafka-examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="monitoring/index.html">Monitoring and auditing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="monitoring/new_metrics_2024.html">New Mosaic broker metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="monitoring/kafka_hubble_reporter.html">Kafka Hubble Reporter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="monitoring/kafka_server_hubble_reporter.html">Kafka Hubble Yammer Reporter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="monitoring/kafka_client_hubble_dashboards.html">Kafka Client Hubble Dashboard Templates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="monitoring/broker_metrics.html">Broker metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="monitoring/kafka_client_open_telemetry.html">Kafka Client OpenTelemetry integration</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="sli_catalogue.html">SLI Catalog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="sli_catalogue.html#kafka">Kafka</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sli_catalogue.html#mirrors">Mirrors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sli_catalogue.html#kaffe">Kaffe</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sli_catalogue.html#iris">Iris</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sli_catalogue.html#api">API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sli_catalogue.html#forthcoming-slis-slos">Forthcoming SLIs/SLOs</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dev-and-ci.html">Development and CI</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dev-and-ci.html#getting-started">Getting Started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev-and-ci.html#local-environments">Local Environments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev-and-ci.html#continuous-integration">Continuous Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev-and-ci.html#client-configuration">Client Configuration</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="faq/index.html">FAQ</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="faq/index.html#getting-started">Getting Started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq/index.html#namespaces">Namespaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq/index.html#connectivity">Connectivity</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting/index.html">Troubleshooting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="troubleshooting/general.html">General troubleshooting guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="troubleshooting/client.html">Common Client Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="troubleshooting/connectivity.html">Checking connectivity to ACI Kafka cluster</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="glossary.html">Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contact.html">Contact Us</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="contact.html#general-support">General Support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contact.html#on-boarding-or-expansion">On-boarding or Expansion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contact.html#announcements">Announcements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contact.html#slack">Slack</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contact.html#paging-for-urgent-support">Paging for Urgent Support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contact.html#design-development-apple-internal">Design &amp; Development (Apple Internal)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contact.html#office-hours">Office Hours</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="roadmap.html">Roadmap</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="roadmap.html#present">Present</a></li>
+<li class="toctree-l2"><a class="reference internal" href="roadmap.html#future">Future</a></li>
+<li class="toctree-l2"><a class="reference internal" href="roadmap.html#past">Past</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="releases/index.html">Releases</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="releases/index.html#recommended-release">Recommended release</a></li>
+<li class="toctree-l2"><a class="reference internal" href="releases/index.html#announcement-procedure">Announcement Procedure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="releases/index.html#release-announcements">Release Announcements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="releases/index.html#apache-kafka-version-mapping">Apache Kafka Version Mapping</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="china.html">China (GCBD)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="china.html#aci-kafka-clusters">ACI Kafka Clusters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="china.html#sdr-identity-certificates">SDR Identity Certificates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="china.html#kaffe">Kaffe</a></li>
+<li class="toctree-l2"><a class="reference internal" href="china.html#broker-tls">Broker TLS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="china.html#kafka-for-all-vips">Kafka For All VIPs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="china.html#apple-network-policies-anps">Apple Network Policies (ANPs)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="china.html#self-service">Self Service</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="internals/index.html">Internals</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="internals/kafka_internal_setup.html">Kafka Internal Setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="internals/verifiable_producer_consumer.html">Verifiable Producer/Consumer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="internals/index.html#qtip">QTIP</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="compliance.html">Compliance</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="compliance.html#supported-data-types"><strong>Supported Data Types</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="compliance.html#end-user-responsibilities-to-use-the-platform-by-data-tier">End user responsibilities to use the platform by data tier</a></li>
+</ul>
+</li>
+</ul>
+
+    </nav>
+  </div>
+    
+  </div>
+</article>
+  
+
+
+<footer class="footer">
+  <p>© Copyright <script>document.write(new Date().getFullYear())</script>, Apple Inc. All rights reserved. Apple Confidential.</p><a href="mailto:aci-queue-support@group.apple.com" alt="contact pie">Contact</a> | <a href="rdar://new/problem/component=ACI%20Queue&version=Kafka%20Support">Report an Issue</a>
+    | <a href="https://github.pie.apple.com/pie/kafka-tools/edit/develop/docs/source/concepts.md" alt="Edit on ACS GitHub">Edit on ACS GitHub</a>
+</footer>
+  </body>
+</html>

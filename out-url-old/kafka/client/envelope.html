@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>PieEnvelope &#8212; ACI Kafka Docs</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css?v=eeb27264" />
+    <link rel="stylesheet" href="../_static/styleguide.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/fonts.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/app.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/toc.css" type="text/css" />
+    <script src="../_static/documentation_options.js?v=b9a12352"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within ACI Kafka Docs"
+          href="../_static/opensearch.xml"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Producer Client" href="producer_client.html" />
+    <link rel="prev" title="Using the client" href="using_client.html" />
+
+<meta name="viewport" content="width=1172">
+<script type="text/javascript" src="../_static/app.js "></script>
+
+<script>
+window.Columbo=window.Columbo||function(o,u){"function"==typeof o?u=o:Columbo.config=o,u&&(Columbo.q=Columbo.q||[]).push(u)};
+Columbo({
+    appConfig: {
+        version: 'v0',
+        columboId: '09707287240ae779c2d02d07465ae16b5129de94c93704236a70c9d51a5f43fc'
+    }
+});
+</script>
+<script async src="../_static/cw.js"></script>
+
+  </head><body>
+
+  <header class="globalHeader">
+  <div class="headerWrapper">
+    <h1 class="globalTitle" data-toc-skip><a href="https://aci.apple.com">Apple Cloud Infrastructure</a></h1>
+    <span class="globalNavigation">
+      <a href="https://aci.apple.com/office-hours/">Office Hours</a>
+      <a href="/">Documentation</a>
+      <a href="https://status.aci.apple.com/">Status</a>
+    </span>
+  </div>
+</header>
+
+<article>
+  
+    <header class="siteHeader">
+  <div class="headerWrapper">
+    <h1 class="siteTitle" data-toc-skip>
+      <a href="../index.html">
+        ACI Kafka</a>
+    </h1>
+    
+      
+<nav class="navbarLinks">
+    
+      <a class="tabbed-navigation--item " href="../contents.html">Site Map</a>
+    
+    
+      <a class="tabbed-navigation--item" href="https://docs.aci.apple.com/kafka/public_api.html">API Docs</a>
+    
+</nav>
+
+    
+    
+      
+<form class="siteSearch" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="text-input--base text-input--medium searchInput" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+    
+  </div>
+</header>
+
+  <div class="pageWrapper">
+    <div class="pageContent column global_and_site_headers" role="main">
+      
+  <section id="pieenvelope">
+<h1><code class="docutils literal notranslate"><span class="pre">PieEnvelope</span></code><a class="headerlink" href="#pieenvelope" title="Link to this heading">¶</a></h1>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p><code class="docutils literal notranslate"><span class="pre">com.apple.pie.queue.kafka.envelope.PieEnvelope</span></code> is deprecated and will be removed in a future release.
+PieEnvelope and its old binary format are now considered deprecated. See the recommended steps below to remove its usage.</p>
+</div>
+<section id="migration-steps">
+<h2>Migration steps<a class="headerlink" href="#migration-steps" title="Link to this heading">¶</a></h2>
+<p>In short, to make sure you aren’t affected, this is what you need to
+do:</p>
+<ul class="simple">
+<li><p>Use kafka-pie-client version 0.15 or newer - <a class="reference internal" href="../releases/index.html#recommended-release"><span class="std std-ref">check the current version recommended for production</span></a>.</p></li>
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">KafkaClientUtils.createConsumer</span></code> instead of
+<code class="docutils literal notranslate"><span class="pre">KafkaClientUtils.createPieConsumer</span></code></p></li>
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">KafkaClientUtils.createProducer</span></code> instead of
+<code class="docutils literal notranslate"><span class="pre">KafkaClientUtils.createPieProducer</span></code></p></li>
+<li><p>If you are including <code class="docutils literal notranslate"><span class="pre">DeserializerConfigurationInterceptor</span></code> in
+<code class="docutils literal notranslate"><span class="pre">config.interceptors.classes</span></code> replace it with
+<code class="docutils literal notranslate"><span class="pre">PieDeserializerConfigurationInterceptor</span></code></p></li>
+<li><p>If you are including <code class="docutils literal notranslate"><span class="pre">SerializerConfigurationInterceptor</span></code> in
+<code class="docutils literal notranslate"><span class="pre">config.interceptors.classes</span></code> replace it with
+<code class="docutils literal notranslate"><span class="pre">PieSerializerConfigurationInterceptor</span></code></p></li>
+<li><p>If you are consuming messages that were produced with a version of
+kafka-pie-client earlier than 0.15 set
+<code class="docutils literal notranslate"><span class="pre">pie.queue.deserializer.assume.payload.envelope</span></code> to true</p></li>
+<li><p>If you are producing messages that will be consumed with a version
+of kafka-pie-client earlier than 0.15 set
+<code class="docutils literal notranslate"><span class="pre">pie.queue.serializer.use.payload.envelope</span></code> to true</p></li>
+<li><p>If you using PieEnvelope extensions get/set <code class="docutils literal notranslate"><span class="pre">pie.ext.X.Y</span></code> record
+headers for compatibility, or move completely to using other new
+headers</p></li>
+</ul>
+<section id="pieenvelope-deprecation-and-migration-details">
+<h3>PieEnvelope Deprecation and Migration details<a class="headerlink" href="#pieenvelope-deprecation-and-migration-details" title="Link to this heading">¶</a></h3>
+<p>The ACI Kafka team has deprecated both the <code class="docutils literal notranslate"><span class="pre">PieEnvelope</span></code> Java object and
+the <a class="reference internal" href="#old-binary-format">old binary format</a>.</p>
+<p>Historically, the ACI Kafka customers were recommended to construct
+clients by using these two methods on KafkaClientUtils:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>public static &lt;K, V&gt; KafkaConsumer&lt;K, PieEnvelope&lt;V&gt;&gt; createPieConsumer(Map&lt;String, Object&gt; config)
+public static &lt;K, V&gt; KafkaProducer&lt;K, PieEnvelope&lt;V&gt;&gt; createPieProducer(Map&lt;String, Object&gt; config)
+</pre></div>
+</div>
+<p>In 0.15, those methods were deprecated and two alternative methods -
+which do not use the PieEnvelope - were introduced:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>public static &lt;K, V&gt; KafkaConsumer&lt;K, V&gt; createConsumer(Map&lt;String, Object&gt; config)
+public static &lt;K, V&gt; KafkaProducer&lt;K, V&gt; createProducer(Map&lt;String, Object&gt; config)
+</pre></div>
+</div>
+<p>All these variants support both the <a class="reference internal" href="#new-binary-format-introduced-in-kafka-pie-client-0-15">new binary
+format</a> and the
+<a class="reference internal" href="#old-binary-format">old binary format</a>. The <a class="reference internal" href="#two-binary-formats">pie.fmt record
+header</a> is used to determine how the message is
+deserialized. The old methods were retrofitted in 0.15 to support the
+new format.</p>
+<p>The old producer - created with <code class="docutils literal notranslate"><span class="pre">createPieProducer</span></code> - chooses the
+appropriate message format based on the value of the
+<code class="docutils literal notranslate"><span class="pre">pie.queue.envelope.serializer.use.payload.envelope</span></code> property, which
+defaults to true, using the <a class="reference internal" href="#old-binary-format">old binary format</a>.</p>
+<p>The new producer - created with <code class="docutils literal notranslate"><span class="pre">createProducer</span></code> - chooses the
+appropriate message format based on the value of the
+<code class="docutils literal notranslate"><span class="pre">pie.queue.envelope.serializer.use.payload.envelope</span></code> property, which
+defaults to false, using the <a class="reference internal" href="#new-binary-format-introduced-in-kafka-pie-client-0-15">new binary
+format</a>.</p>
+<p>Both old and new consumers examine the <code class="docutils literal notranslate"><span class="pre">pie.fmt</span></code> header to determine the
+serialized format. When no <a class="reference internal" href="#two-binary-formats">pie.fmt record header</a>
+header record is present in a message:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>The old consumer - created with <code class="docutils literal notranslate"><span class="pre">createPieConsumer</span></code> - uses the
+<code class="docutils literal notranslate"><span class="pre">pie.queue.envelope.deserializer.assume.payload.envelope</span></code>
+property, which defaults to true and indicates that the <a class="reference internal" href="#old-binary-format">old
+binary format</a> is assumed.</p></li>
+<li><p>The new consumer - created with <code class="docutils literal notranslate"><span class="pre">createConsumer</span></code> - uses the
+<code class="docutils literal notranslate"><span class="pre">pie.queue.deserializer.assume.payload.envelope</span></code> property, which
+defaults to false and indicates that the <a class="reference internal" href="#new-binary-format-introduced-in-kafka-pie-client-0-15">new binary
+format</a> is
+assumed.</p></li>
+</ul>
+</div></blockquote>
+<p>Up until March 2021, Kaffe was overriding the default value from <code class="docutils literal notranslate"><span class="pre">false</span></code> to <code class="docutils literal notranslate"><span class="pre">true</span></code> on these properties, to minimize
+disruption:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">pie.queue.serializer.use.payload.envelope</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pie.queue.deserializer.assume.payload.envelope</span></code></p></li>
+</ul>
+<p>But these overrides were removed, making the default be <code class="docutils literal notranslate"><span class="pre">false</span></code> for both settings.</p>
+<p>If you are consuming messages from or producing messages to clients
+running a kafka-pie-client version earlier than 0.15 you need to configure these values
+to be <code class="docutils literal notranslate"><span class="pre">true</span></code> to ensure compatibility.</p>
+<p>When using the new methods, the <code class="docutils literal notranslate"><span class="pre">Map&lt;ExtensionKey,</span> <span class="pre">ByteBufferOrValue&gt;</span></code>
+in PieEnvelope are available as a collection of record headers. The
+names of these headers are <code class="docutils literal notranslate"><span class="pre">pie.ext.X.Y</span></code>. <code class="docutils literal notranslate"><span class="pre">X</span></code> is the <a class="reference internal" href="#organization-id">organization
+id</a> and <code class="docutils literal notranslate"><span class="pre">Y</span></code> is the <a class="reference internal" href="#extension-id">extension id</a>.</p>
+<p>A more detailed discussion of this topic can be found in
+<a class="reference external" href="https://github.pie.apple.com/pie/kafka-tools/blob/develop/improvement-proposals/028-envelope-deprecation.md">QTIP-028</a>.</p>
+</section>
+<section id="envelope-motivation">
+<h3>Envelope motivation<a class="headerlink" href="#envelope-motivation" title="Link to this heading">¶</a></h3>
+<p>Kafka itself uses an envelope which contains: message key, message
+payload, message timestamp, and the compression codec. In Apache Kafka
+0.11, record headers were added to this list, but before that, it was
+not generally extensible. The ACI Kafka envelope was introduced to
+provide general extensibility before the advent of Kafka record headers,
+and it utilizes the message payload portion of the Kafka envelope in
+order to achieve this.</p>
+<p>The envelope provided by ACI Kafka strives to be extensible and enables
+users to add their own extensions to records. Extensions can
+conceptually be compared to HTTP headers, with the exception that
+extensions are single valued. The extensions can be set either by the
+producing code, by registering producer interceptors, or by custom
+serializers.</p>
+<p>On the consumer side, ACI Kafka only deserializes extensions for which
+deserializers are registered. This enables users to only deserialize the
+extensions they are interested in and avoid adding unnecessary
+dependencies.</p>
+<p>Now that Kafka has introduced record headers, the envelope is no longer
+required to achieve this functionality.</p>
+</section>
+<section id="two-binary-formats">
+<h3>Two binary formats<a class="headerlink" href="#two-binary-formats" title="Link to this heading">¶</a></h3>
+<p>To support envelope deprecation, there are now two binary formats that
+support the envelope. These are distinguished by the value of the
+<code class="docutils literal notranslate"><span class="pre">pie.fmt</span></code> record header, which was introduced in kafka-pie-client
+version 0.15. The header’s byte array values are as follows:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Binary format</p></th>
+<th class="head"><p>Header value</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Old</p></td>
+<td><p>[0x01]</p></td>
+</tr>
+<tr class="row-odd"><td><p>New</p></td>
+<td><p>[0x00]</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="new-binary-format-introduced-in-kafka-pie-client-0-15">
+<h3>New binary format (introduced in kafka-pie-client 0.15)<a class="headerlink" href="#new-binary-format-introduced-in-kafka-pie-client-0-15" title="Link to this heading">¶</a></h3>
+<p>The new binary format leverages Kafka’s native support for record headers.
+The PIE Envelope headers are mapped to Kafka record headers.</p>
+<p>The Kafka record payload corresponds to the <code class="docutils literal notranslate"><span class="pre">payload</span></code> entry from the
+legacy format, as it would for any regular Kafka serializer.</p>
+<p>Any envelope extensions present are serialized as Kafka record headers.
+The header name is <code class="docutils literal notranslate"><span class="pre">pie.ext.&lt;organization</span> <span class="pre">key&gt;.&lt;extension</span> <span class="pre">id&gt;</span></code>, and the
+header value corresponds to the <code class="docutils literal notranslate"><span class="pre">extension</span> <span class="pre">value</span></code> entry from the legacy
+format.</p>
+<p>As noted above, records serialized to the new format will include the
+<code class="docutils literal notranslate"><span class="pre">pie.fmt</span></code> header with a byte array value of <code class="docutils literal notranslate"><span class="pre">[0x00]</span></code>.</p>
+</section>
+<section id="old-binary-format">
+<h3>Old binary format<a class="headerlink" href="#old-binary-format" title="Link to this heading">¶</a></h3>
+<p>Back when Kafka did not support record headers, the old binary format enabled users of
+ACI Kafka to add headers to messages by wrapping the payload in a well defined envelope
+with a header section. This means the payload will be wrapped inside an extra binary structure.</p>
+<p>The legacy PieEnvelope binary format uses the standard <a class="reference external" href="https://github.pie.apple.com/pie/kafka-tools/blob/develop/pie-envelope/src/main/java/com/apple/pie/queue/kafka/envelope/EnvelopeDeserializer.java#L40-L74">Kafka
+serialization</a>
+format. This enables us to leverage a tested, low-overhead and
+dependency-free format.</p>
+<p>It is versioned, thus enabling us to completely change the schema in the
+future without breaking backwards compatibility.</p>
+<p>It is made of an array of envelope extensions and a series of bytes for
+the serialized payload. Each extension is made of an extension key and a
+payload (the content of the extension). The extension key is made of 2
+16-bit integers, the organization_id and the extension_id.</p>
+<p>Here’s a format definition:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>envelope magic number : 1 byte (0x7C)
+envelope version      : 1 byte
+extension count       : 4 bytes
+extensions:           : N envelope_extension
+payload length        : 4 bytes
+payload               : V bytes
+</pre></div>
+</div>
+<p>An envelope_extension is defined as:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>organization key: 2 bytes
+extension id    : 2 bytes
+extension length: 4 bytes
+extension value : N bytes
+</pre></div>
+</div>
+<p>For more information have a look at the class
+<a class="reference external" href="https://github.pie.apple.com/pie/kafka-tools/blob/develop/pie-envelope/src/main/java/com/apple/pie/queue/kafka/envelope/internal/EnvelopeProtocol.java">EnvelopeProtocol</a>.</p>
+<p>As noted above, records serialized to the old format using
+kafka-pie-client 0.15 or newer will include the <code class="docutils literal notranslate"><span class="pre">pie.fmt</span></code> header with a
+byte array value of <code class="docutils literal notranslate"><span class="pre">[0x01]</span></code>.</p>
+</section>
+<section id="organization-id">
+<h3>Organization id<a class="headerlink" href="#organization-id" title="Link to this heading">¶</a></h3>
+<p>The link to the organization id is usually given out by ACI Kafka.</p>
+<p>The current organization ids are:</p>
+<ul class="simple">
+<li><p>0 ACI Kafka</p></li>
+<li><p>1 AMP XMB</p></li>
+<li><p>2 PIE Insights</p></li>
+<li><p>3 PIE SpaaS</p></li>
+<li><p>4 AMP Content Infrastructure</p></li>
+<li><p>5 AMP Data</p>
+<ul>
+<li><p>Extension 1: AMP Data Personalization</p></li>
+</ul>
+</li>
+<li><p>6 Apple Pay</p></li>
+</ul>
+<p>Rather than creating new organizations, new use cases are encouraged to
+use Kafka record headers in place of envelope extensions.</p>
+</section>
+<section id="extension-id">
+<h3>Extension id<a class="headerlink" href="#extension-id" title="Link to this heading">¶</a></h3>
+<p>Extension ids need only be unique within an organization, so it is up to
+the organization to avoid conflicts.</p>
+</section>
+<section id="using-envelope-extensions-in-the-client">
+<h3>Using envelope extensions in the client<a class="headerlink" href="#using-envelope-extensions-in-the-client" title="Link to this heading">¶</a></h3>
+<p>To be able to use an envelope extension you will need to give the client
+a subclass of
+<a class="reference external" href="https://github.pie.apple.com/pie/kafka-tools/blob/develop/pie-envelope/src/main/java/com/apple/pie/queue/kafka/envelope/extensions/ExtensionSerDeserializer.java">com.apple.pie.queue.kafka.envelope.extensions.ExtensionSerDeserializer</a>.</p>
+<p>To do so, a new configuration parameter was introduced in the clients,
+<code class="docutils literal notranslate"><span class="pre">pie.queue.envelope.extension.serde.classes</span></code>, which takes a list of
+extension serde. There is a handy utility function that you can use to
+add extension serde classes to your configuration:
+<code class="docutils literal notranslate"><span class="pre">EnvelopeConfig.addExtensionSerdesToConfig</span></code>.</p>
+<p>Anywhere you access the envelope you can use
+<a class="reference external" href="https://github.pie.apple.com/pie/kafka-tools/blob/develop/pie-envelope/src/main/java/com/apple/pie/queue/kafka/envelope/PieEnvelope.java">getExtension(ExtensionKey)</a>
+to get access to an envelope extension.</p>
+<p>For efficiency you can avoid deserializing too many extensions by only
+providing the ones needed to your consumer. The other extensions will
+still be accessible in their serialized form, thus enabling forwarding
+them without incurring the deserialization cost.</p>
+</section>
+<section id="chaining-serialization">
+<h3>Chaining Serialization<a class="headerlink" href="#chaining-serialization" title="Link to this heading">¶</a></h3>
+<p>To serialize objects you’ll need to go through multiple steps:</p>
+<ul class="simple">
+<li><p>Serialize the payload into bytes</p></li>
+<li><p>Encrypt the payload (if enabled)</p></li>
+<li><p>Serialize the envelope of the payload into bytes</p></li>
+</ul>
+<p>To deserialize you need to do these action in the opposite order.</p>
+<p>This is summarized is the following schema:</p>
+<p><img alt="" src="../_images/serializer_chain.png" /></p>
+<p>We walk through the linked list created to execute the serializers in
+the right order. Deserialization works in the opposite order.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">SerializerConfigurationInterceptor</span></code> and
+<code class="docutils literal notranslate"><span class="pre">DeserializerConfigurationInterceptor</span></code> add PieEnvelope
+serializers/deserializers to your client on startup.
+<code class="docutils literal notranslate"><span class="pre">PieSerializerConfigurationInterceptor</span></code> and
+<code class="docutils literal notranslate"><span class="pre">PieDeserializerConfigurationInterceptor</span></code> add non-PieEnvelope
+serializers/deserializers to your client on startup. Just set
+<code class="docutils literal notranslate"><span class="pre">value.serializer</span></code>, <code class="docutils literal notranslate"><span class="pre">key.serializer</span></code>, <code class="docutils literal notranslate"><span class="pre">value.deserializer</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">key.deserializer</span></code>, just like you normally would.</p>
+</div>
+</section>
+<section id="copy-optimization-optional">
+<h3>0-copy optimization (optional)<a class="headerlink" href="#copy-optimization-optional" title="Link to this heading">¶</a></h3>
+<p>If you don’t use encryption, you can further improve your consumer’s
+memory consumption by moving the deserialization of your payload to your
+client code. This configuration is not recommended for most use cases so
+please evaluate carefully if you really need to use it!</p>
+<p>To use this 0-copy optimization, encryption and decryption must be disabled, and
+the standard Kafka <code class="docutils literal notranslate"><span class="pre">ByteBuffer</span></code> serializer and deserializer may be used.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span># producer:
+import org.apache.kafka.common.serialization.ByteBufferSerializer;
+producerConfig.put(EncryptionSerializerConfigDef.ENCRYPT_MESSAGES_CONFIG, false);
+producerConfig.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, ByteBufferSerializer.class);
+# consumer:
+import org.apache.kafka.common.serialization.ByteBufferDeserializer;
+consumerConfig.put(DecryptionDeserializerConfigDef.TRY_TO_DECRYPT_MESSAGES_CONFIG, false);
+consumerConfig.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, ByteBufferDeserializer.class);
+</pre></div>
+</div>
+</section>
+<section id="advice-on-writing-good-extensions">
+<h3>Advice on writing good extensions<a class="headerlink" href="#advice-on-writing-good-extensions" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>An extension should be self contained and for a specific purpose. (A
+specific interceptor shouldn’t need to access multiple extensions.)</p></li>
+<li><p>An extension should be versioned and backward compatible. In other
+words, remember that you might have old data in your queue forever
+(especially with compacted topics).</p></li>
+</ul>
+<p>Note that Kafka record headers are now recommended in place of
+extensions.</p>
+</section>
+<section id="existing-extensions">
+<h3>Existing extensions<a class="headerlink" href="#existing-extensions" title="Link to this heading">¶</a></h3>
+<p>We keep here links to extensions which already exist and those being
+worked on. Do not hesitate to share yours.</p>
+<p>Available:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.pie.apple.com/pie/kafka-extensions/tree/develop/avro-serializer">avro
+serialization</a>
+with
+<a class="reference external" href="https://github.pie.apple.com/amp-content-infra/schema-store">schema-store</a>
+integration: Apache Avro serializer and deserializer that integrates
+your application with the Apple
+<a class="reference external" href="https://github.pie.apple.com/amp-content-infra/schema-store">schema-store</a>,
+supporting both compile-time and run-time schemas.</p></li>
+<li><p><a class="reference external" href="https://github.pie.apple.com/pie/kafka-extensions/tree/develop/proto-2-serializer">proto
+serialization</a>
+with
+<a class="reference external" href="https://github.pie.apple.com/amp-content-infra/schema-store">schema-store</a>
+integration. Google Protocol Buffers serializer and deserializer
+that integrates your application with the Apple
+<a class="reference external" href="https://github.pie.apple.com/amp-content-infra/schema-store">schema-store</a>.</p></li>
+<li><p><a class="reference external" href="https://github.pie.apple.com/pie/kafka-extensions/tree/develop/client-auditors">message
+auditing</a>.
+A set of interceptors and auditors to allow your application to
+submit auditing information tracking the Kafka records it has
+produced and consumed.</p></li>
+</ul>
+</section>
+<section id="kafka-extensions-repository">
+<h3>Kafka-extensions repository<a class="headerlink" href="#kafka-extensions-repository" title="Link to this heading">¶</a></h3>
+<p><a class="reference external" href="https://github.pie.apple.com/pie/kafka-extensions">Kafka extensions</a> is
+a shared repository where we keep a set of interceptors and other tools
+to enable clients to do more. Most of the extensions mentioned
+previously are in kafka-extensions.</p>
+</section>
+</section>
+</section>
+
+
+    </div>
+    
+  <div class="pageTOC">
+    <nav class="toc nav global_and_site_headers">
+      <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../overview.html#getting-started">Getting Started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../overview.html#offerings">Offerings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../overview.html#roadmap">Roadmap</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../overview.html#reference">Reference</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../concepts.html">Concepts</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../concepts.html#customer-group">Customer group</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../concepts.html#client-identities">Client identities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../concepts.html#namespace">Namespace</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../concepts.html#topic">Topic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../concepts.html#cluster-traffic-quota">Cluster traffic quota</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../concepts.html#client-identity-topic-access">Client identity topic access</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../onboarding.html">On-Boarding &amp; Expansion</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../onboarding.html#expansion-for-existing-customers">Expansion for Existing Customers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../onboarding.html#getting-started-for-new-customers">Getting Started for New Customers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../onboarding.html#general-process">General Process</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../self-service/index.html">Self Service</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../self-service/kube.html">Kubernetes CRDs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../self-service/kafka_cli.html">ACI Kafka CLI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../self-service/public_api.html">Public API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../self-service/inspector.html">Inspector</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../monitoring/broker_metrics.html">Broker metrics</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Client</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="quick_start.html">Quick Start</a></li>
+<li class="toctree-l2"><a class="reference internal" href="kafka_for_all.html">Kafka for All (non-Java clients)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="using_client.html">Using the client</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">PieEnvelope</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="producer_client.html">Producer Client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="producer_settings.html">Producer Recommendations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="consumer_client.html">Consumer Client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="consumer_settings.html">Consumer Recommendations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="security_settings.html">Security Settings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="kaffe.html">Kaffe</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client_secrets_distribution.html">Client Secrets Distribution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="default_config_injection.html">Default Configuration Injection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lag_metrics.html">Consumer Group’s lag metrics</a></li>
+<li class="toctree-l2"><a class="reference external" href="https://github.pie.apple.com/aci/kafka-examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../monitoring/index.html">Monitoring and auditing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../monitoring/kafka_hubble_reporter.html">Kafka Hubble Reporter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../monitoring/kafka_server_hubble_reporter.html">Kafka Hubble Yammer Reporter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../monitoring/kafka_client_hubble_dashboards.html">Kafka Client Hubble Dashboard Templates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../monitoring/broker_metrics.html">Broker metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../monitoring/kafka_client_open_telemetry.html">Kafka Client OpenTelemetry integration</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../sli_catalogue.html">SLI Catalog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../sli_catalogue.html#kafka">Kafka</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../sli_catalogue.html#mirrors">Mirrors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../sli_catalogue.html#kaffe">Kaffe</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../sli_catalogue.html#iris">Iris</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../sli_catalogue.html#api">API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../sli_catalogue.html#forthcoming-slis-slos">Forthcoming SLIs/SLOs</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../dev-and-ci.html">Development and CI</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../dev-and-ci.html#getting-started">Getting Started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dev-and-ci.html#local-environments">Local Environments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dev-and-ci.html#continuous-integration">Continuous Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dev-and-ci.html#client-configuration">Client Configuration</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../faq/index.html">FAQ</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../faq/index.html#getting-started">Getting Started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/index.html#namespaces">Namespaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/index.html#connectivity">Connectivity</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../troubleshooting/index.html">Troubleshooting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../troubleshooting/general.html">General troubleshooting guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../troubleshooting/client.html">Common Client Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../troubleshooting/connectivity.html">Checking connectivity to ACI Kafka cluster</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../glossary.html">Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contact.html">Contact Us</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../contact.html#general-support">General Support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contact.html#on-boarding-or-expansion">On-boarding or Expansion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contact.html#announcements">Announcements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contact.html#slack">Slack</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contact.html#paging-for-urgent-support">Paging for Urgent Support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contact.html#design-development-apple-internal">Design &amp; Development (Apple Internal)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contact.html#office-hours">Office Hours</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../roadmap.html">Roadmap</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../roadmap.html#present">Present</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../roadmap.html#future">Future</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../roadmap.html#past">Past</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../releases/index.html">Releases</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../releases/index.html#recommended-release">Recommended release</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../releases/index.html#announcement-procedure">Announcement Procedure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../releases/index.html#release-announcements">Release Announcements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../releases/index.html#apache-kafka-version-mapping">Apache Kafka Version Mapping</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../china.html">China (GCBD)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../china.html#aci-kafka-clusters">ACI Kafka Clusters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../china.html#sdr-identity-certificates">SDR Identity Certificates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../china.html#kaffe">Kaffe</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../china.html#broker-tls">Broker TLS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../china.html#kafka-for-all-vips">Kafka For All VIPs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../china.html#apple-network-policies-anps">Apple Network Policies (ANPs)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../china.html#self-service">Self Service</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../internals/index.html">Internals</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../internals/kafka_internal_setup.html">Kafka Internal Setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../internals/verifiable_producer_consumer.html">Verifiable Producer/Consumer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../internals/index.html#qtip">QTIP</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../compliance.html">Compliance</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../compliance.html#supported-data-types"><strong>Supported Data Types</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../compliance.html#end-user-responsibilities-to-use-the-platform-by-data-tier">End user responsibilities to use the platform by data tier</a></li>
+</ul>
+</li>
+</ul>
+
+    </nav>
+  </div>
+    
+  </div>
+</article>
+  
+
+
+<footer class="footer">
+  <p>© Copyright <script>document.write(new Date().getFullYear())</script>, Apple Inc. All rights reserved. Apple Confidential.</p><a href="mailto:aci-queue-support@group.apple.com" alt="contact pie">Contact</a> | <a href="rdar://new/problem/component=ACI%20Queue&version=Kafka%20Support">Report an Issue</a>
+    | <a href="https://github.pie.apple.com/pie/kafka-tools/edit/develop/docs/source/client/envelope.md" alt="Edit on ACS GitHub">Edit on ACS GitHub</a>
+</footer>
+  </body>
+</html>

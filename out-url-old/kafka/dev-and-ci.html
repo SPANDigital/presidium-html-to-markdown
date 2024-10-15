@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Development and CI &#8212; ACI Kafka Docs</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+    <link rel="stylesheet" type="text/css" href="_static/basic.css?v=eeb27264" />
+    <link rel="stylesheet" href="_static/styleguide.css" type="text/css" />
+    <link rel="stylesheet" href="_static/fonts.css" type="text/css" />
+    <link rel="stylesheet" href="_static/app.css" type="text/css" />
+    <link rel="stylesheet" href="_static/toc.css" type="text/css" />
+    <script src="_static/documentation_options.js?v=b9a12352"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within ACI Kafka Docs"
+          href="_static/opensearch.xml"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="FAQ" href="faq/index.html" />
+    <link rel="prev" title="SLI Catalog" href="sli_catalogue.html" />
+
+<meta name="viewport" content="width=1172">
+<script type="text/javascript" src="_static/app.js "></script>
+
+<script>
+window.Columbo=window.Columbo||function(o,u){"function"==typeof o?u=o:Columbo.config=o,u&&(Columbo.q=Columbo.q||[]).push(u)};
+Columbo({
+    appConfig: {
+        version: 'v0',
+        columboId: '09707287240ae779c2d02d07465ae16b5129de94c93704236a70c9d51a5f43fc'
+    }
+});
+</script>
+<script async src="_static/cw.js"></script>
+
+  </head><body>
+
+  <header class="globalHeader">
+  <div class="headerWrapper">
+    <h1 class="globalTitle" data-toc-skip><a href="https://aci.apple.com">Apple Cloud Infrastructure</a></h1>
+    <span class="globalNavigation">
+      <a href="https://aci.apple.com/office-hours/">Office Hours</a>
+      <a href="/">Documentation</a>
+      <a href="https://status.aci.apple.com/">Status</a>
+    </span>
+  </div>
+</header>
+
+<article>
+  
+    <header class="siteHeader">
+  <div class="headerWrapper">
+    <h1 class="siteTitle" data-toc-skip>
+      <a href="index.html">
+        ACI Kafka</a>
+    </h1>
+    
+      
+<nav class="navbarLinks">
+    
+      <a class="tabbed-navigation--item " href="contents.html">Site Map</a>
+    
+    
+      <a class="tabbed-navigation--item" href="https://docs.aci.apple.com/kafka/public_api.html">API Docs</a>
+    
+</nav>
+
+    
+    
+      
+<form class="siteSearch" action="search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="text-input--base text-input--medium searchInput" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+    
+  </div>
+</header>
+
+  <div class="pageWrapper">
+    <div class="pageContent column global_and_site_headers" role="main">
+      
+  <section id="development-and-ci">
+<h1>Development and CI<a class="headerlink" href="#development-and-ci" title="Link to this heading">¶</a></h1>
+<p>This section of the documentation explains additional resources provided
+for use during development and CI.</p>
+<section id="getting-started">
+<h2>Getting Started<a class="headerlink" href="#getting-started" title="Link to this heading">¶</a></h2>
+<p>The ACI Kafka team suggests using a <a class="reference external" href="https://docs.aci.apple.com/rio/build-features/sidecars.html">Rio
+Sidecar</a>,
+providing customers with supported tooling for managing
+<a class="reference internal" href="#local-environments">local</a>, ephemeral,
+and lightweight ACI Kafka environments.</p>
+<p>The provided Rio Sidecar can also be used as part of a
+<a class="reference internal" href="#continuous-integration">CI process</a>. Both
+scenarios are covered by this section.</p>
+<p>The Rio Sidecar is published at the same cadence as our general
+releases, using the same versioning semantics as ACI Kafka itself.</p>
+<section id="supported-features">
+<h3>Supported Features<a class="headerlink" href="#supported-features" title="Link to this heading">¶</a></h3>
+<p>We suggest using the upstream <a class="reference external" href="https://hub.docker.com/r/apache/kafka">docker image</a>
+for the sidecar. That means some ACI Kafka features
+like <a class="reference internal" href="client/kaffe.html"><span class="std std-doc">Kaffe</span></a> or the Public API are not available.</p>
+<p>If your use case requires accessing any of these features, consider
+<a class="reference internal" href="onboarding.html"><span class="std std-doc">applying</span></a> for a qualification namespace.</p>
+</section>
+</section>
+<section id="local-environments">
+<h2>Local Environments<a class="headerlink" href="#local-environments" title="Link to this heading">¶</a></h2>
+<p>Our Rio Sidecar can be started locally in order to experiment and begin
+the process of integrating with Kafka.</p>
+<p>Under the hood, this sidecar is backed by containers, therefore, either
+<a class="reference external" href="https://vessel.apple.com/">Vessel</a> or Docker are prerequisites for running
+it locally. This has been tested with Vessel and Docker for Mac.</p>
+<p>In addition to the above, we recommend using the Rio Sidecar binary. This
+binary provides parity with a Rio pipeline while offering a convenient
+interface to manage the lifecycle of your local environment.</p>
+<p>Please ensure you’re on macOS &gt;= <code class="docutils literal notranslate"><span class="pre">13.0</span></code>, have Rio Sidecar
+binary &gt;= <code class="docutils literal notranslate"><span class="pre">2.2.3</span></code> installed and have Vessel’s
+<a class="reference external" href="https://vessel.apple.com/usage/docker-compatibility/compat-mode">compat mode</a>
+set up if you’re using sidecar with Vessel.</p>
+<p>Start by creating the <code class="docutils literal notranslate"><span class="pre">aci-kafka.yml</span></code> file inside your <code class="docutils literal notranslate"><span class="pre">sidecars</span></code> folder
+with the following content:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">schemaVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2.0</span>
+
+<span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">docker://docker-upstream.apple.com/apache/kafka:&lt;oss-kafka-version&gt;</span>
+<span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">PIE_KAFKA_HOST</span>
+<span class="nt">ports</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">KAFKA_PORT</span>
+<span class="w">    </span><span class="nt">default</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">9092</span>
+
+<span class="nt">commands</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">&gt;</span>
+<span class="w">      </span><span class="no">HOST=$([ &quot;$PIE_KAFKA_HOST&quot; = &quot;0.0.0.0&quot; ] &amp;&amp; echo &quot;127.0.0.1&quot; || echo &quot;$PIE_KAFKA_HOST&quot;)</span>
+<span class="w">      </span><span class="no">KAFKA_NODE_ID=1</span>
+<span class="w">      </span><span class="no">KAFKA_PROCESS_ROLES=&#39;broker,controller&#39;</span>
+<span class="w">      </span><span class="no">KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=&#39;CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT&#39;</span>
+<span class="w">      </span><span class="no">KAFKA_ADVERTISED_LISTENERS=&quot;PLAINTEXT_HOST://$HOST:$KAFKA_PORT,PLAINTEXT://$HOST:19092&quot;</span>
+<span class="w">      </span><span class="no">KAFKA_CONTROLLER_QUORUM_VOTERS=&quot;1@$HOST:29093&quot;</span>
+<span class="w">      </span><span class="no">KAFKA_LISTENERS=&quot;CONTROLLER://:29093,PLAINTEXT_HOST://:$KAFKA_PORT,PLAINTEXT://:19092&quot;</span>
+<span class="w">      </span><span class="no">KAFKA_INTER_BROKER_LISTENER_NAME=&#39;PLAINTEXT&#39;</span>
+<span class="w">      </span><span class="no">KAFKA_CONTROLLER_LISTENER_NAMES=&#39;CONTROLLER&#39;</span>
+<span class="w">      </span><span class="no">KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1</span>
+<span class="w">      </span><span class="no">KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS=0</span>
+<span class="w">      </span><span class="no">KAFKA_TRANSACTION_STATE_LOG_MIN_ISR=1</span>
+<span class="w">      </span><span class="no">KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR=1</span>
+<span class="w">      </span><span class="no">/etc/kafka/docker/run</span>
+</pre></div>
+</div>
+<p>Please refer to <a class="reference internal" href="releases/index.html#apache-kafka-version-mapping"><span class="std std-ref">version mapping</span></a>
+and substitute the Apache Kafka version in place for <code class="docutils literal notranslate"><span class="pre">&lt;oss-kafka-version&gt;</span></code>.</p>
+<p>At the root of your project, use <code class="docutils literal notranslate"><span class="pre">sidecar</span> <span class="pre">start</span></code>. You’ll need to set
+some environment variables for your Kafka client, load them with
+<code class="docutils literal notranslate"><span class="pre">eval</span> <span class="pre">$(sidecar</span> <span class="pre">env)</span></code>.</p>
+<p>If you’re running integration tests against the sidecar from IntelliJ,
+run the following command instead:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sidecar<span class="w"> </span>env<span class="w"> </span><span class="p">|</span><span class="w"> </span>sed<span class="w"> </span><span class="s1">&#39;s/export //&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>pbcopy
+</pre></div>
+</div>
+<p>This will copy the environment configuration into your clipboard. Then
+in IntelliJ, under <strong>Run</strong> &gt; <strong>Edit Configurations…</strong> &gt;
+<strong>Templates</strong>, select the template you’re interested in and paste the
+environment variables from your clipboard.</p>
+<p>Make sure to check if your Kafka client configuration meets the
+requirements to connect to your new local environment as described in
+<a class="reference internal" href="#client-configuration">Client Configuration</a>.</p>
+</section>
+<section id="continuous-integration">
+<h2>Continuous Integration<a class="headerlink" href="#continuous-integration" title="Link to this heading">¶</a></h2>
+<p>When running Sidecars in Rio, you are required to read the connection
+information for Kafka from the Sidecar provided environment variables.
+This is because Rio controls running the Sidecar docker container, and
+with dynamic port assignment.</p>
+<p>Setting dev mode (covered below) will mean that the ACI Kafka client
+will automatically read these environment variables, and populate the
+<code class="docutils literal notranslate"><span class="pre">bootstrap.servers</span></code> for you.</p>
+</section>
+<section id="client-configuration">
+<h2>Client Configuration<a class="headerlink" href="#client-configuration" title="Link to this heading">¶</a></h2>
+<p>You may need to adjust some client-side configurations for Kafka in
+order for things to work. In the production scenario, you don’t need to
+set these properties, as <a class="reference internal" href="client/kaffe.html"><span class="std std-doc">Kaffe</span></a> will handle these
+for you.</p>
+<section id="enable-development-mode">
+<h3>Enable Development Mode<a class="headerlink" href="#enable-development-mode" title="Link to this heading">¶</a></h3>
+<p>You only need to add the following property in order to connect to the
+sidecar.</p>
+<div class="highlight-properties notranslate"><div class="highlight"><pre><span></span><span class="na">pie.queue.kafka.dev.mode.enabled</span><span class="o">=</span><span class="s">true</span>
+</pre></div>
+</div>
+<p>We populate the <code class="docutils literal notranslate"><span class="pre">bootstrap.servers</span></code> string automatically for you using
+the environment variables provided by the sidecar. Make sure these are
+set when working locally. When working on a Rio pipeline, these will be
+set for you as part of starting the sidecar in a pipeline.</p>
+</section>
+<section id="security-protocols">
+<h3>Security Protocols<a class="headerlink" href="#security-protocols" title="Link to this heading">¶</a></h3>
+<p>The sidecar definition above only supports the PLAINTEXT protocol.
+This differs from QA and Production environments where we mandate the use
+of <code class="docutils literal notranslate"><span class="pre">SASL_SSL</span></code>.</p>
+</section>
+</section>
+</section>
+
+
+    </div>
+    
+  <div class="pageTOC">
+    <nav class="toc nav global_and_site_headers">
+      <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="overview.html#getting-started">Getting Started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="overview.html#offerings">Offerings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="overview.html#roadmap">Roadmap</a></li>
+<li class="toctree-l2"><a class="reference internal" href="overview.html#reference">Reference</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="concepts.html">Concepts</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="concepts.html#customer-group">Customer group</a></li>
+<li class="toctree-l2"><a class="reference internal" href="concepts.html#client-identities">Client identities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="concepts.html#namespace">Namespace</a></li>
+<li class="toctree-l2"><a class="reference internal" href="concepts.html#topic">Topic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="concepts.html#cluster-traffic-quota">Cluster traffic quota</a></li>
+<li class="toctree-l2"><a class="reference internal" href="concepts.html#client-identity-topic-access">Client identity topic access</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="onboarding.html">On-Boarding &amp; Expansion</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="onboarding.html#expansion-for-existing-customers">Expansion for Existing Customers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="onboarding.html#getting-started-for-new-customers">Getting Started for New Customers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="onboarding.html#general-process">General Process</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="self-service/index.html">Self Service</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="self-service/kube.html">Kubernetes CRDs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="self-service/kafka_cli.html">ACI Kafka CLI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="self-service/public_api.html">Public API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="self-service/inspector.html">Inspector</a></li>
+<li class="toctree-l2"><a class="reference internal" href="monitoring/broker_metrics.html">Broker metrics</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="client/index.html">Client</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="client/quick_start.html">Quick Start</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client/kafka_for_all.html">Kafka for All (non-Java clients)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client/using_client.html">Using the client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client/envelope.html"><code class="docutils literal notranslate"><span class="pre">PieEnvelope</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="client/producer_client.html">Producer Client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client/producer_settings.html">Producer Recommendations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client/consumer_client.html">Consumer Client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client/consumer_settings.html">Consumer Recommendations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client/security_settings.html">Security Settings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client/kaffe.html">Kaffe</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client/client_secrets_distribution.html">Client Secrets Distribution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client/default_config_injection.html">Default Configuration Injection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client/lag_metrics.html">Consumer Group’s lag metrics</a></li>
+<li class="toctree-l2"><a class="reference external" href="https://github.pie.apple.com/aci/kafka-examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="monitoring/index.html">Monitoring and auditing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="monitoring/kafka_hubble_reporter.html">Kafka Hubble Reporter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="monitoring/kafka_server_hubble_reporter.html">Kafka Hubble Yammer Reporter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="monitoring/kafka_client_hubble_dashboards.html">Kafka Client Hubble Dashboard Templates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="monitoring/broker_metrics.html">Broker metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="monitoring/kafka_client_open_telemetry.html">Kafka Client OpenTelemetry integration</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="sli_catalogue.html">SLI Catalog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="sli_catalogue.html#kafka">Kafka</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sli_catalogue.html#mirrors">Mirrors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sli_catalogue.html#kaffe">Kaffe</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sli_catalogue.html#iris">Iris</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sli_catalogue.html#api">API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sli_catalogue.html#forthcoming-slis-slos">Forthcoming SLIs/SLOs</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Development and CI</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#getting-started">Getting Started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#local-environments">Local Environments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#continuous-integration">Continuous Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#client-configuration">Client Configuration</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="faq/index.html">FAQ</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="faq/index.html#getting-started">Getting Started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq/index.html#namespaces">Namespaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq/index.html#connectivity">Connectivity</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting/index.html">Troubleshooting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="troubleshooting/general.html">General troubleshooting guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="troubleshooting/client.html">Common Client Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="troubleshooting/connectivity.html">Checking connectivity to ACI Kafka cluster</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="glossary.html">Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contact.html">Contact Us</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="contact.html#general-support">General Support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contact.html#on-boarding-or-expansion">On-boarding or Expansion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contact.html#announcements">Announcements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contact.html#slack">Slack</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contact.html#paging-for-urgent-support">Paging for Urgent Support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contact.html#design-development-apple-internal">Design &amp; Development (Apple Internal)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contact.html#office-hours">Office Hours</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="roadmap.html">Roadmap</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="roadmap.html#present">Present</a></li>
+<li class="toctree-l2"><a class="reference internal" href="roadmap.html#future">Future</a></li>
+<li class="toctree-l2"><a class="reference internal" href="roadmap.html#past">Past</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="releases/index.html">Releases</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="releases/index.html#recommended-release">Recommended release</a></li>
+<li class="toctree-l2"><a class="reference internal" href="releases/index.html#announcement-procedure">Announcement Procedure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="releases/index.html#release-announcements">Release Announcements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="releases/index.html#apache-kafka-version-mapping">Apache Kafka Version Mapping</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="china.html">China (GCBD)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="china.html#aci-kafka-clusters">ACI Kafka Clusters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="china.html#sdr-identity-certificates">SDR Identity Certificates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="china.html#kaffe">Kaffe</a></li>
+<li class="toctree-l2"><a class="reference internal" href="china.html#broker-tls">Broker TLS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="china.html#kafka-for-all-vips">Kafka For All VIPs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="china.html#apple-network-policies-anps">Apple Network Policies (ANPs)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="china.html#self-service">Self Service</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="internals/index.html">Internals</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="internals/kafka_internal_setup.html">Kafka Internal Setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="internals/verifiable_producer_consumer.html">Verifiable Producer/Consumer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="internals/index.html#qtip">QTIP</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="compliance.html">Compliance</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="compliance.html#supported-data-types"><strong>Supported Data Types</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="compliance.html#end-user-responsibilities-to-use-the-platform-by-data-tier">End user responsibilities to use the platform by data tier</a></li>
+</ul>
+</li>
+</ul>
+
+    </nav>
+  </div>
+    
+  </div>
+</article>
+  
+
+
+<footer class="footer">
+  <p>© Copyright <script>document.write(new Date().getFullYear())</script>, Apple Inc. All rights reserved. Apple Confidential.</p><a href="mailto:aci-queue-support@group.apple.com" alt="contact pie">Contact</a> | <a href="rdar://new/problem/component=ACI%20Queue&version=Kafka%20Support">Report an Issue</a>
+    | <a href="https://github.pie.apple.com/pie/kafka-tools/edit/develop/docs/source/dev-and-ci.md" alt="Edit on ACS GitHub">Edit on ACS GitHub</a>
+</footer>
+  </body>
+</html>

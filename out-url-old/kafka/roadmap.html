@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Roadmap &#8212; ACI Kafka Docs</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+    <link rel="stylesheet" type="text/css" href="_static/basic.css?v=eeb27264" />
+    <link rel="stylesheet" href="_static/styleguide.css" type="text/css" />
+    <link rel="stylesheet" href="_static/fonts.css" type="text/css" />
+    <link rel="stylesheet" href="_static/app.css" type="text/css" />
+    <link rel="stylesheet" href="_static/toc.css" type="text/css" />
+    <script src="_static/documentation_options.js?v=b9a12352"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within ACI Kafka Docs"
+          href="_static/opensearch.xml"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Releases" href="releases/index.html" />
+    <link rel="prev" title="Contact Us" href="contact.html" />
+
+<meta name="viewport" content="width=1172">
+<script type="text/javascript" src="_static/app.js "></script>
+
+<script>
+window.Columbo=window.Columbo||function(o,u){"function"==typeof o?u=o:Columbo.config=o,u&&(Columbo.q=Columbo.q||[]).push(u)};
+Columbo({
+    appConfig: {
+        version: 'v0',
+        columboId: '09707287240ae779c2d02d07465ae16b5129de94c93704236a70c9d51a5f43fc'
+    }
+});
+</script>
+<script async src="_static/cw.js"></script>
+
+  </head><body>
+
+  <header class="globalHeader">
+  <div class="headerWrapper">
+    <h1 class="globalTitle" data-toc-skip><a href="https://aci.apple.com">Apple Cloud Infrastructure</a></h1>
+    <span class="globalNavigation">
+      <a href="https://aci.apple.com/office-hours/">Office Hours</a>
+      <a href="/">Documentation</a>
+      <a href="https://status.aci.apple.com/">Status</a>
+    </span>
+  </div>
+</header>
+
+<article>
+  
+    <header class="siteHeader">
+  <div class="headerWrapper">
+    <h1 class="siteTitle" data-toc-skip>
+      <a href="index.html">
+        ACI Kafka</a>
+    </h1>
+    
+      
+<nav class="navbarLinks">
+    
+      <a class="tabbed-navigation--item " href="contents.html">Site Map</a>
+    
+    
+      <a class="tabbed-navigation--item" href="https://docs.aci.apple.com/kafka/public_api.html">API Docs</a>
+    
+</nav>
+
+    
+    
+      
+<form class="siteSearch" action="search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="text-input--base text-input--medium searchInput" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+    
+  </div>
+</header>
+
+  <div class="pageWrapper">
+    <div class="pageContent column global_and_site_headers" role="main">
+      
+  <section id="roadmap">
+<h1>Roadmap<a class="headerlink" href="#roadmap" title="Link to this heading">¶</a></h1>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Here you can find our current plan for customer facing features and developments. We periodically review and refine our roadmap according to customer needs and organizational priorities. This means it is subject to adjustments. If you have dependencies on anything in our roadmap or have any questions, please reach out to <a class="reference external" href="adir://employees/973791632">Tom Duckering</a>.</p>
+</div>
+<section id="present">
+<h2>Present<a class="headerlink" href="#present" title="Link to this heading">¶</a></h2>
+<section id="fy2020-quarter-4">
+<h3>FY2020 - Quarter 4<a class="headerlink" href="#fy2020-quarter-4" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>Automated Onboarding for Playgrounds</strong> Providing fast, easy
+onboarding for small, non-production use cases via integration with
+SAFE.</p></li>
+<li><p><strong>Stateless Services in K8s</strong> Run our stateless, supporting services
+in K8s</p></li>
+<li><p><strong>Kafka Upgrade</strong> Upgrade Kafka to bring new features to improve
+reliability and performance. See <a class="reference external" href="https://archive.apache.org/dist/kafka/2.4.1/RELEASE_NOTES.html">Kafka 2.4.1 Release
+Notes</a></p></li>
+<li><p><strong>JDK 11 JARs</strong> Provide JDK 11 only JARs to complete our move away
+from JDK 8</p></li>
+<li><p><strong>Decommission Coda</strong> Close down vestigial use cases of Coda and
+move customers to supported alternatives, i.e Kafka.</p></li>
+<li><p><strong>Decommission Kafka Connect</strong> migrate all use cases onto the new
+Kafka Mirrors solution.</p></li>
+</ul>
+</section>
+</section>
+<section id="future">
+<h2>Future<a class="headerlink" href="#future" title="Link to this heading">¶</a></h2>
+<section id="fy2021-h1">
+<h3>FY2021 - H1<a class="headerlink" href="#fy2021-h1" title="Link to this heading">¶</a></h3>
+<p><em>Note: This list is partial and to be confirmed</em></p>
+<ul class="simple">
+<li><p><strong>Golden Gate</strong> following on from Silk Road, we will offer ACI Kafka
+in Golden Gate.</p></li>
+<li><p><strong>Kafka Mirrors for Golden Gate</strong> the facility to replicate topics
+from Golden Gate based clusters.</p></li>
+<li><p><strong>Kube</strong> an offering of our service running on Kube for faster
+onboarding and elastic capacity.</p></li>
+<li><p><strong>API Improvements</strong> we plan to make some major improvements to our
+API to improve it’s reliability and usability.</p></li>
+</ul>
+<p>If there is anything you would like to see us do, please <a class="reference internal" href="contact.html"><span class="std std-doc">contact
+us</span></a></p>
+</section>
+</section>
+<section id="past">
+<h2>Past<a class="headerlink" href="#past" title="Link to this heading">¶</a></h2>
+<p>Below are the developments delivered in prior years.</p>
+<section id="id1">
+<h3>2020<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>SilkRoad Build Out</strong> Delivering ACI Kafka for use in Silk Road, in
+preparation for Golden Gate.</p></li>
+<li><p><strong>Mirrors for SR</strong> Allow replication of topics from SilkRoad to
+AODCs - limited availability</p></li>
+<li><p><strong>SLOs</strong> Integrate with <a class="reference external" href="https://slo.apple.com">slo.apple.com</a> for
+Kafka to provide visibility of our platform reliability</p></li>
+<li><p><strong>Improved Data Rebalancing</strong> added the ability to rebalance data
+between brokers to improve disk utilization</p></li>
+</ul>
+</section>
+<section id="id2">
+<h3>2019<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>JDK11 Compatibility</p></li>
+<li><p>Public API available to all for self-service entity management</p></li>
+<li><p>Integration with Topic Key Management Service Front End service
+(Iris) to eliminate C* client dependency</p></li>
+<li><p>APIs and plan to facilitate the deprecation of the PIE Envelope in
+favor of Kafka Message Headers</p></li>
+<li><p>Utilization reports for storage, CPU, and other Kafka and system
+resources</p></li>
+<li><p>Kubernetes support to manage Kafka cluster running on K8s for SR and
+GG</p></li>
+</ul>
+</section>
+<section id="id3">
+<h3>2018<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>Production cluster available for Phase 1 and 2</p></li>
+<li><p>Entity management is fully done with Portal and is backed by PIE
+Workflow.</p></li>
+<li><p>Users can use portal for most actions necessary</p></li>
+<li><p>Published SLOs about service reliability and reviewing them monthly.</p></li>
+<li><p>Kafka ACLs enforcement with support for prefixed principle and
+resource identifiers</p></li>
+<li><p>Configuration injection with Kaffe to enable easier setup for user</p></li>
+<li><p>Kafka for All to allow polyglot use of ACI Kafka</p></li>
+<li><p>Upgrade to Kafka 1.1</p></li>
+<li><p>Inspector release to allow customers to troubleshoot problems and
+see their consumer lag.</p></li>
+<li><p>Quota accounting in place which will enable us to enforce it in the
+future.</p></li>
+<li><p>Limited access preview to mirroring solution based on Kafka connect.</p></li>
+</ul>
+</section>
+<section id="id4">
+<h3>2017<a class="headerlink" href="#id4" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>First Shared QA cluster available for Phase 1 customers in June</p></li>
+<li><p>Begin placing production hardware orders for dedicated high-volume
+clusters</p></li>
+<li><p>Early Availability for the ACI Kafka client</p></li>
+<li><p>New Shared QA clusters added for Phase 2 customers</p></li>
+<li><p>End-to-end encryption available to customers</p></li>
+<li><p>First Shared Production cluster available for Phase 1 customers</p></li>
+<li><p>First dedicated production clusters live</p></li>
+</ul>
+</section>
+</section>
+</section>
+
+
+    </div>
+    
+  <div class="pageTOC">
+    <nav class="toc nav global_and_site_headers">
+      <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="overview.html#getting-started">Getting Started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="overview.html#offerings">Offerings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="overview.html#roadmap">Roadmap</a></li>
+<li class="toctree-l2"><a class="reference internal" href="overview.html#reference">Reference</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="concepts.html">Concepts</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="concepts.html#customer-group">Customer group</a></li>
+<li class="toctree-l2"><a class="reference internal" href="concepts.html#client-identities">Client identities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="concepts.html#namespace">Namespace</a></li>
+<li class="toctree-l2"><a class="reference internal" href="concepts.html#topic">Topic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="concepts.html#cluster-traffic-quota">Cluster traffic quota</a></li>
+<li class="toctree-l2"><a class="reference internal" href="concepts.html#client-identity-topic-access">Client identity topic access</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="onboarding.html">On-Boarding &amp; Expansion</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="onboarding.html#expansion-for-existing-customers">Expansion for Existing Customers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="onboarding.html#getting-started-for-new-customers">Getting Started for New Customers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="onboarding.html#general-process">General Process</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="self-service/index.html">Self Service</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="self-service/kube.html">Kubernetes CRDs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="self-service/kafka_cli.html">ACI Kafka CLI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="self-service/public_api.html">Public API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="self-service/inspector.html">Inspector</a></li>
+<li class="toctree-l2"><a class="reference internal" href="monitoring/broker_metrics.html">Broker metrics</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="client/index.html">Client</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="client/quick_start.html">Quick Start</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client/kafka_for_all.html">Kafka for All (non-Java clients)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client/using_client.html">Using the client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client/envelope.html"><code class="docutils literal notranslate"><span class="pre">PieEnvelope</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="client/producer_client.html">Producer Client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client/producer_settings.html">Producer Recommendations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client/consumer_client.html">Consumer Client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client/consumer_settings.html">Consumer Recommendations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client/security_settings.html">Security Settings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client/kaffe.html">Kaffe</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client/client_secrets_distribution.html">Client Secrets Distribution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client/default_config_injection.html">Default Configuration Injection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client/lag_metrics.html">Consumer Group’s lag metrics</a></li>
+<li class="toctree-l2"><a class="reference external" href="https://github.pie.apple.com/aci/kafka-examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="monitoring/index.html">Monitoring and auditing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="monitoring/kafka_hubble_reporter.html">Kafka Hubble Reporter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="monitoring/kafka_server_hubble_reporter.html">Kafka Hubble Yammer Reporter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="monitoring/kafka_client_hubble_dashboards.html">Kafka Client Hubble Dashboard Templates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="monitoring/broker_metrics.html">Broker metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="monitoring/kafka_client_open_telemetry.html">Kafka Client OpenTelemetry integration</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="sli_catalogue.html">SLI Catalog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="sli_catalogue.html#kafka">Kafka</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sli_catalogue.html#mirrors">Mirrors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sli_catalogue.html#kaffe">Kaffe</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sli_catalogue.html#iris">Iris</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sli_catalogue.html#api">API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sli_catalogue.html#forthcoming-slis-slos">Forthcoming SLIs/SLOs</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dev-and-ci.html">Development and CI</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dev-and-ci.html#getting-started">Getting Started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev-and-ci.html#local-environments">Local Environments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev-and-ci.html#continuous-integration">Continuous Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev-and-ci.html#client-configuration">Client Configuration</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="faq/index.html">FAQ</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="faq/index.html#getting-started">Getting Started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq/index.html#namespaces">Namespaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq/index.html#connectivity">Connectivity</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting/index.html">Troubleshooting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="troubleshooting/general.html">General troubleshooting guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="troubleshooting/client.html">Common Client Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="troubleshooting/connectivity.html">Checking connectivity to ACI Kafka cluster</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="glossary.html">Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contact.html">Contact Us</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="contact.html#general-support">General Support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contact.html#on-boarding-or-expansion">On-boarding or Expansion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contact.html#announcements">Announcements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contact.html#slack">Slack</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contact.html#paging-for-urgent-support">Paging for Urgent Support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contact.html#design-development-apple-internal">Design &amp; Development (Apple Internal)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contact.html#office-hours">Office Hours</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Roadmap</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#present">Present</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#future">Future</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#past">Past</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="releases/index.html">Releases</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="releases/index.html#recommended-release">Recommended release</a></li>
+<li class="toctree-l2"><a class="reference internal" href="releases/index.html#announcement-procedure">Announcement Procedure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="releases/index.html#release-announcements">Release Announcements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="releases/index.html#apache-kafka-version-mapping">Apache Kafka Version Mapping</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="china.html">China (GCBD)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="china.html#aci-kafka-clusters">ACI Kafka Clusters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="china.html#sdr-identity-certificates">SDR Identity Certificates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="china.html#kaffe">Kaffe</a></li>
+<li class="toctree-l2"><a class="reference internal" href="china.html#broker-tls">Broker TLS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="china.html#kafka-for-all-vips">Kafka For All VIPs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="china.html#apple-network-policies-anps">Apple Network Policies (ANPs)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="china.html#self-service">Self Service</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="internals/index.html">Internals</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="internals/kafka_internal_setup.html">Kafka Internal Setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="internals/verifiable_producer_consumer.html">Verifiable Producer/Consumer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="internals/index.html#qtip">QTIP</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="compliance.html">Compliance</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="compliance.html#supported-data-types"><strong>Supported Data Types</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="compliance.html#end-user-responsibilities-to-use-the-platform-by-data-tier">End user responsibilities to use the platform by data tier</a></li>
+</ul>
+</li>
+</ul>
+
+    </nav>
+  </div>
+    
+  </div>
+</article>
+  
+
+
+<footer class="footer">
+  <p>© Copyright <script>document.write(new Date().getFullYear())</script>, Apple Inc. All rights reserved. Apple Confidential.</p><a href="mailto:aci-queue-support@group.apple.com" alt="contact pie">Contact</a> | <a href="rdar://new/problem/component=ACI%20Queue&version=Kafka%20Support">Report an Issue</a>
+    | <a href="https://github.pie.apple.com/pie/kafka-tools/edit/develop/docs/source/roadmap.md" alt="Edit on ACS GitHub">Edit on ACS GitHub</a>
+</footer>
+  </body>
+</html>

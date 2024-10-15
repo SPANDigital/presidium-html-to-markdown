@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Kafka Hubble Reporter &#8212; ACI Kafka Docs</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css?v=eeb27264" />
+    <link rel="stylesheet" href="../_static/styleguide.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/fonts.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/app.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/toc.css" type="text/css" />
+    <script src="../_static/documentation_options.js?v=b9a12352"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within ACI Kafka Docs"
+          href="../_static/opensearch.xml"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Kafka Hubble Yammer Reporter" href="kafka_server_hubble_reporter.html" />
+    <link rel="prev" title="Monitoring and auditing" href="index.html" />
+
+<meta name="viewport" content="width=1172">
+<script type="text/javascript" src="../_static/app.js "></script>
+
+<script>
+window.Columbo=window.Columbo||function(o,u){"function"==typeof o?u=o:Columbo.config=o,u&&(Columbo.q=Columbo.q||[]).push(u)};
+Columbo({
+    appConfig: {
+        version: 'v0',
+        columboId: '09707287240ae779c2d02d07465ae16b5129de94c93704236a70c9d51a5f43fc'
+    }
+});
+</script>
+<script async src="../_static/cw.js"></script>
+
+  </head><body>
+
+  <header class="globalHeader">
+  <div class="headerWrapper">
+    <h1 class="globalTitle" data-toc-skip><a href="https://aci.apple.com">Apple Cloud Infrastructure</a></h1>
+    <span class="globalNavigation">
+      <a href="https://aci.apple.com/office-hours/">Office Hours</a>
+      <a href="/">Documentation</a>
+      <a href="https://status.aci.apple.com/">Status</a>
+    </span>
+  </div>
+</header>
+
+<article>
+  
+    <header class="siteHeader">
+  <div class="headerWrapper">
+    <h1 class="siteTitle" data-toc-skip>
+      <a href="../index.html">
+        ACI Kafka</a>
+    </h1>
+    
+      
+<nav class="navbarLinks">
+    
+      <a class="tabbed-navigation--item " href="../contents.html">Site Map</a>
+    
+    
+      <a class="tabbed-navigation--item" href="https://docs.aci.apple.com/kafka/public_api.html">API Docs</a>
+    
+</nav>
+
+    
+    
+      
+<form class="siteSearch" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="text-input--base text-input--medium searchInput" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+    
+  </div>
+</header>
+
+  <div class="pageWrapper">
+    <div class="pageContent column global_and_site_headers" role="main">
+      
+  <section id="kafka-hubble-reporter">
+<h1>Kafka Hubble Reporter<a class="headerlink" href="#kafka-hubble-reporter" title="Link to this heading">¶</a></h1>
+<p>kafka-hubble-reporter aims to provide a flexible and easy way to push
+your client stats to hubble. Because this is shared both by the brokers
+and the clients we provide the ability to do some fine grain
+aggregation.</p>
+<section id="getting-it">
+<h2>Getting it<a class="headerlink" href="#getting-it" title="Link to this heading">¶</a></h2>
+<p>We publish a library which contains only the reporter. To get it use
+these coordinates:
+<strong>com.apple.pie.queue:kafka-hubble-reporter:<latestVersion></strong>.</p>
+</section>
+<section id="setting-it-up">
+<h2>Setting it up<a class="headerlink" href="#setting-it-up" title="Link to this heading">¶</a></h2>
+<p>The reporter is configured just as a regular
+<em>o.a.k.common.metrics.KafkaMetricReporter</em> reporters by providing your
+client and broker properties. You will need to add to your client
+configuration our metric reporter by adding:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>metric.reporters=com.apple.pie.queue.kafka.hubble.HubbleMetricsReporter
+</pre></div>
+</div>
+<p>If your application doesn’t already initialize the HubbleAgent you will
+want to add to your configuration:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>pie.queue.hubble.agent.initialize=true
+</pre></div>
+</div>
+<p>If this property is set, you will need to set the configuration of
+hubble. We will be read from your HubbleProperties the path to publish
+stats and other general hubble properties.</p>
+<p>By default configuration name are:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><em>hubble.config.file</em> A configuration file sent directly to hubble.</p></li>
+<li><p><em>pie.queue.applicationName</em> or <em>ISApplicationName</em> used for the
+application name part of the hubble path.</p></li>
+<li><p><em>pie.queue.datacenterName</em> used for the data center name to report
+to.</p></li>
+<li><p><em>pie.queue.podName</em> or <em>partition</em> the pod name part of the hubble
+path.</p></li>
+<li><p><em>pie.queue.hostName</em> the hostname part of the hubble path.</p></li>
+<li><p><em>pie.queue.instanceId</em> or <em>ISInstanceId</em> the instance id part of
+the hubble path.</p></li>
+<li><p><em>pie.queue.metrics.prefix</em> the prefix to add in front of all the
+stats.</p></li>
+</ul>
+</div></blockquote>
+<p>Other useful configuration used for hubble are :</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>hubble.publisher.publish=true
+hubble.agent.enable.percentile=true
+
+# The publishing frequency in seconds.
+hubble.publisher.frequency=60
+
+hubble.event.includeAll=true
+hubble.event.names=*
+hubble.properties.canOverideFromFileAtRuntime=false
+
+hubble.channel.tcp.proto.include=true
+hubble.publisher.tcp.server.url=&lt;url of the hubble to report to&gt;
+</pre></div>
+</div>
+<p>Please refer to the <a class="reference external" href="https://github.pie.apple.com/Hubble/hubble-agent-docs">hubble agent
+documentation</a>
+for more details.</p>
+<p>For pie queue deployment we keep all these in a common
+<em>hubble.properties</em> that we point to in our configuration by setting
+<em>hubble.config.file</em>.</p>
+</section>
+<section id="kpi-configuration-and-aggregation">
+<h2>KPI configuration and aggregation<a class="headerlink" href="#kpi-configuration-and-aggregation" title="Link to this heading">¶</a></h2>
+<p>Hubble has a limitation in the number of KPIs which can be emitted. It
+also doesn’t enable you to easily roll things up together on something
+other than the machine placement.</p>
+<p>In Kafka all stats are emitted with a scope or a set of tags (taking the
+shape of key/values). For example <em>kafka.log-Log-LogEndOffset</em> is
+emitted for each topic and partition. Because you can have many topics
+and partitions and don’t want to create alerts for each tuple you’ll
+want to roll things up together.</p>
+<p><strong>By default all tags are rolled up together</strong> and emit stats like
+<em>kafka.log-Log-LogEndOffset(partition:aggregated)(topic:aggregated)</em>.</p>
+<p>A non exhaustive list of possible tags are:</p>
+<ul class="simple">
+<li><p>partition (the partition number of the topic).</p></li>
+<li><p>topic (the topic name).</p></li>
+<li><p>client-id (the client.id property passed in to the instance).</p></li>
+</ul>
+<p>Because some tags for some values may be more important you can
+selectively enable them with:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>pie.queue.metrics.nameResolver[&lt;tagName&gt;]=&lt;regularExpression&gt;
+</pre></div>
+</div>
+<p>If a regular expression is invalid an error message will be logged and
+we’ll simply ignore it.</p>
+<p>This will push 2 stats for the previous event
+<em>kafka.log-Log-LogEndOffset(partition:aggregated)(topic:aggregated)</em> and
+<em>kafka.log-Log-LogEndOffset(partition:aggregated)(topic:<Your Selected
+Topic>)</em>. If a tag has a many values where a subset of the topics are
+selectively enabled, the other topics will be aggregated with under the
+value <em>nonIncluded</em>.</p>
+<p>Here is an example of selectively enabling topic metrics:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>pie.queue.metrics.nameResolver[topic]=foo.*
+</pre></div>
+</div>
+<p>This will enable all the KPIs which have a key ‘topic’ which starts
+with <em>foo</em>. So if we take the event <em>compression rate</em> and the topics
+foo, foo2, bar and baz 4 KPIs will be emitted:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>producer-topic-metrics-compression-rate(client-id:aggregated)(topic:aggregated)
+producer-topic-metrics-compression-rate(client-id:aggregated)(topic:foo)
+producer-topic-metrics-compression-rate(client-id:aggregated)(topic:foo2)
+producer-topic-metrics-compression-rate(client-id:aggregated)(topic:nonIncluded)
+</pre></div>
+</div>
+<p>in <em>aggregated</em> we’ll have all topics, in <em>foo</em> and <em>foo2</em> we’ll just
+have respectively <em>foo</em> and <em>foo2</em> and in <em>nonIncluded</em> <em>bar</em> and
+<em>baz</em>.</p>
+<p>For aggregated values such as averages and percentiles rolling up is not
+straight forward we therefore compute the weighted average of them,
+unfortunately this has limited mathematical significance and we
+recommend using the maximum.</p>
+<p>If you want to know more about the existing KPIs see the <a class="reference external" href="https://kafka.apache.org/documentation.html#monitoring">public
+documentation</a>.</p>
+</section>
+<section id="selectively-disabling-kpis">
+<h2>Selectively Disabling KPIs<a class="headerlink" href="#selectively-disabling-kpis" title="Link to this heading">¶</a></h2>
+<p>If you want to selectively disable some KPIs you can use the property:
+<em>pie.queue.metrics.excluded.patterns</em>. Disabling takes priority over
+enable, so when a KPI is selectively disabled, any explicit enabling of
+that KPI will have no effect.</p>
+<p><strong>Note: We marked <em>pie.queue.metrics.blacklist.patterns</em> for deprecation.</strong></p>
+<p>It takes a comma separated list of patterns to be applied to the root
+name of the KPI (doesn’t take into account tags used for aggregation).</p>
+<p>There are 2 ways to selectively disable KPIs:</p>
+<ul class="simple">
+<li><p>String matching (Using String.contains()), to do so simply give a
+portion of the KPI name as a parameter</p></li>
+<li><p>regular expression matching (Using java Pattern), to do so prefix
+your pattern by <em>re:</em>.</p></li>
+</ul>
+<p>You can escape commas (.i.e: <em>,</em>) character with a backslash. If a
+regular expression is invalid an error message will be logged and we’ll
+simply ignore it.</p>
+<p>Here’s an example of a valid configuration:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>pie.queue.metrics.excluded.patterns=producer-topic,topic-metric[0-9]{2,4}
+</pre></div>
+</div>
+<p>Note:</p>
+<p>This feature was added because of
+<a class="reference external" href="https://issues.apache.org/jira/browse/KAFKA-5890">KAFKA-5890</a>. You can
+use this configuration to ignore all the extra KPIs:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>pie.queue.metrics.excluded.patterns=re:consumer-fetch-manager-metrics-.*\.records-lag.*
+</pre></div>
+</div>
+</section>
+<section id="invoke-your-own-configuration">
+<h2>Invoke your own configuration<a class="headerlink" href="#invoke-your-own-configuration" title="Link to this heading">¶</a></h2>
+<p>By default configuration is extracted from your client or broker
+configuration. You might have another way to provide configuration
+(framework base, hard coded…). You can easily integrate with your
+custom provider by implementing
+<em>com.apple.pie.queue.kafka.hubble.HubbleProperties</em>. You will then need
+to specify in your configuration <em>pie.queue.config.class</em> to the path of
+this class. By default it uses
+<em>com.apple.pie.queue.kafka.hubble.PieHubbleProperties</em>. But for the
+broker we extend this class to use the Kafka broker id as the instance
+id in <em>com.apple.pie.queue.kafka.hubble.PieBrokerHubbleProperties</em>. We
+then add to all our broker properties:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>pie.queue.config.class=com.apple.pie.queue.kafka.hubble.PieBrokerHubbleProperties
+</pre></div>
+</div>
+<p>Another existing <em>HubbleProperties</em> implementation is
+<em>com.apple.pie.queue.kafka.hubble.PassThroughProperties</em> which will pass
+in all your configuration down to hubble.</p>
+</section>
+<section id="defining-your-own-kpi-aggregation-and-selection">
+<h2>Defining your own KPI aggregation and selection<a class="headerlink" href="#defining-your-own-kpi-aggregation-and-selection" title="Link to this heading">¶</a></h2>
+<p>In <em>HubbleProperties</em> you can implement <em>getNameResolver</em> which enables
+you to return a possibly empty stream of all events you extracted from a
+KPI.</p>
+</section>
+<section id="adding-other-statscollection">
+<h2>Adding other StatsCollection<a class="headerlink" href="#adding-other-statscollection" title="Link to this heading">¶</a></h2>
+<p>One thing you might want to do is to add new StatsModules or
+StatsCollections to publish to hubble. <em>HubbleProperties</em> offers you two
+methods to do so.</p>
+<p>To get more information on the hubble agent please refer to the <a class="reference external" href="https://github.pie.apple.com/Hubble/hubble-agent-docs">hubble
+agent
+documentation</a></p>
+</section>
+</section>
+
+
+    </div>
+    
+  <div class="pageTOC">
+    <nav class="toc nav global_and_site_headers">
+      <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../overview.html#getting-started">Getting Started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../overview.html#offerings">Offerings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../overview.html#roadmap">Roadmap</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../overview.html#reference">Reference</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../concepts.html">Concepts</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../concepts.html#customer-group">Customer group</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../concepts.html#client-identities">Client identities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../concepts.html#namespace">Namespace</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../concepts.html#topic">Topic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../concepts.html#cluster-traffic-quota">Cluster traffic quota</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../concepts.html#client-identity-topic-access">Client identity topic access</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../onboarding.html">On-Boarding &amp; Expansion</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../onboarding.html#expansion-for-existing-customers">Expansion for Existing Customers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../onboarding.html#getting-started-for-new-customers">Getting Started for New Customers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../onboarding.html#general-process">General Process</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../self-service/index.html">Self Service</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../self-service/kube.html">Kubernetes CRDs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../self-service/kafka_cli.html">ACI Kafka CLI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../self-service/public_api.html">Public API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../self-service/inspector.html">Inspector</a></li>
+<li class="toctree-l2"><a class="reference internal" href="broker_metrics.html">Broker metrics</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../client/index.html">Client</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../client/quick_start.html">Quick Start</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../client/kafka_for_all.html">Kafka for All (non-Java clients)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../client/using_client.html">Using the client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../client/envelope.html"><code class="docutils literal notranslate"><span class="pre">PieEnvelope</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../client/producer_client.html">Producer Client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../client/producer_settings.html">Producer Recommendations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../client/consumer_client.html">Consumer Client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../client/consumer_settings.html">Consumer Recommendations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../client/security_settings.html">Security Settings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../client/kaffe.html">Kaffe</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../client/client_secrets_distribution.html">Client Secrets Distribution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../client/default_config_injection.html">Default Configuration Injection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../client/lag_metrics.html">Consumer Group’s lag metrics</a></li>
+<li class="toctree-l2"><a class="reference external" href="https://github.pie.apple.com/aci/kafka-examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Monitoring and auditing</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Kafka Hubble Reporter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="kafka_server_hubble_reporter.html">Kafka Hubble Yammer Reporter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="kafka_client_hubble_dashboards.html">Kafka Client Hubble Dashboard Templates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="broker_metrics.html">Broker metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="kafka_client_open_telemetry.html">Kafka Client OpenTelemetry integration</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../sli_catalogue.html">SLI Catalog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../sli_catalogue.html#kafka">Kafka</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../sli_catalogue.html#mirrors">Mirrors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../sli_catalogue.html#kaffe">Kaffe</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../sli_catalogue.html#iris">Iris</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../sli_catalogue.html#api">API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../sli_catalogue.html#forthcoming-slis-slos">Forthcoming SLIs/SLOs</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../dev-and-ci.html">Development and CI</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../dev-and-ci.html#getting-started">Getting Started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dev-and-ci.html#local-environments">Local Environments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dev-and-ci.html#continuous-integration">Continuous Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dev-and-ci.html#client-configuration">Client Configuration</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../faq/index.html">FAQ</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../faq/index.html#getting-started">Getting Started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/index.html#namespaces">Namespaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/index.html#connectivity">Connectivity</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../troubleshooting/index.html">Troubleshooting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../troubleshooting/general.html">General troubleshooting guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../troubleshooting/client.html">Common Client Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../troubleshooting/connectivity.html">Checking connectivity to ACI Kafka cluster</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../glossary.html">Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contact.html">Contact Us</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../contact.html#general-support">General Support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contact.html#on-boarding-or-expansion">On-boarding or Expansion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contact.html#announcements">Announcements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contact.html#slack">Slack</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contact.html#paging-for-urgent-support">Paging for Urgent Support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contact.html#design-development-apple-internal">Design &amp; Development (Apple Internal)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contact.html#office-hours">Office Hours</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../roadmap.html">Roadmap</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../roadmap.html#present">Present</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../roadmap.html#future">Future</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../roadmap.html#past">Past</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../releases/index.html">Releases</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../releases/index.html#recommended-release">Recommended release</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../releases/index.html#announcement-procedure">Announcement Procedure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../releases/index.html#release-announcements">Release Announcements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../releases/index.html#apache-kafka-version-mapping">Apache Kafka Version Mapping</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../china.html">China (GCBD)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../china.html#aci-kafka-clusters">ACI Kafka Clusters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../china.html#sdr-identity-certificates">SDR Identity Certificates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../china.html#kaffe">Kaffe</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../china.html#broker-tls">Broker TLS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../china.html#kafka-for-all-vips">Kafka For All VIPs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../china.html#apple-network-policies-anps">Apple Network Policies (ANPs)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../china.html#self-service">Self Service</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../internals/index.html">Internals</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../internals/kafka_internal_setup.html">Kafka Internal Setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../internals/verifiable_producer_consumer.html">Verifiable Producer/Consumer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../internals/index.html#qtip">QTIP</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../compliance.html">Compliance</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../compliance.html#supported-data-types"><strong>Supported Data Types</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../compliance.html#end-user-responsibilities-to-use-the-platform-by-data-tier">End user responsibilities to use the platform by data tier</a></li>
+</ul>
+</li>
+</ul>
+
+    </nav>
+  </div>
+    
+  </div>
+</article>
+  
+
+
+<footer class="footer">
+  <p>© Copyright <script>document.write(new Date().getFullYear())</script>, Apple Inc. All rights reserved. Apple Confidential.</p><a href="mailto:aci-queue-support@group.apple.com" alt="contact pie">Contact</a> | <a href="rdar://new/problem/component=ACI%20Queue&version=Kafka%20Support">Report an Issue</a>
+    | <a href="https://github.pie.apple.com/pie/kafka-tools/edit/develop/docs/source/monitoring/kafka_hubble_reporter.md" alt="Edit on ACS GitHub">Edit on ACS GitHub</a>
+</footer>
+  </body>
+</html>
