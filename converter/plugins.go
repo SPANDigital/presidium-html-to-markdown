@@ -67,9 +67,12 @@ func LinkCheckerPlugin(baseDomain string) md.Plugin {
 
 					// Check if the link is external or internal
 					if isExternalLink(href, baseDomain) {
+						// content = fmt.Sprintf("[External Link: %s](%s)", content, href)
 						content = fmt.Sprintf("[External Link: %s](%s)", content, href)
 					} else {
-						content = fmt.Sprintf("[Internal Link: %s](%s)", content, href)
+
+						content = fmt.Sprintf("[Internal Link: %s](%s)", content, processInternalRef(href))
+
 					}
 
 					return &content
@@ -92,6 +95,26 @@ func isExternalLink(link string, baseDomain string) bool {
 	}
 
 	return false
+}
+
+func removeHtmlAndHtmls(href string) string {
+
+	/*remove .html*/
+	cleanHtml := strings.ReplaceAll(href, ".html", "")
+
+	/*remove .htmls*/
+	cleanHtmls := strings.ReplaceAll(cleanHtml, ".htmls", "")
+
+	return cleanHtmls
+
+}
+
+func processInternalRef(href string) string {
+
+	cleanLink := removeHtmlAndHtmls(href)
+
+	return `\{{<ref "` + cleanLink + `" >}}`
+
 }
 
 // check that all external links are types or parsed correctly and are linking to external sites
