@@ -67,7 +67,6 @@ func LinkCheckerPlugin(baseDomain string) md.Plugin {
 
 					// Check if the link is external or internal
 					if isExternalLink(href, baseDomain) {
-						// content = fmt.Sprintf("[External Link: %s](%s)", content, href)
 						content = fmt.Sprintf("[External Link: %s](%s)", content, href)
 					} else {
 
