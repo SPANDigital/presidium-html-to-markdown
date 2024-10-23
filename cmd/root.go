@@ -15,10 +15,8 @@ func init() {
 }
 
 var rootCmd = &cobra.Command{
-	Use: "root",
-	Run: func(cmd *cobra.Command, args []string) {
-		return
-	},
+	Use: "html2md",
+	Run: func(cmd *cobra.Command, args []string) {},
 }
 
 func Execute() {
