@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"htmltomarkdown/util"
 	"net/url"
+	"path/filepath"
 	"strings"
 
 	md "github.com/JohannesKaufmann/html-to-markdown"
@@ -53,14 +54,14 @@ func articleHeader(title string, delim string) string {
 }
 
 // LinkCheckerPlugin is a custom plugin that checks whether links are internal or external
-func LinkCheckerPlugin(baseDomain string) md.Plugin {
+func LinkCheckerPlugin(baseDomain string, baseDir string) md.Plugin {
 	return func(c *md.Converter) []md.Rule {
 		return []md.Rule{
 			{
 				Filter: []string{"a"},
 				Replacement: func(content string, node *goquery.Selection, opt *md.Options) *string {
 					href, exists := node.Attr("href")
-
+					fmt.Print("blah")
 					if !exists {
 						return nil
 					}
@@ -69,9 +70,26 @@ func LinkCheckerPlugin(baseDomain string) md.Plugin {
 					if isExternalLink(href, baseDomain) {
 						content = fmt.Sprintf("[External Link: %s](%s)", content, href)
 					} else {
-						content = fmt.Sprintf("[Internal Link: %s](%s)", content, href)
+
+						content = fmt.Sprintf("[Internal Link: %s](%s)", content, processInternalRef(href))
+
 					}
 
+					return &content
+				},
+			},
+			{
+				Filter: []string{"img"},
+				Replacement: func(content string, node *goquery.Selection, opt *md.Options) *string {
+					src, exists := node.Attr("src")
+					path := filepath.Join("/", baseDir, "images", filepath.Base(src))
+
+					fmt.Print("blah", src, exists, path)
+					if !exists {
+						return nil
+					}
+
+					content = fmt.Sprintf("![Image](%s)", path)
 					return &content
 				},
 			},
@@ -94,10 +112,27 @@ func isExternalLink(link string, baseDomain string) bool {
 	return false
 }
 
-// check that all external links are types or parsed correctly and are linking to external sites
-// check that all internal links are parsed correctly with no confusing/extra chars
-// check mailto, adirs etc, that they link to the correct application. (behavior) and if internal => what happens when we add the `({{<ref` style
-// Maybe remove .html or whatever at the end of the link before applying the `({{<ref` style
-// Track this in your ticket - track time spent and add comments on the ticket for visibility.
+func removeHtmlAndHtmls(href string) string {
+
+	/*remove .html*/
+	cleanHtml := strings.ReplaceAll(href, ".html", "")
+
+	/*remove .htmls*/
+	cleanHtmls := strings.ReplaceAll(cleanHtml, ".htmls", "")
+
+	return cleanHtmls
+
+}
+
+func processInternalRef(href string) string {
+
+	cleanLink := removeHtmlAndHtmls(href)
+
+	return `\{{<ref "` + cleanLink + `" >}}`
+
+}
+
+// remove the [internal link/external link ...]
+
 // Mpilo: to look at linking other file types and base url specific issues
 // Mpilo: or the baseurl style: return fmt.Sprintf("{{%%baseurl%%}}/%s", path) for file links / images
