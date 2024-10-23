@@ -1,10 +1,11 @@
 package cmd
 
 import (
+	"htmltomarkdown/config"
+
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"htmltomarkdown/config"
 )
 
 var cfg config.Config
