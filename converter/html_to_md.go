@@ -33,7 +33,7 @@ func HtmlConverter(baseUrl, path string, cfg config.Config) *html2md.Converter {
 
 	conv.Before(remove(cfg.Html.Remove), replace(cfg.Html.Replace))
 	conv.Use(plugin.Table(), ArticlePlugin(cfg.Html.HeaderTags, ";;;"))
-	conv.Use(LinkCheckerPlugin(baseUrl, path))
+	conv.Use(LinkCheckerPlugin(baseUrl))
 	conv.AddRules(rules...)
 
 	return conv

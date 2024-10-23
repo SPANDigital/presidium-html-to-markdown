@@ -3,7 +3,6 @@ package converter
 import (
 	"fmt"
 	"htmltomarkdown/util"
-	"net/url"
 	"path/filepath"
 	"strings"
 
@@ -54,25 +53,22 @@ func articleHeader(title string, delim string) string {
 }
 
 // LinkCheckerPlugin is a custom plugin that checks whether links are internal or external
-func LinkCheckerPlugin(baseDomain string, baseDir string) md.Plugin {
+func LinkCheckerPlugin(baseDomain string) md.Plugin {
 	return func(c *md.Converter) []md.Rule {
 		return []md.Rule{
 			{
 				Filter: []string{"a"},
 				Replacement: func(content string, node *goquery.Selection, opt *md.Options) *string {
 					href, exists := node.Attr("href")
-					fmt.Print("blah")
 					if !exists {
 						return nil
 					}
 
 					// Check if the link is external or internal
-					if isExternalLink(href, baseDomain) {
+					if util.IsExternalUrl(href, baseDomain) {
 						content = fmt.Sprintf("[External Link: %s](%s)", content, href)
 					} else {
-
 						content = fmt.Sprintf("[Internal Link: %s](%s)", content, processInternalRef(href))
-
 					}
 
 					return &content
@@ -82,14 +78,27 @@ func LinkCheckerPlugin(baseDomain string, baseDir string) md.Plugin {
 				Filter: []string{"img"},
 				Replacement: func(content string, node *goquery.Selection, opt *md.Options) *string {
 					src, exists := node.Attr("src")
-					path := filepath.Join("/", baseDir, "images", filepath.Base(src))
-
-					fmt.Print("blah", src, exists, path)
 					if !exists {
 						return nil
 					}
 
+					path := fmt.Sprintf("{{%%baseurl%%}}/%s", filepath.Join("images", filepath.Base(src)))
 					content = fmt.Sprintf("![Image](%s)", path)
+
+					return &content
+				},
+			},
+			{
+				Filter: []string{"video"},
+				Replacement: func(content string, node *goquery.Selection, opt *md.Options) *string {
+					src, exists := node.Attr("src")
+					if !exists {
+						return nil
+					}
+
+					path := fmt.Sprintf("{{%%baseurl%%}}/%s", filepath.Join("videos", filepath.Base(src)))
+					content = fmt.Sprintf("{{< video %s >}}", path)
+
 					return &content
 				},
 			},
@@ -97,42 +106,17 @@ func LinkCheckerPlugin(baseDomain string, baseDir string) md.Plugin {
 	}
 }
 
-// isExternalLink checks if the link is external based on the domain
-func isExternalLink(link string, baseDomain string) bool {
-	parsedURL, err := url.Parse(link)
-	if err != nil {
-		return false // Handle invalid URLs as internal by default
-	}
-
-	// Check if the hostname is different or if it's a relative link
-	if parsedURL.Host != "" && !strings.Contains(parsedURL.Host, baseDomain) {
-		return true
-	}
-
-	return false
-}
-
-func removeHtmlAndHtmls(href string) string {
-
-	/*remove .html*/
-	cleanHtml := strings.ReplaceAll(href, ".html", "")
-
-	/*remove .htmls*/
-	cleanHtmls := strings.ReplaceAll(cleanHtml, ".htmls", "")
-
-	return cleanHtmls
-
+func removeHtmlExtensions(href string) string {
+	return strings.NewReplacer(
+		".html", "",
+		".htmls", "",
+	).Replace(href)
 }
 
 func processInternalRef(href string) string {
-
-	cleanLink := removeHtmlAndHtmls(href)
+	cleanLink := removeHtmlExtensions(href)
 
 	return `\{{<ref "` + cleanLink + `" >}}`
-
 }
 
 // remove the [internal link/external link ...]
-
-// Mpilo: to look at linking other file types and base url specific issues
-// Mpilo: or the baseurl style: return fmt.Sprintf("{{%%baseurl%%}}/%s", path) for file links / images
