@@ -1,0 +1,7 @@
+- For more details on Consumer Group please check the [Kafka Consumer documentation]({{%baseurl%}}/https://docs.confluent.io/platform/current/clients/consumer.html#consumer-groups).
+- ![]({{%baseurl%}}//images/consumer_lifecycle.png)
+- 1. Avoiding duplication during data writing. This can be achieved by enabling the [Idempotent Producer]({{%baseurl%}}/producer_settings.html#idempotent-producer-and-transactional-producer)).
+- Any ACI Kafka client with its [client identity topic access]({{%baseurl%}}/../concepts.html#client-identity-topic-access) set to `CONSUME`
+is authorized to create a [consumer group]({{%baseurl%}}/consumer_client.html#consumer-group-a-k-a-group-id-config) by prefixing the `group.id` property with their [ACI Kafka client identity]({{%baseurl%}}/../concepts.html#client-identities):
+- If you are using ACI Kafka client with third-party apps like Spark you have to use the [custom ConfigurationInterceptor]({{%baseurl%}}/https://github.pie.apple.com/pie/kafka-tools/blob/develop/kafka-pie-client/src/main/java/com/apple/pie/queue/kafka/client/configinterceptors/ConsumerGroupIdConfigurationInterceptor.java). Spark manipulates the consumer group internally and requires this interceptor as a workaround.
+`kafka-pie-client>=0.13 include ` com.apple.pie.queue.kafka.client.configinterceptors.ConsumerGroupIdConfigurationInterceptor\`.
