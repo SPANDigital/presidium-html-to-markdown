@@ -106,6 +106,7 @@ func LinkCheckerPlugin(baseDomain string) md.Plugin {
 	}
 }
 
+/*removes html and htmls extensions in param string*/
 func removeHtmlExtensions(href string) string {
 	return strings.NewReplacer(
 		".html", "",
@@ -113,6 +114,7 @@ func removeHtmlExtensions(href string) string {
 	).Replace(href)
 }
 
+/*adds the ref style*/
 func processInternalRef(href string) string {
 	cleanLink := removeHtmlExtensions(href)
 
