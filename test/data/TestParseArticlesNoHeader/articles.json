@@ -1,0 +1,16 @@
+[
+  {
+    "FrontMatter": {
+      "Title": "Article title",
+      "Weight": 0
+    },
+    "Content": "\n"
+  },
+  {
+    "FrontMatter": {
+      "Title": "Article title that needs to be escaped!?",
+      "Weight": 0
+    },
+    "Content": "\n#### Also not a title\n"
+  }
+]
