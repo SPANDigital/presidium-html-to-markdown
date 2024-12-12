@@ -1,10 +1,11 @@
 package cmd
 
 import (
+	"htmltomarkdown/config"
+
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"htmltomarkdown/config"
 )
 
 var cfg config.Config
@@ -14,10 +15,8 @@ func init() {
 }
 
 var rootCmd = &cobra.Command{
-	Use: "root",
-	Run: func(cmd *cobra.Command, args []string) {
-		return
-	},
+	Use: "html2md",
+	Run: func(cmd *cobra.Command, args []string) {},
 }
 
 func Execute() {
