@@ -1,9 +1,8 @@
 package util
 
 import (
-	"testing"
-
 	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
 func TestReplaceTemplate(t *testing.T) {
@@ -70,8 +69,6 @@ func TestIsURL(t *testing.T) {
 }
 
 func TestIsExternalURL(t *testing.T) {
-	baseDomain := "example.com"
-
 	testCases := map[string]bool{
 		"http://url":               true,
 		"https://url":              true,
@@ -86,7 +83,7 @@ func TestIsExternalURL(t *testing.T) {
 	}
 
 	for test, expected := range testCases {
-		actual := IsExternalUrl(test, baseDomain)
+		actual := IsExternalUrl(test)
 		assert.Equal(t, expected, actual, test)
 	}
 }

@@ -2,12 +2,11 @@ package util
 
 import (
 	"fmt"
+	rake "github.com/afjoseph/RAKE.Go"
 	"net/url"
 	"path/filepath"
 	"regexp"
 	"strings"
-
-	rake "github.com/afjoseph/RAKE.Go"
 )
 
 var (
@@ -37,24 +36,14 @@ func IsURL(path string) bool {
 	return len(parsedURL.Scheme) > 0 && len(parsedURL.Host) > 0
 }
 
-func IsExternalUrl(path string, baseDomain string) bool {
-
-	//Handle mailto: links
-	if strings.HasPrefix(path, "mailto:") {
+func IsExternalUrl(path string) bool {
+	if IsURL(path) {
 		return true
 	}
 
-	parsedURL, err := url.Parse(path)
-	if err != nil {
-		return false // Handle invalid URLs as internal by default
-	}
-
-	// Check if the hostname is different or if it's a relative link
-	if parsedURL.Host != "" && !strings.Contains(parsedURL.Host, baseDomain) {
-		return true
-	}
-
-	return false
+	return strings.HasPrefix(path, "tel:") ||
+		strings.HasPrefix(path, "mailto:") ||
+		strings.HasPrefix(path, "file:")
 }
 
 func PathByType(contentType, filePath, assetDir string) string {

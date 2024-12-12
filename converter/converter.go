@@ -3,15 +3,14 @@ package converter
 import (
 	"errors"
 	"fmt"
+	"github.com/PuerkitoBio/goquery"
+	log "github.com/sirupsen/logrus"
 	"htmltomarkdown/config"
 	"htmltomarkdown/models"
 	"htmltomarkdown/parser"
 	"htmltomarkdown/util"
 	"os"
 	"path/filepath"
-
-	"github.com/PuerkitoBio/goquery"
-	log "github.com/sirupsen/logrus"
 )
 
 var ErrNoContentFound = errors.New("no content found")
@@ -68,7 +67,7 @@ func (c *Converter) convertFile(filename, src, relDir, dst string) error {
 		return err
 	}
 
-	markdown := HtmlConverter(c.baseUrl, dst, c.cfg).Convert(content)
+	markdown := HtmlConverter(c.baseUrl, relDir, c.cfg).Convert(content)
 	articles, err := parser.ParseArticles(markdown, ";;;")
 	if err != nil {
 		return fmt.Errorf("%s: %s", err, src)

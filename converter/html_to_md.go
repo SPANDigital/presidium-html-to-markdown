@@ -2,14 +2,17 @@ package converter
 
 import (
 	"fmt"
-	"htmltomarkdown/config"
-	"htmltomarkdown/models"
-	"htmltomarkdown/util"
-	"strings"
-
 	html2md "github.com/JohannesKaufmann/html-to-markdown"
 	"github.com/JohannesKaufmann/html-to-markdown/plugin"
 	"github.com/PuerkitoBio/goquery"
+	log "github.com/sirupsen/logrus"
+	"htmltomarkdown/config"
+	"htmltomarkdown/models"
+	"htmltomarkdown/util"
+	"mime"
+	"path/filepath"
+	"regexp"
+	"strings"
 )
 
 type GetAbsoluteURL func(selection *goquery.Selection, rawURL string, domain string) string
@@ -28,15 +31,63 @@ var rules = []html2md.Rule{{
 	},
 }}
 
+var replacementRules = []models.RegexReplace{{
+	// anchor links are escaped by the converter, this fixes it
+	// e.g (\#anchor) -> (#anchor)
+	Pattern: "\\(\\\\#([^)]+)\\)",
+	With:    "(#$1)",
+}}
+
 func HtmlConverter(baseUrl, path string, cfg config.Config) *html2md.Converter {
-	conv := html2md.NewConverter(path, true, &html2md.Options{})
+	conv := html2md.NewConverter(path, true, &html2md.Options{
+		GetAbsoluteURL: getAbsoluteURL(baseUrl, cfg.AssetDir),
+	})
 
 	conv.Before(remove(cfg.Html.Remove), replace(cfg.Html.Replace))
+	conv.After(regexReplace(append(replacementRules, cfg.Markdown.Replace...)))
 	conv.Use(plugin.Table(), ArticlePlugin(cfg.Html.HeaderTags, ";;;"))
-	conv.Use(LinkCheckerPlugin(baseUrl))
 	conv.AddRules(rules...)
 
 	return conv
+}
+
+func getAbsoluteURL(baseUrl, assetDir string) GetAbsoluteURL {
+	return func(_ *goquery.Selection, rawURL string, path string) string {
+		ext := filepath.Ext(rawURL)
+		if len(ext) > 0 && ext != ".html" {
+			mimeType := mime.TypeByExtension(ext)
+			path := util.PathByType(mimeType, rawURL, assetDir)
+			return fmt.Sprintf("{{%%baseurl%%}}/%s", path)
+		}
+
+		if strings.Contains(rawURL, "github-issues") {
+			log.Warnf("github-issues found: %s", rawURL)
+		}
+
+		if util.IsExternalUrl(rawURL) {
+			return rawURL
+		}
+
+		if strings.HasPrefix(rawURL, "#") {
+			return rawURL
+		}
+
+		// remove baseUrl from url e.g /docs/article -> /article
+		if filepath.IsAbs(rawURL) {
+			return strings.TrimPrefix(rawURL, baseUrl)
+		}
+
+		filename := filepath.Base(rawURL)
+		if strings.HasPrefix(filename, "index.html") { // remove index.html from url
+			rawURL = filepath.Join(filepath.Dir(rawURL), strings.TrimPrefix(filename, "index.html"))
+		}
+
+		// resolve relative urls against the current path
+		absURL := filepath.Join(path, rawURL)
+		absURL = strings.Replace(absURL, ".html", "", -1)
+
+		return fmt.Sprintf("{{< ref \"%s\" >}}", absURL)
+	}
 }
 
 func replace(replacements []models.DocReplacement) html2md.BeforeHook {
@@ -77,5 +128,19 @@ func remove(selectors []string) html2md.BeforeHook {
 			}
 			selection.Remove()
 		}
+	}
+}
+
+func regexReplace(replacements []models.RegexReplace) html2md.Afterhook {
+	return func(markdown string) string {
+		for _, replacement := range replacements {
+			rgx, err := regexp.Compile(replacement.Pattern)
+			if err != nil {
+				log.Errorf("failed to compile pattern: %s", replacement.Pattern)
+				continue
+			}
+			markdown = rgx.ReplaceAllString(markdown, replacement.With)
+		}
+		return markdown
 	}
 }
